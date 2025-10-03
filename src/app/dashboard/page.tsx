@@ -12,6 +12,7 @@ import {
   useCreateChatClient,
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
+import Channelheader from "@/components/ChannelHeader";
 
 const chatClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!,
@@ -33,7 +34,7 @@ const dashboard = () => {
         <div className="flex-1 flex flex-col">
           <Channel >
             <div className="flex-1 flex flex-col">
-              <ChannelHeader  />
+              <Channelheader/>
               <MessageList />
               <MessageInput />
             </div>
