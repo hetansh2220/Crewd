@@ -30,22 +30,36 @@ export default function CreateGroup({
   const [groupName, setGroupName] = useState("");
   const [groupBio, setGroupBio] = useState("");
   const [groupImage, setGroupImage] = useState<File | null>(null);
+  const [maxMembers, setMaxMembers] = useState<number>(10);
+  const [entryFee, setEntryFee] = useState<number>(0);
 
   const handleCreateGroup = async () => {
     if (!groupName) return alert("Group name is required!");
+    if (maxMembers <= 0) return alert("Maximum members must be greater than 0");
+    if (entryFee < 0) return alert("Entry fee cannot be negative");
 
-    const channel = chatClient.channel("messaging", groupName.toLowerCase(), {
-      name: groupName,
-      members: [userId],
-      image: groupImage ? URL.createObjectURL(groupImage) : undefined,
-      custom: { bio: groupBio },
-    } as Record<string, unknown>);
+    const channel = chatClient.channel(
+      "messaging",
+      groupName.toLowerCase(),
+      {
+        name: groupName,
+        members: [userId],
+        image: groupImage ? URL.createObjectURL(groupImage) : undefined,
+        custom: { 
+          bio: groupBio,
+          maxMembers,
+          entryFee,
+        },
+      } as Record<string, unknown>
+    );
 
     await channel.create();
 
     setGroupName("");
     setGroupBio("");
     setGroupImage(null);
+    setMaxMembers(10);
+    setEntryFee(0);
     onOpenChange(false); 
   };
 
@@ -74,6 +88,26 @@ export default function CreateGroup({
             type="file"
             accept="image/*"
             onChange={(e) => setGroupImage(e.target.files?.[0] || null)}
+          />
+          <label htmlFor="" className="text-sm font-medium">
+            Maximum Members
+          </label>
+          <Input
+            type="number"
+            placeholder="Maximum Members"
+            value={maxMembers}
+            onChange={(e) => setMaxMembers(Number(e.target.value))}
+            min={1}
+          />
+          <label htmlFor="" className="text-sm font-medium">
+            Entry Fee
+          </label>
+          <Input
+            type="number"
+            placeholder="Entry Fee"
+            value={entryFee}
+            onChange={(e) => setEntryFee(Number(e.target.value))}
+            min={0}
           />
         </div>
 

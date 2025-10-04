@@ -2,10 +2,10 @@
 
 import MessageInput from "@/components/MessageInput";
 import Sidebar from "@/components/Sidebar";
+import SidePanel from "@/components/SidePanel";
 import { StreamChat } from "stream-chat";
 import {
   Channel,
-  ChannelHeader,
   Chat,
   MessageList,
   Thread,
@@ -18,7 +18,7 @@ const chatClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!,
 );
 
-const dashboard = () => {
+const Dashboard = () => {
   const client = useCreateChatClient({
     apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
     tokenOrProvider: chatClient.devToken("guest"),
@@ -30,11 +30,12 @@ const dashboard = () => {
   return (
     <Chat client={client} theme="str_chat__theme-light">
       <div className="flex h-screen">
+        <SidePanel />
         <Sidebar client={client} currentUserId="guest" />
         <div className="flex-1 flex flex-col">
-          <Channel >
+          <Channel>
             <div className="flex-1 flex flex-col">
-              <Channelheader/>
+              <Channelheader />
               <MessageList />
               <MessageInput />
             </div>
@@ -46,4 +47,4 @@ const dashboard = () => {
   );
 };
 
-export default dashboard;
+export default Dashboard;
