@@ -1,15 +1,25 @@
-'use client';
+import { Header } from "../components/Header"
+import { HeroSection } from "../components/Hero-section"
+import { ActivityFeed } from "../components/Activity-feed"
+import { FeaturedTowns } from "../components/Featured-towns"
 
-import LoginWithWallet from "@/components/LoginWithWallet";
-
-export default function HomePage() {
-
+export default function Home() {
   return (
-    <>
-      <nav className="bg-gray-800 p-4 flex justify-between items-center">
-        <h1 className="text-white text-lg">Chat Application</h1>
-        <LoginWithWallet />
-      </nav>
-    </>
-  );
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <HeroSection />
+          </div>
+          <div className="lg:col-span-1">
+            <ActivityFeed />
+          </div>
+        </div>
+        <div className="mt-16">
+          <FeaturedTowns />
+        </div>
+      </main>
+    </div>
+  )
 }

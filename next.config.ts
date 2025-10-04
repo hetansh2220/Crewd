@@ -11,4 +11,9 @@ const nextConfig: NextConfig = {
   },
 };
 
+// ✅ Add this after object definition (using assignment)
+nextConfig.images = {
+  domains: ["river.delivery"],
+};
+
 export default nextConfig;
