@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ChannelHeader, useChannelStateContext, Avatar } from "stream-chat-react";
-import { ListIcon } from "@phosphor-icons/react";
+import { UsersIcon } from "@phosphor-icons/react";
 import {
   Dialog,
   DialogContent,
@@ -23,13 +23,13 @@ export default function ChannelHeaderWithMembers() {
       <Dialog>
         <DialogTrigger asChild>
           <button className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
-            <ListIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            <UsersIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Channel Members</DialogTitle>
+            <DialogTitle>Group Members</DialogTitle>
           </DialogHeader>
           <ul className="mt-4 space-y-2 max-h-96 overflow-y-auto">
             {channel.state.members &&

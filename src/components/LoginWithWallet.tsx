@@ -1,32 +1,13 @@
-'use client';
-
-import { usePrivy } from '@privy-io/react-auth';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from './ui/button';
+import { useState } from "react"
+import { LoginForm } from "./login-form"
 
 export default function LoginWithWallet() {
-  const { user, login, logout } = usePrivy();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user) {
-      router.push('/dashboard');
-    }
-  }, [user, router]);
-
-  const handleClick = async () => {
-    if (user) {
-      await logout();
-      router.push('/'); 
-    } else {
-       login();
-    }
-  };
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [otpOpen, setOtpOpen] = useState(false)
 
   return (
-    <Button onClick={handleClick}>
-      Login with Wallet
-    </Button>
-  );
+    <>
+      <LoginForm  />
+    </>
+  )
 }
