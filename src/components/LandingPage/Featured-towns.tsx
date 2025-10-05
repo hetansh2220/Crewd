@@ -1,6 +1,7 @@
 "use client"
 
-import {CaretRightIcon,  CaretLeftIcon, StarIcon, UsersIcon} from "@phosphor-icons/react";
+import { useState } from "react"
+import { CaretRightIcon, CaretLeftIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { CommunityCard } from "./community-card"
 
@@ -66,7 +67,81 @@ export function FeaturedSection() {
       price: "0.005 ETH",
       description: "When the fun stops, dep...",
     },
+    {
+      id: 7,
+      name: "naja",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
+      members: 3400,
+      rating: 4.8,
+      reviews: 84,
+      price: "0.002 ETH",
+      description: "Exclusive alpha community.",
+    },
+    {
+      id: 8,
+      name: "Pixel Pioneers",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
+      members: 8700,
+      rating: 4.5,
+      reviews: 220,
+      price: "Free",
+      description: "For indie game creators.",
+    },
+    {
+      id: 9,
+      name: "DeFi Lounge",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
+      members: 12200,
+      rating: 4.7,
+      reviews: 312,
+      price: "0.003 ETH",
+      description: "Discuss yield strategies.",
+    },
+    {
+      id: 10,
+      name: "MetaVerse Builders",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
+      members: 46000,
+      rating: 4.9,
+      reviews: 642,
+      price: "0.02 ETH",
+      description: "Building the virtual future.",
+    },
+    {
+      id: 11,
+      name: "ArtDrop Studio",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
+      members: 720,
+      rating: 4.2,
+      reviews: 14,
+      price: "0.0015 ETH",
+      description: "NFT artists and collectors.",
+    },
+    {
+      id: 12,
+      name: "Crypto Coders",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
+      members: 10400,
+      rating: 5.0,
+      reviews: 389,
+      price: "0.002 ETH",
+      description: "Developers building web3.",
+    },
   ]
+
+  const [page, setPage] = useState(0)
+  const itemsPerPage = 6
+  const totalPages = Math.ceil(communities.length / itemsPerPage)
+
+  const handleNext = () => {
+    if (page < totalPages - 1) setPage(page + 1)
+  }
+
+  const handlePrev = () => {
+    if (page > 0) setPage(page - 1)
+  }
+
+  const currentItems = communities.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
 
   return (
     <section className="p-4">
@@ -76,20 +151,29 @@ export function FeaturedSection() {
           <p className="mt-1 text-gray-700">{"This week's curated Groups"}</p>
         </div>
         <div className="flex items-center justify-center gap-4">
-          <Button>
+          <Button
+            onClick={handlePrev}
+            disabled={page === 0}
+            className={page === 0 ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <CaretLeftIcon size={22} />
           </Button>
-          <Button>
+          <Button
+            onClick={handleNext}
+            disabled={page === totalPages - 1}
+            className={page === totalPages - 1 ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <CaretRightIcon size={22} />
           </Button>
+
           <Button variant="link" className="text-lg">
             See All
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {communities.map((community) => (
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 transition-all duration-300">
+        {currentItems.map((community) => (
           <CommunityCard key={community.id} {...community} />
         ))}
       </div>
