@@ -9,7 +9,7 @@ export function FeaturedSection() {
     {
       id: 1,
       name: "Creator Central",
-      image: "https://river.delivery/media/ffc966d34a9e47159e94dba1478f460c151c9b3be50d545bedb3ce09f7ea6fa8?size=300x300&key=4a831bdc3b83478ba6967cdc12c7955d511f9236a28ac6ce875c1c1b3b1f29e5&iv=",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 603,
       rating: 5.0,
       reviews: 21,
@@ -19,7 +19,7 @@ export function FeaturedSection() {
     {
       id: 2,
       name: "AX1.vc",
-      image: "https://river.delivery/media/ffc966d34a9e47159e94dba1478f460c151c9b3be50d545bedb3ce09f7ea6fa8?size=300x300&key=4a831bdc3b83478ba6967cdc12c7955d511f9236a28ac6ce875c1c1b3b1f29e5&iv=",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 22000,
       rating: 4.9,
       reviews: 1261,
@@ -29,7 +29,7 @@ export function FeaturedSection() {
     {
       id: 3,
       name: "ZenAcademy",
-      image: "https://river.delivery/media/ffc966d34a9e47159e94dba1478f460c151c9b3be50d545bedb3ce09f7ea6fa8?size=300x300&key=4a831bdc3b83478ba6967cdc12c7955d511f9236a28ac6ce875c1c1b3b1f29e5&iv=",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 55000,
       rating: 5.0,
       reviews: 35,
@@ -39,7 +39,7 @@ export function FeaturedSection() {
     {
       id: 4,
       name: "CATAPULT",
-      image: "https://river.delivery/media/ffc966d34a9e47159e94dba1478f460c151c9b3be50d545bedb3ce09f7ea6fa8?size=300x300&key=4a831bdc3b83478ba6967cdc12c7955d511f9236a28ac6ce875c1c1b3b1f29e5&iv=",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 6900,
       rating: 4.3,
       reviews: 3,
@@ -49,7 +49,7 @@ export function FeaturedSection() {
     {
       id: 5,
       name: "Sistine Research",
-      image: "https://river.delivery/media/ffc966d34a9e47159e94dba1478f460c151c9b3be50d545bedb3ce09f7ea6fa8?size=300x300&key=4a831bdc3b83478ba6967cdc12c7955d511f9236a28ac6ce875c1c1b3b1f29e5&iv=",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 8300000,
       rating: 5.0,
       reviews: 65,
@@ -59,7 +59,7 @@ export function FeaturedSection() {
     {
       id: 6,
       name: "BrazyBet",
-      image: "https://river.delivery/media/ffc966d34a9e47159e94dba1478f460c151c9b3be50d545bedb3ce09f7ea6fa8?size=300x300&key=4a831bdc3b83478ba6967cdc12c7955d511f9236a28ac6ce875c1c1b3b1f29e5&iv=",
+      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 1,
       rating: 5.0,
       reviews: 1,

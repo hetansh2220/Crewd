@@ -12,7 +12,8 @@ import {
   useCreateChatClient,
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
-import Channelheader from "@/components/LandingPage/ChannelHeader";
+import Channelheader from "@/components/ChannelHeader";
+import { Header } from "@/components/Header";
 
 const chatClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!,
@@ -28,23 +29,26 @@ const Dashboard = () => {
   if (!client) return null;
 
   return (
-    <Chat client={client} theme="str_chat__theme-light">
-      <div className="flex h-screen">
-        <SidePanel />
-        <Sidebar client={client} currentUserId="guest" />
-        <div className="flex-1 flex flex-col">
-          <Channel>
-            <div className="flex-1 flex flex-col">
-              <Channelheader />
-              <MessageList />
-              <MessageInput />
+    <div className="h-screen ">
+      <Chat client={client} theme="str_chat__theme-dark" >
+        <div className="flex flex-col h-screen">
+          <Header />
+          <div className="flex flex-1 overflow-hidden">
+            <Sidebar client={client} currentUserId="guest" />
+            <div className="flex-1 flex flex-col mr-1 rounded border-3 mb-2 ">
+              <Channel>
+                <div className="flex-1 flex flex-col">
+                  <Channelheader />
+                  <MessageList />
+                  <MessageInput />
+                </div>
+              </Channel>
+              <Thread />
             </div>
-          </Channel>
-          <Thread />
+          </div>
         </div>
-      </div>
-    </Chat>
+      </Chat>
+    </div>
   );
-};
-
+}
 export default Dashboard;

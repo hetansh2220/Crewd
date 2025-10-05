@@ -21,7 +21,7 @@ const MessageInput = () => {
     };
 
     return (
-        <div className="relative flex items-center border-t bg-white">
+        <div className="relative flex items-center rounded-md bg-white">
             <button
                 type="button"
                 onClick={() => setOpen((prev) => !prev)}

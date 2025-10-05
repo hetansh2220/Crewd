@@ -7,7 +7,7 @@ export default function SidePanel() {
   const router = useRouter();
 
   return (
-    <div className="h-screen w-16 bg-[#f9f9f9] flex flex-col items-center justify-between py-4 border-r border-gray-300">
+    <div className="h-screen w-16 bg-[#f9f9f9] flex flex-col items-center justify-between py-4 border-r rounded px-2 border-gray-300">
       <div className="flex flex-col items-center space-y-6 ">
         <button
           onClick={() => router.push("/")}

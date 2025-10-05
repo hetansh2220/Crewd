@@ -15,7 +15,7 @@ export default function ChannelHeaderWithMembers() {
   const { channel } = useChannelStateContext();
 
   return (
-    <div className="flex justify-between items-center p-2 border-b bg-white dark:bg-gray-800">
+    <div className="flex justify-between items-center p-2 border-b  dark:bg-gray-800">
       <div className="flex-1">
         <ChannelHeader />
       </div>
