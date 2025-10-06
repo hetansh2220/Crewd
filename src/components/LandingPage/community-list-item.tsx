@@ -32,64 +32,49 @@ export function CommunityListItem({
   }
 
   return (
-    <Card className="group p-2 rounded-2xl bg-gray-200 hover:shadow-md transition-shadow duration-300">
-      <CardContent className="flex flex-col sm:flex-row items-center gap-4 p-4">
-        {/* Rank + Avatar */}
-        <div className="flex items-center gap-4 w-full sm:w-auto">
-          <span className="text-2xl font-bold text-gray-400 shrink-0">{rank}</span>
-          <Avatar className="h-20 w-20 sm:h-28 sm:w-28 rounded-xl">
-            <AvatarImage
-              src={image || "/placeholder.svg"}
-              alt={name}
-              className="object-cover"
-            />
-            <AvatarFallback className="rounded-xl bg-white/10 text-gray-700">
-              {name[0]}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-
-        {/* Info Section */}
-        <div className="flex-1 space-y-2 w-full min-w-0">
-          {/* Name + Members */}
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-            <div className="min-w-0">
-              <h3 className="font-semibold text-black truncate">{name}</h3>
-              <p className="text-sm text-gray-500 line-clamp-2">{description}</p>
-            </div>
-            <Badge
-              variant="secondary"
-              className="bg-white/10 text-gray-500 hover:bg-white/10 flex items-center gap-1 shrink-0"
-            >
-              <Users className="h-3 w-3" />
-              {formatMembers(members)}
-            </Badge>
+    <Card className="group rounded-xl bg-muted/50 border-border hover:shadow-md transition-all duration-300">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Rank and Avatar */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <span className="text-xl sm:text-2xl font-bold text-muted-foreground w-6 sm:w-8">{rank}</span>
+            <Avatar className="h-16 w-16 sm:h-26 sm:w-26 rounded-lg">
+              <AvatarImage src={image || "/placeholder.svg"} alt={name} className="object-cover" />
+              <AvatarFallback className="rounded-lg bg-muted">{name[0]}</AvatarFallback>
+            </Avatar>
           </div>
 
-          {/* Rating + Button */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            {/* Rating */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < Math.round(rating)
-                        ? "fill-orange-500 text-orange-500"
-                        : "text-gray-300"
-                    }`}
-                  />
-                ))}
+          {/* Content */}
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-card-foreground text-sm sm:text-base line-clamp-1">{name}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{description}</p>
               </div>
-              <span className="text-sm text-black">{rating}</span>
-              <span className="text-sm text-gray-400">({reviews})</span>
+              <Badge
+                variant="secondary"
+                className="bg-background/80 text-muted-foreground hover:bg-background/80 flex-shrink-0 text-xs"
+              >
+                <Users className="mr-1 h-3 w-3" />
+                {formatMembers(members)}
+              </Badge>
             </div>
 
-            {/* Price Button */}
-            <Button className="rounded-lg px-4 py-2 text-sm font-medium w-full sm:w-auto">
-              {price}
-            </Button>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-3 w-3 sm:h-4 sm:w-4 fill-orange-500 text-orange-500" />
+                  ))}
+                </div>
+                <span className="text-xs sm:text-sm text-card-foreground font-medium">{rating}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">({reviews})</span>
+              </div>
+
+              <Button size="sm" className="text-xs sm:text-sm h-8">
+                {price}
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

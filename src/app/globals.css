@@ -325,3 +325,13 @@
 .str-chat__channel-header {
   background: none !important;
 }
+
+
+/* Hide scrollbars (works on Chrome, Safari, Firefox) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { CommunityListItem } from "@/components/LandingPage/community-list-item"
+import { CommunityListItem } from "./community-list-item"
 
 export function TopSection() {
   const topCommunities = [
@@ -72,20 +72,21 @@ export function TopSection() {
   ]
 
   return (
-    <section className="mx-auto px-4 md:px-8 lg:px-16 py-16">
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <section className="m-2 mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <div className="mb-6 sm:mb-8 flex flex-row items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-black">Top</h2>
-          <p className="mt-1 text-gray-400 text-sm md:text-base">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Top</h2>
+          <p className="mt-1 text-muted-foreground text-sm sm:text-base">
             Highest revenue this month
           </p>
         </div>
-        <Button variant="link" className="text-sm md:text-base">
+        <Button variant="link" className="text-sm sm:text-base">
           See All
         </Button>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {topCommunities.map((community) => (
           <CommunityListItem key={community.id} {...community} />
         ))}
