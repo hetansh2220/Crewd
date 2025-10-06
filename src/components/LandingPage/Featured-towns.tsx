@@ -144,38 +144,64 @@ export function FeaturedSection() {
   const currentItems = communities.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
 
   return (
-    <section className="p-4">
-      <div className="mb-8 flex items-center justify-between">
+    <section className="px-4 py-8 md:px-8 lg:px-16 xl:px-24">
+      {/* Header Section */}
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-black">Featured</h2>
-          <p className="mt-1 text-gray-700">{"This week's curated Groups"}</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-black">Featured</h2>
+          <p className="mt-1 text-gray-600 text-sm md:text-base">
+            This week&#39;s curated Groups
+          </p>
         </div>
-        <div className="flex items-center justify-center gap-4">
+
+        {/* Button Group */}
+        <div className="flex items-center justify-center gap-2 sm:gap-4">
           <Button
             onClick={handlePrev}
             disabled={page === 0}
-            className={page === 0 ? "opacity-50 cursor-not-allowed" : ""}
+            className={`p-2 sm:p-3 rounded-full ${page === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            <CaretLeftIcon size={22} />
+            <CaretLeftIcon size={20} />
           </Button>
           <Button
             onClick={handleNext}
             disabled={page === totalPages - 1}
-            className={page === totalPages - 1 ? "opacity-50 cursor-not-allowed" : ""}
+            className={`p-2 sm:p-3 rounded-full ${page === totalPages - 1 ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            <CaretRightIcon size={22} />
+            <CaretRightIcon size={20} />
           </Button>
 
-          <Button variant="link" className="text-lg">
+          <Button
+            variant="link"
+            className="text-sm md:text-base text-blue-600 hover:text-blue-800"
+          >
             See All
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 transition-all duration-300">
+      {/* Cards Grid */}
+      <div
+        className="
+          grid 
+          gap-4 sm:gap-6 
+          grid-cols-1 
+          xs:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-4 
+          xl:grid-cols-6
+          transition-all 
+          duration-300
+        "
+      >
         {currentItems.map((community) => (
           <CommunityCard key={community.id} {...community} />
         ))}
+      </div>
+
+      {/* Pagination info (optional) */}
+      <div className="mt-6 text-center text-gray-500 text-sm">
+        Page {page + 1} of {totalPages}
       </div>
     </section>
   )
