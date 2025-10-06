@@ -145,7 +145,7 @@ export function FeaturedSection() {
 
   return (
     <section className="px-4 py-8 md:px-8 lg:px-16 xl:px-24">
-      {/* Header Section */}
+      {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-black">Featured</h2>
@@ -154,7 +154,7 @@ export function FeaturedSection() {
           </p>
         </div>
 
-        {/* Button Group */}
+        {/* Buttons */}
         <div className="flex items-center justify-center gap-2 sm:gap-4">
           <Button
             onClick={handlePrev}
@@ -180,7 +180,7 @@ export function FeaturedSection() {
         </div>
       </div>
 
-      {/* Cards Grid */}
+      {/* Grid */}
       <div
         className="
           grid 
@@ -199,7 +199,7 @@ export function FeaturedSection() {
         ))}
       </div>
 
-      {/* Pagination info (optional) */}
+      {/* Pagination Info */}
       <div className="mt-6 text-center text-gray-500 text-sm">
         Page {page + 1} of {totalPages}
       </div>

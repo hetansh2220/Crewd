@@ -72,18 +72,20 @@ export function TopSection() {
   ]
 
   return (
-    <section className=" mx-auto px-4 py-16">
-      <div className="mb-8 flex items-center justify-between">
+    <section className="mx-auto px-4 md:px-8 lg:px-16 py-16">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-black">Top</h2>
-          <p className="mt-1 text-gray-400">Highest revenue this month</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-black">Top</h2>
+          <p className="mt-1 text-gray-400 text-sm md:text-base">
+            Highest revenue this month
+          </p>
         </div>
-        <Button variant="link" className="text-lg">
+        <Button variant="link" className="text-sm md:text-base">
           See All
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3 text-black ">
+      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
         {topCommunities.map((community) => (
           <CommunityListItem key={community.id} {...community} />
         ))}
