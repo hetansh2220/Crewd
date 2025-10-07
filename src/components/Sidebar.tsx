@@ -18,14 +18,12 @@ export default function Sidebar({ client, currentUserId }: SidebarProps) {
   const filters = {
     type: "messaging",
     members: { $in: [currentUserId] },
-    ...(searchQuery
-      ? { name: { $autocomplete: searchQuery } }
-      : {}),
+    ...(searchQuery ? { name: { $autocomplete: searchQuery } } : {}),
   };
 
   return (
-    <div className="w-[320px] border-3 border-border/40 rounded-md bg-background/80 backdrop-blur-sm flex flex-col ml-2 mb-2">
-      <div className="flex items-center justify-between p-3  dark:bg-gray-800 border-b">
+    <div className="h-full border-r bg-background/80 backdrop-blur-sm flex flex-col">
+      <div className="flex items-center justify-between p-3 dark:bg-gray-800 border-b">
         <p className="text-lg font-semibold">Chat</p>
         <button
           onClick={() => setShowCreateModal(true)}
