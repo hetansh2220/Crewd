@@ -33,7 +33,7 @@ export function CommunityListItem({
 
   return (
     <Card className="group rounded-xl bg-muted/50 border-border hover:shadow-md transition-all duration-300">
-      <CardContent className="p-3 sm:p-4">
+      <CardContent className="p-2 sm:p-3">
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Rank and Avatar */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
