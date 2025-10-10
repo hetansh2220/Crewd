@@ -21,11 +21,11 @@ const MessageInput = () => {
     };
 
     return (
-        <div className="relative flex items-center rounded-md bg-white">
+        <div className="relative flex items-center rounded-md  bg-white dark:bg-gray-800">
             <button
                 type="button"
                 onClick={() => setOpen((prev) => !prev)}
-                className="p-2 rounded-full hover:bg-gray-100"
+                className="p-2 rounded-full hover:bg-gray-800"
             >
                 <Smile size={20} />
             </button>
@@ -35,11 +35,11 @@ const MessageInput = () => {
             </div>
 
             {open && (
-                <div className="absolute bottom-14 left-2 z-50">
+                <div className="absolute bottom-14 left-2 z-50 bg-background">
                     <Picker
                         data={emojiData}
                         onEmojiSelect={addEmoji}
-                        theme="light"
+                        theme="dark"
                         emojiSize={24}
                         perLine={8}
                         previewPosition="none"

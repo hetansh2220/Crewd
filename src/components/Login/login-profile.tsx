@@ -1,19 +1,10 @@
-"use client"
+'use client'
 
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import Image from "next/image"
-
-import {
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
@@ -21,106 +12,67 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/form'
 
 const profileSchema = z.object({
-  username: z.string().min(2, { message: "Username must be at least 2 characters." }),
+  username: z.string().min(2),
   bio: z.string().max(200).optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
 
 interface Props {
-  onSubmit: (data: ProfileFormValues & { avatarUrl: string }) => void
-  onCancel: () => void
-  defaultValues?: Partial<ProfileFormValues>
+  onSubmit: (data: ProfileFormValues) => void
 }
 
-export function LoginProfileStep({ onSubmit, onCancel, defaultValues }: Props) {
+export function LoginProfileStep({ onSubmit }: Props) {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      username: defaultValues?.username || "",
-      bio: defaultValues?.bio || "",
-    },
+    defaultValues: { username: '', bio: '' },
   })
 
-  const username = form.watch("username")
-  const avatarUrl = username
-    ? `https://api.dicebear.com/9.x/thumbs/svg?seed=${encodeURIComponent(username)}`
-    : "https://api.dicebear.com/9.x/thumbs/svg?seed=default"
-
   const handleSubmit = (data: ProfileFormValues) => {
-    onSubmit({ ...data, avatarUrl })
+    onSubmit(data)
   }
 
   return (
-    <DialogContent className="sm:max-w-md">
-      <DialogHeader>
-        <DialogTitle>Complete Your Profile</DialogTitle>
-        <DialogDescription>
-          Choose a username and write a short bio. A profile picture will be generated automatically.
-        </DialogDescription>
-      </DialogHeader>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="flex flex-col gap-4"
+      >
+        <h2 className="text-xl font-semibold">Complete Your Profile</h2>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          {/* Username */}
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your username" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Avatar Preview */}
-          <div className="flex flex-col items-center space-y-2">
-            <Image
-              src={avatarUrl}
-              alt="Generated avatar"
-              width={80}
-              height={80}
-              className="rounded-full border shadow-sm"
-            />
-            <p className="text-xs text-muted-foreground text-center">
-              This avatar is automatically generated from your username.
-            </p>
-          </div>
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bio</FormLabel>
+              <FormControl>
+                <Input placeholder="Tell us about yourself" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Bio */}
-          <FormField
-            control={form.control}
-            name="bio"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bio</FormLabel>
-                <FormControl>
-                  <Input placeholder="Tell us about yourself" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Buttons */}
-          <DialogFooter className="mt-4">
-            <DialogClose asChild>
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
-              </Button>
-            </DialogClose>
-            <Button type="submit">Submit Profile</Button>
-          </DialogFooter>
-        </form>
-      </Form>
-    </DialogContent>
+        <Button type="submit">Submit Profile</Button>
+      </form>
+    </Form>
   )
 }

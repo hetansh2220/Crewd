@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MessageInput from "@/components/MessageInput";
-import Sidebar from "@/components/Sidebar";
+import MessageInput from "@/components/Dashboard/message-input";
+import Sidebar from "@/components/Dashboard/sidebar";
 import { StreamChat } from "stream-chat";
 import {
   Channel,
@@ -13,8 +13,8 @@ import {
   useChatContext,
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
-import Channelheader from "@/components/ChannelHeader";
-import { Header } from "@/components/Header";
+import Channelheader from "@/components/Dashboard/channel-header";
+import { Header } from "@/components/header";
 
 const chatClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!,

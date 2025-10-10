@@ -1,8 +1,11 @@
-import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, uuid, text } from "drizzle-orm/pg-core";
 
-export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
-  age: integer().notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
+export const user = pgTable("users", {
+  id: uuid().primaryKey().defaultRandom(),
+  username: varchar({ length: 12 }).notNull().unique(),
+  bio: varchar({ length: 160 }).notNull(),
+  walletAddress: varchar("wallet_address").unique(),
+  avatar: text().notNull()
 });
+ 
+export type user = typeof user.$inferInsert

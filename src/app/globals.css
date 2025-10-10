@@ -326,7 +326,6 @@
   background: none !important;
 }
 
-
 /* Hide scrollbars (works on Chrome, Safari, Firefox) */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

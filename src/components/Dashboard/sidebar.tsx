@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import { ChannelList } from 'stream-chat-react';
 import { PlusIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import CreateGroup from './CreateGroup';
+import CreateGroup from './create-group';
 
 interface SidebarProps {
   client: StreamChat;
@@ -22,7 +22,7 @@ export default function Sidebar({ client, currentUserId }: SidebarProps) {
   };
 
   return (
-    <div className="h-full border-r bg-background/80 backdrop-blur-sm flex flex-col">
+    <div className="h-full border-r bg-background/80 backdrop-blur-sm flex flex-col p-2 rounded">
       <div className="flex items-center justify-between p-3 dark:bg-gray-800 border-b">
         <p className="text-lg font-semibold">Chat</p>
         <button
