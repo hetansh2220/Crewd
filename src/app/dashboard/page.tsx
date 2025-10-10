@@ -14,7 +14,7 @@ import {
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
 import Channelheader from "@/components/Dashboard/channel-header";
-import { Header } from "@/components/header";
+import  {Header} from "@/components/Header";
 
 const chatClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!,
@@ -40,9 +40,8 @@ const DashboardContent = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - visible on desktop or when showChat=false */}
         <div
-          className={`transition-all duration-300 ${
-            showChat ? "hidden md:flex" : "flex"
-          } flex-col w-full md:w-[320px] border-r`}
+          className={`transition-all duration-300 ${showChat ? "hidden md:flex" : "flex"
+            } flex-col w-full md:w-[320px] border-r`}
         >
           <Sidebar
             client={client}
@@ -52,9 +51,8 @@ const DashboardContent = () => {
 
         {/* Chat area - visible on desktop or when showChat=true */}
         <div
-          className={`flex-1 flex flex-col transition-all duration-300 ${
-            showChat ? "flex" : "hidden md:flex"
-          }`}
+          className={`flex-1 flex flex-col transition-all duration-300 ${showChat ? "flex" : "hidden md:flex"
+            }`}
         >
           {channel ? (
             <Channel channel={channel}>

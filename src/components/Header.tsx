@@ -5,13 +5,31 @@ import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-
-export function Header() {
+import { GetUser } from "@/server/user";
+import { useEffect, useState } from "react";
+import { Avatar, AvatarImage } from "./ui/avatar";
+export  function Header() {
   const { authenticated, logout } = usePrivy();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const { login } = usePrivy()
+  type User = {
+  id: string;
+  username: string;
+  bio: string;
+  walletAddress: string | null;
+  avatar: string;
+};
 
+const [users, setUsers] = useState<User>();
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const data = await GetUser();
+      setUsers(data);
+    };
+
+    getUsers();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-1 bg-background backdrop-blur-md m-2 rounded-xl">
@@ -22,9 +40,17 @@ export function Header() {
 
         {/* Login Button */}
         <Button onClick={() => router.push('/login')}>
-          {authenticated ? <Button onClick={logout}>Logout</Button > : 'Login'}
+          Login
         </Button>
-
+        {authenticated && (
+          <Button variant="destructive" onClick={logout}>
+            Logout
+          </Button>
+        )}
+        <p>{users?.username}</p>
+        <Avatar>
+          <AvatarImage sizes="32" src={users?.avatar || "/default-avatar.png"} alt="User Avatar" />
+        </Avatar>
         {/* Theme Toggle */}
         <Button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
           {theme === "dark" ? <SunIcon size={24} /> : <MoonIcon size={24} />}

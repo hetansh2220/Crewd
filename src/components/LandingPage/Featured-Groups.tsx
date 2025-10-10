@@ -1,16 +1,18 @@
 "use client"
 
 import { useRef } from "react"
+import { useRouter } from "next/navigation"
 import { CaretRightIcon, CaretLeftIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { CommunityCard } from "./community-card"
 
 export function FeaturedSection() {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const communities = [
     {
-      id: 1,
+      id: "creator-central",   // use string slug instead of number
       name: "Creator Central",
       image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 603,
@@ -20,7 +22,7 @@ export function FeaturedSection() {
       description: "Creator Central is a place for re...",
     },
     {
-      id: 2,
+      id: "ax1-vc",
       name: "AX1.vc",
       image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 22000,
@@ -30,17 +32,17 @@ export function FeaturedSection() {
       description: "Venture Club",
     },
     {
-      id: 3,
-      name: "ZenAcademy",
-      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-      members: 55000,
-      rating: 5.0,
-      reviews: 35,
-      price: "~0.001 ETH",
-      description: "Learn and grow together",
-    },
+    id: "zenacademy",
+    name: "ZenAcademy",
+    image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
+    members: 55000,
+    rating: 5.0,
+    reviews: 35,
+    price: "~0.001 ETH",
+    description: "Learn and grow together",
+},
     {
-      id: 4,
+      id: "catapult",
       name: "CATAPULT",
       image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 6900,
@@ -50,7 +52,7 @@ export function FeaturedSection() {
       description: "CATAPULT TOWNS CO...",
     },
     {
-      id: 5,
+      id: "sistine-research",
       name: "Sistine Research",
       image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 8300000,
@@ -60,7 +62,7 @@ export function FeaturedSection() {
       description: "Trading, investing, and re...",
     },
     {
-      id: 6,
+      id: "brazybet",
       name: "BrazyBet",
       image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 1,
@@ -70,7 +72,7 @@ export function FeaturedSection() {
       description: "When the fun stops, dep...",
     },
     {
-      id: 7,
+      id: "naja",
       name: "naja",
       image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
       members: 3400,
@@ -105,44 +107,29 @@ export function FeaturedSection() {
         </div>
 
         <div className="flex items-center gap-1 flex-shrink-0">
-          <Button
-            onClick={() => scroll("left")}
-            size="icon"
-            className="h-8 w-8 sm:h-9 sm:w-9"
-          >
+          <Button onClick={() => scroll("left")} size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
             <CaretLeftIcon size={16} />
           </Button>
-          <Button
-            onClick={() => scroll("right")}
-            size="icon"
-            className="h-8 w-8 sm:h-9 sm:w-9"
-          >
+          <Button onClick={() => scroll("right")} size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
             <CaretRightIcon size={16} />
           </Button>
-          <Button
-            variant="link"
-            className="text-sm sm:text-md px-1 sm:px-2 whitespace-nowrap"
-          >
+          <Button variant="link" className="text-sm sm:text-md px-1 sm:px-2 whitespace-nowrap">
             See All
           </Button>
         </div>
       </div>
 
-
-
-      {/* Carousel Container */}
+      {/* Carousel */}
       <div
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
       >
         {communities.map((community) => (
           <div
             key={community.id}
-            className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] transition-all duration-300"
+            className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] transition-all duration-300 cursor-pointer"
+            onClick={() => router.push(`/featured/${community.id}`)}
+
           >
             <CommunityCard {...community} />
           </div>

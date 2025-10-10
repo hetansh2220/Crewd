@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useLoginWithEmail } from '@privy-io/react-auth'
 import { LoginEmailStep } from '@/components/Login/login-email'
 import { LoginCodeStep } from '@/components/Login/login-code'
@@ -12,15 +12,27 @@ import {
 } from "@privy-io/react-auth";
 import { useCreateWallet } from '@privy-io/react-auth/solana';
 
+
 export default function LoginPage() {
   const router = useRouter()
-  const { sendCode, loginWithCode } = useLoginWithEmail()
-  const [stage, setStage] = useState<0 | 1 | 2>(0)
+  const params = useSearchParams()
+  const urlStage = params.get('stage')
+  const [stage, setStage] = useState<0 | 1 | 2>(urlStage === '2' ? 2 : 0)
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const { user } = usePrivy()
   const { createWallet } = useCreateWallet();
+  const { sendCode, loginWithCode } = useLoginWithEmail({
+    onComplete: async ({ isNewUser }) => {
+      if (isNewUser) {
+        await createWallet();
+        setStage(2);
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  })
 
   console.log(user)
   /** STEP 0 — Send OTP */
@@ -40,19 +52,15 @@ export default function LoginPage() {
 
   /** STEP 1 — Verify OTP */
   const handleVerifyCode = async () => {
-    if (!code || code.length !== 6) return alert('Enter a 6-digit code')
+    if (!code || code.length !== 6) return alert('Enter a 6-digit code');
     try {
-      setIsLoading(true)
-      await loginWithCode({ code })
-      if (!user?.wallet?.address) {
-        await createWallet()
-      }
-      setStage(2)
+      setIsLoading(true);
+      await loginWithCode({ code });
     } catch (err) {
-      console.error(err)
-      alert('Invalid code')
+      console.error(err);
+      alert('Invalid code');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
