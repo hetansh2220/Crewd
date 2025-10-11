@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useLoginWithEmail } from '@privy-io/react-auth'
 import { LoginEmailStep } from '@/components/Login/login-email'
@@ -11,7 +11,8 @@ import {
   usePrivy,
 } from "@privy-io/react-auth";
 import { useCreateWallet } from '@privy-io/react-auth/solana';
-
+import { GetUserByWallet } from '@/server/user'
+import { th } from 'zod/v4/locales'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -24,15 +25,32 @@ export default function LoginPage() {
   const { user } = usePrivy()
   const { createWallet } = useCreateWallet();
   const { sendCode, loginWithCode } = useLoginWithEmail({
-    onComplete: async ({ isNewUser }) => {
-      if (isNewUser) {
-        await createWallet();
-        setStage(2);
-      } else {
-        router.push('/dashboard');
+    onComplete: async ({ user, isNewUser }) => {
+      try {
+        if (isNewUser) {
+          await createWallet();
+          setStage(2);
+          return;
+        }
+
+        if (!user?.wallet?.address) {
+          throw new Error("Wallet not found");
+        }
+
+        const existingUser = await GetUserByWallet(user.wallet.address);
+
+        if (!existingUser) {
+          setStage(2);
+        } else {
+          router.push('/dashboard');
+        }
+      } catch (err) {
+        console.error("Login error:", err);
       }
-    }
-  })
+    },
+  });
+
+
 
   console.log(user)
   /** STEP 0 — Send OTP */

@@ -1,30 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
-import { StreamChat } from "stream-chat";
+import { Header } from "@/components/Header";
+import stream from "@/lib/stream";
+import { usePrivy } from "@privy-io/react-auth";
+import { useEffect, useState } from "react";
 import {
   Channel,
   Chat,
   MessageList,
   Thread,
-  useCreateChatClient,
   useChatContext,
+  useCreateChatClient,
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
-import Channelheader from "@/components/Dashboard/channel-header";
-import  {Header} from "@/components/Header";
-
-const chatClient = StreamChat.getInstance(
-  process.env.NEXT_PUBLIC_STREAM_API_KEY!,
-);
 
 // Inner component that has access to ChatContext
 const DashboardContent = () => {
   const [showChat, setShowChat] = useState(false);
   const { client, channel } = useChatContext();
-
+  const { user } = usePrivy();
   // Listen for channel changes
   useEffect(() => {
     if (channel) {
@@ -45,7 +42,7 @@ const DashboardContent = () => {
         >
           <Sidebar
             client={client}
-            currentUserId="guest"
+            currentUserId={user?.wallet?.address || "guest"}
           />
         </div>
 
@@ -75,10 +72,11 @@ const DashboardContent = () => {
 };
 
 const Dashboard = () => {
+  const { user } = usePrivy()
   const client = useCreateChatClient({
     apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
-    tokenOrProvider: chatClient.devToken("guest"),
-    userData: { id: "guest" },
+    tokenOrProvider: stream.devToken(user?.wallet?.address || "guest"),
+    userData: { id: user?.wallet?.address || "guest" },
   });
 
   if (!client) return null;

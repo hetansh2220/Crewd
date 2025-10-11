@@ -23,7 +23,7 @@ interface CreateGroupProps {
 
 export default function CreateGroup({
   chatClient,
-  userId,
+  userId ,
   open,
   onOpenChange,
 }: CreateGroupProps) {

@@ -5,56 +5,133 @@ import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { GetUser } from "@/server/user";
+import { GetUserByWallet } from "@/server/user";
 import { useEffect, useState } from "react";
-import { Avatar, AvatarImage } from "./ui/avatar";
-export  function Header() {
-  const { authenticated, logout } = usePrivy();
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+export function Header() {
+  const { authenticated, logout, user: privyUser } = usePrivy();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  type User = {
-  id: string;
-  username: string;
-  bio: string;
-  walletAddress: string | null;
-  avatar: string;
-};
 
-const [users, setUsers] = useState<User>();
+  const wallet = privyUser?.wallet?.address;
+
+  type User = {
+    id: string;
+    username: string;
+    bio: string;
+    walletAddress: string | null;
+    avatar: string;
+  };
+
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUsers = async () => {
-      const data = await GetUser();
-      setUsers(data);
+    const checkUser = async () => {
+      if (!authenticated || !wallet) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await GetUserByWallet(wallet);
+
+        if (!data) {
+          // User exists in Privy but not in DB → redirect to profile completion
+          router.replace("/login?stage=2");
+          return;
+        }
+
+        setUser(data);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    getUsers();
-  }, []);
+    checkUser();
+  }, [authenticated, wallet, router]);
+
+  // While loading or not authenticated, render the login header
+  if (loading) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-1 bg-background backdrop-blur-md m-2 rounded-xl">
+    <header className="sticky top-0 z-50 border bg-background/70 backdrop-blur-md m-2 rounded-xl">
       <div className="max-w-9xl mx-auto flex h-16 items-center justify-between px-6">
+        {/* Left side: Logo */}
         <div className="flex items-center gap-2">
           <ChatCircleIcon size={32} />
         </div>
 
-        {/* Login Button */}
-        <Button onClick={() => router.push('/login')}>
-          Login
-        </Button>
-        {authenticated && (
-          <Button variant="destructive" onClick={logout}>
-            Logout
+        {/* Right side: Actions */}
+        <div className="flex items-center gap-3">
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <SunIcon size={24} /> : <MoonIcon size={24} />}
           </Button>
-        )}
-        <p>{users?.username}</p>
-        <Avatar>
-          <AvatarImage sizes="32" src={users?.avatar || "/default-avatar.png"} alt="User Avatar" />
-        </Avatar>
-        {/* Theme Toggle */}
-        <Button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-          {theme === "dark" ? <SunIcon size={24} /> : <MoonIcon size={24} />}
-        </Button>
+
+          {/* Auth Section */}
+          {!authenticated ? (
+            <Button onClick={() => router.push("/login")}>Login</Button>
+          ) : (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" className="p-0 rounded-full">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={user?.avatar} alt={user?.username} />
+                    <AvatarFallback>
+                      {user?.username?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-48 p-2 flex flex-col gap-2"
+              >
+                <div className="flex flex-col items-center text-sm text-center border-b pb-2">
+                  <Avatar className="h-10 w-10 mb-1">
+                    <AvatarImage src={user?.avatar} alt={user?.username} />
+                    <AvatarFallback>
+                      {user?.username?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-semibold">{user?.username}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => router.push("/profile")}
+                >
+                  Profile
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="w-full justify-start"
+                  onClick={async () => {
+                    await logout();
+                    setUser(null); // Reset local user state
+                    router.push("/login"); // Optional: redirect to login
+                  }}
+                >
+                  Logout
+                </Button>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
       </div>
     </header>
   );

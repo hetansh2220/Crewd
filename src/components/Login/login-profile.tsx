@@ -13,9 +13,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { GetUser } from '@/server/user'
 
 const profileSchema = z.object({
-  username: z.string().min(2),
+  username: z.string().min(2, 'Username must be at least 2 characters'),
   bio: z.string().max(200).optional(),
 })
 
@@ -31,8 +32,24 @@ export function LoginProfileStep({ onSubmit }: Props) {
     defaultValues: { username: '', bio: '' },
   })
 
-  const handleSubmit = (data: ProfileFormValues) => {
-    onSubmit(data)
+  const handleSubmit = async (data: ProfileFormValues) => {
+    try {
+      const users = await GetUser()
+      const existingUser = users.username === data.username
+     
+     
+      if (existingUser) {
+        // Show error in the form under the username input
+        form.setError('username', { message: 'Username is already taken' })
+        return
+      }
+
+      // Proceed with saving profile
+      onSubmit(data)
+    } catch (err) {
+      console.error('Failed to validate username', err)
+      form.setError('username', { message: 'Unable to validate username' })
+    }
   }
 
   return (
@@ -52,6 +69,7 @@ export function LoginProfileStep({ onSubmit }: Props) {
               <FormControl>
                 <Input placeholder="Username" {...field} />
               </FormControl>
+              {/* This will show the error message under the input */}
               <FormMessage />
             </FormItem>
           )}
