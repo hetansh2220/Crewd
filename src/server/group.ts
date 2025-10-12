@@ -2,6 +2,7 @@
 
 import { db } from "@/db/index";
 import { group } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 //GetGroups
 export async function GetGroups() {
@@ -23,3 +24,9 @@ export async function CreateGroup(name: string, description: string, image: stri
     return newGroup;
 }
 
+//GetGroupById
+
+export async function GetGroupById(id: string) {
+  const result = await db.select().from(group).where(eq(group.id, id)).limit(1);
+  return result[0] || null;
+}
