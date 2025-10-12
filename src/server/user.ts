@@ -26,3 +26,4 @@ export async function GetUserByWallet(wallet_address: string) {
     const [users] = await db.select().from(user).where(eq(user.walletAddress, wallet_address));
     return users;
 }
+

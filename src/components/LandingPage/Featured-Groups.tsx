@@ -1,96 +1,66 @@
-"use client"
+"use client";
 
-import { useRef } from "react"
-import { useRouter } from "next/navigation"
-import { CaretRightIcon, CaretLeftIcon } from "@phosphor-icons/react"
-import { Button } from "@/components/ui/button"
-import { CommunityCard } from "./community-card"
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { CaretRightIcon, CaretLeftIcon } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import { CommunityCard } from "./community-card";
+import { GetGroups } from "@/server/group"; // ✅ your server function
+
+interface Group {
+  id: string;
+  name: string;
+  description: string | null;
+  image: string | null;
+  maxMembers: number;
+  entryFee: number;
+}
 
 export function FeaturedSection() {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const communities = [
-    {
-      id: "creator-central",   // use string slug instead of number
-      name: "Creator Central",
-      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-      members: 603,
-      rating: 5.0,
-      reviews: 21,
-      price: "~0.001 ETH",
-      description: "Creator Central is a place for re...",
-    },
-    {
-      id: "ax1-vc",
-      name: "AX1.vc",
-      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-      members: 22000,
-      rating: 4.9,
-      reviews: 1261,
-      price: "0.01 ETH",
-      description: "Venture Club",
-    },
-    {
-    id: "zenacademy",
-    name: "ZenAcademy",
-    image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-    members: 55000,
-    rating: 5.0,
-    reviews: 35,
-    price: "~0.001 ETH",
-    description: "Learn and grow together",
-},
-    {
-      id: "catapult",
-      name: "CATAPULT",
-      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-      members: 6900,
-      rating: 4.3,
-      reviews: 3,
-      price: "~0.001 ETH",
-      description: "CATAPULT TOWNS CO...",
-    },
-    {
-      id: "sistine-research",
-      name: "Sistine Research",
-      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-      members: 8300000,
-      rating: 5.0,
-      reviews: 65,
-      price: "0.1 ETH",
-      description: "Trading, investing, and re...",
-    },
-    {
-      id: "brazybet",
-      name: "BrazyBet",
-      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-      members: 1,
-      rating: 5.0,
-      reviews: 1,
-      price: "0.005 ETH",
-      description: "When the fun stops, dep...",
-    },
-    {
-      id: "naja",
-      name: "naja",
-      image: "https://pbs.twimg.com/profile_images/1941864407186702336/BtLzKmlV_400x400.jpg",
-      members: 3400,
-      rating: 4.8,
-      reviews: 84,
-      price: "0.002 ETH",
-      description: "Exclusive alpha community.",
-    },
-  ]
+  // ✅ Fetch groups using server action
+  useEffect(() => {
+    (async () => {
+      try {
+        // You can directly call server actions this way in Next 13+ with `"use client"`
+        const data = await GetGroups();
+        setGroups(data);
+      } catch (error) {
+        console.error("Error fetching groups:", error);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const scroll = (direction: "left" | "right") => {
-    const container = scrollRef.current
-    if (!container) return
-    const scrollAmount = container.clientWidth * 0.8
+    const container = scrollRef.current;
+    if (!container) return;
+    const scrollAmount = container.clientWidth * 0.8;
     container.scrollBy({
       left: direction === "left" ? -scrollAmount : scrollAmount,
       behavior: "smooth",
-    })
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        Loading featured groups...
+      </div>
+    );
+  }
+
+  if (groups.length === 0) {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        No groups available yet.
+      </div>
+    );
   }
 
   return (
@@ -124,17 +94,24 @@ export function FeaturedSection() {
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
       >
-        {communities.map((community) => (
+        {groups.map((group, index) => (
           <div
-            key={community.id}
+            key={index}
             className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] transition-all duration-300 cursor-pointer"
-            onClick={() => router.push(`/featured/${community.id}`)}
-
+            onClick={() => router.push(`/group/${group.id}`)}
           >
-            <CommunityCard {...community} />
+            <CommunityCard
+              name={group.name}
+              image={group.image || "/default-image.png"}
+              members={group.maxMembers}
+              rating={5}
+              reviews={10}
+              price={`${group.entryFee} SOL`}
+              description={group.description || "No description provided"}
+            />
           </div>
         ))}
       </div>
     </section>
-  )
+  );
 }
