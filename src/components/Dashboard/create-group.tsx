@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { StreamChat } from "stream-chat";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Plus } from "lucide-react";
+import { uploadToCloudinary } from "@/providers/cloudinary-provider";
+import { CreateGroup as CreateGroupDB} from "@/server/group";
 
 interface CreateGroupProps {
   chatClient: StreamChat;
@@ -23,45 +26,89 @@ interface CreateGroupProps {
 
 export default function CreateGroup({
   chatClient,
-  userId ,
+  userId,
   open,
   onOpenChange,
 }: CreateGroupProps) {
   const [groupName, setGroupName] = useState("");
   const [groupBio, setGroupBio] = useState("");
   const [groupImage, setGroupImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [maxMembers, setMaxMembers] = useState<number>(10);
   const [entryFee, setEntryFee] = useState<number>(0);
 
-  const handleCreateGroup = async () => {
-    if (!groupName) return alert("Group name is required!");
-    if (maxMembers <= 0) return alert("Maximum members must be greater than 0");
-    if (entryFee < 0) return alert("Entry fee cannot be negative");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const channel = chatClient.channel(
-      "messaging",
-      groupName.toLowerCase(),
-      {
-        name: groupName,
-        members: [userId],
-        image: groupImage ? URL.createObjectURL(groupImage) : undefined,
-        custom: { 
-          bio: groupBio,
-          maxMembers,
-          entryFee,
-        },
-      } as Record<string, unknown>
+const handleCreateGroup = async () => {
+  if (!groupName) return alert("Group name is required!");
+  if (maxMembers <= 0) return alert("Maximum members must be greater than 0");
+  if (entryFee < 0) return alert("Entry fee cannot be negative");
+
+  let imageUrl = previewUrl;
+  if (groupImage) {
+    try {
+      imageUrl = await uploadToCloudinary(groupImage);
+    } catch (err) {
+      console.error(err);
+      return alert("Failed to upload image. Try again.");
+    }
+  }
+
+  // 1️⃣ Create Stream Chat channel
+  const channel = chatClient.channel("messaging", groupName.toLowerCase(), {
+    name: groupName,
+    members: [userId],
+    image: imageUrl || undefined,
+    custom: {
+      bio: groupBio,
+      maxMembers,
+      entryFee,
+    },
+  } as Record<string, unknown>);
+  await channel.create();
+  console.log(channel.data);
+
+
+  try {
+    const dbGroup = await CreateGroupDB(
+      groupName,
+      groupBio,
+      imageUrl || "",
+      maxMembers,
+      entryFee,
+      userId
     );
+    console.log("Group saved in DB:", dbGroup);
+  } catch (err) {
+    console.error("Failed to save group in DB:", err);
+  }
 
-    await channel.create();
+  // reset form
+  setGroupName("");
+  setGroupBio("");
+  setGroupImage(null);
+  setPreviewUrl(null);
+  setMaxMembers(10);
+  setEntryFee(0);
+  onOpenChange(false);
+};
 
-    setGroupName("");
-    setGroupBio("");
-    setGroupImage(null);
-    setMaxMembers(10);
-    setEntryFee(0);
-    onOpenChange(false); 
+
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
   };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setGroupImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -74,6 +121,29 @@ export default function CreateGroup({
         </DialogHeader>
 
         <div className="space-y-4 py-2">
+          {/* Image Upload with + Icon */}
+          <div
+            className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition relative overflow-hidden"
+            onClick={handleImageClick}
+          >
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="Group"
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <Plus className="w-8 h-8 text-muted-foreground" />
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
+
           <Input
             placeholder="Group Name"
             value={groupName}
@@ -84,31 +154,28 @@ export default function CreateGroup({
             value={groupBio}
             onChange={(e) => setGroupBio(e.target.value)}
           />
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setGroupImage(e.target.files?.[0] || null)}
-          />
-          <label htmlFor="" className="text-sm font-medium">
-            Maximum Members
-          </label>
-          <Input
-            type="number"
-            placeholder="Maximum Members"
-            value={maxMembers}
-            onChange={(e) => setMaxMembers(Number(e.target.value))}
-            min={1}
-          />
-          <label htmlFor="" className="text-sm font-medium">
-            Entry Fee
-          </label>
-          <Input
-            type="number"
-            placeholder="Entry Fee"
-            value={entryFee}
-            onChange={(e) => setEntryFee(Number(e.target.value))}
-            min={0}
-          />
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Maximum Members</label>
+            <Input
+              type="number"
+              placeholder="Maximum Members"
+              value={maxMembers}
+              onChange={(e) => setMaxMembers(Number(e.target.value))}
+              min={1}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Entry Fee(sol)</label>
+            <Input
+              type="number"
+              placeholder="Entry Fee"
+              value={entryFee}
+              onChange={(e) => setEntryFee(Number(e.target.value))}
+              min={0}
+            />
+          </div>
         </div>
 
         <DialogFooter>

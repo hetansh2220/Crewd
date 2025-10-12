@@ -12,7 +12,7 @@ import {
 } from "@privy-io/react-auth";
 import { useCreateWallet } from '@privy-io/react-auth/solana';
 import { GetUserByWallet } from '@/server/user'
-import { th } from 'zod/v4/locales'
+
 
 export default function LoginPage() {
   const router = useRouter()
@@ -24,6 +24,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const { user } = usePrivy()
   const { createWallet } = useCreateWallet();
+  
   const { sendCode, loginWithCode } = useLoginWithEmail({
     onComplete: async ({ user, isNewUser }) => {
       try {
