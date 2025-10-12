@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 import { uploadToCloudinary } from "@/providers/cloudinary-provider";
-import { CreateGroup as CreateGroupDB} from "@/server/group";
+import { CreateGroup as CreateGroupDB } from "@/server/group";
 
 interface CreateGroupProps {
   chatClient: StreamChat;
@@ -39,59 +39,61 @@ export default function CreateGroup({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-const handleCreateGroup = async () => {
-  if (!groupName) return alert("Group name is required!");
-  if (maxMembers <= 0) return alert("Maximum members must be greater than 0");
-  if (entryFee < 0) return alert("Entry fee cannot be negative");
+  const handleCreateGroup = async () => {
+    if (!groupName) return alert("Group name is required!");
+    if (maxMembers <= 0) return alert("Maximum members must be greater than 0");
+    if (entryFee < 0) return alert("Entry fee cannot be negative");
 
-  let imageUrl = previewUrl;
-  if (groupImage) {
-    try {
-      imageUrl = await uploadToCloudinary(groupImage);
-    } catch (err) {
-      console.error(err);
-      return alert("Failed to upload image. Try again.");
+    let imageUrl = previewUrl;
+    if (groupImage) {
+      try {
+        imageUrl = await uploadToCloudinary(groupImage);
+      } catch (err) {
+        console.error(err);
+        return alert("Failed to upload image. Try again.");
+      }
     }
-  }
 
-  // 1️⃣ Create Stream Chat channel
-  const channel = chatClient.channel("messaging", groupName.toLowerCase(), {
-    name: groupName,
-    members: [userId],
-    image: imageUrl || undefined,
-    custom: {
+    // id 
+  const id = crypto.randomUUID();
+    // 1️⃣ Create Stream Chat channel
+    const channel = chatClient.channel("messaging", groupName.toLowerCase(), {
+      name: groupName,
+      members: [userId],
+      image: imageUrl || undefined,
       bio: groupBio,
       maxMembers,
       entryFee,
-    },
-  } as Record<string, unknown>);
-  await channel.create();
-  console.log(channel.data);
+      sid: id,
+    } as Record<string, unknown>);
 
+    await channel.create();
+    console.log(channel.data);
 
-  try {
-    const dbGroup = await CreateGroupDB(
-      groupName,
-      groupBio,
-      imageUrl || "",
-      maxMembers,
-      entryFee,
-      userId
-    );
-    console.log("Group saved in DB:", dbGroup);
-  } catch (err) {
-    console.error("Failed to save group in DB:", err);
-  }
+    try {
+      const dbGroup = await CreateGroupDB(
+        groupName,
+        groupBio,
+        imageUrl || "",
+        maxMembers,
+        entryFee,
+        userId,
+        id
+      );
+      console.log("Group saved in DB:", dbGroup);
+    } catch (err) {
+      console.error("Failed to save group in DB:", err);
+    }
 
-  // reset form
-  setGroupName("");
-  setGroupBio("");
-  setGroupImage(null);
-  setPreviewUrl(null);
-  setMaxMembers(10);
-  setEntryFee(0);
-  onOpenChange(false);
-};
+    // reset form
+    setGroupName("");
+    setGroupBio("");
+    setGroupImage(null);
+    setPreviewUrl(null);
+    setMaxMembers(10);
+    setEntryFee(0);
+    onOpenChange(false);
+  };
 
 
 
