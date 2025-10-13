@@ -24,23 +24,14 @@ import { redirect } from "next/navigation";
 const DashboardContent = () => {
   const [showChat, setShowChat] = useState(false);
   const { client, channel } = useChatContext();
-  const { user } = usePrivy();
-  if (!user) {
-    redirect("/");
-  }
-  const walletAddress = user?.wallet?.address;
-  if (!walletAddress) {
-    redirect("/login");
-  }
+  const { user ,ready} = usePrivy();
   useEffect(() => {
-    const fetchUserData = async () => {
-      const existuser = await GetUserByWallet(walletAddress);
-      if (!existuser) {
-        redirect("/login");
+    if(ready){
+      if (!user) {
+        redirect("/");
       }
-    };
-    fetchUserData();
-  }, [walletAddress]);
+    }
+  }, [ready, user]);
 
   
   

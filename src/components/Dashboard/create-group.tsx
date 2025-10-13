@@ -57,7 +57,7 @@ export default function CreateGroup({
     // id 
   const id = crypto.randomUUID();
     // 1️⃣ Create Stream Chat channel
-    const channel = chatClient.channel("messaging", groupName.toLowerCase(), {
+    const channel = chatClient.channel("messaging", id, {
       name: groupName,
       members: [userId],
       image: imageUrl || undefined,

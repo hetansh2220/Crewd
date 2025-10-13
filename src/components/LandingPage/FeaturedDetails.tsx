@@ -1,11 +1,13 @@
 "use client";
 
-import { Star, Users, Hash, Share2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import stream from "@/lib/stream";
+import { usePrivy } from "@privy-io/react-auth";
+import { useChatContext } from "stream-chat-react";
+import { Channel } from "stream-chat-react";
+import { redirect } from "next/dist/server/api-utils";
 
 interface FeaturedDetailsProps {
   groupData: {
@@ -21,7 +23,36 @@ interface FeaturedDetailsProps {
 }
 
 export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
-  const membershipProgress = 70; 
+  const [joining, setJoining] = useState(false);
+  const [joined, setJoined] = useState(false);
+  const { user } = usePrivy();
+  const userId = user?.wallet?.address || "guest";
+
+  const membershipProgress = 70;
+
+  const handleJoin = async () => {
+    if (!user) return;
+    setJoining(true);
+
+    try {
+      await stream.connectUser(
+        {
+          id: groupData.owner,
+        },
+        stream.devToken(groupData.owner)
+      );
+
+      const channel = stream.getChannelById("messaging", groupData.name, {});
+      await channel.addMembers([userId]);
+      await stream.disconnectUser();
+      setJoined(true);
+      console.log(`User ${userId} joined channel ${groupData.id}`);
+    } catch (err) {
+      console.error("Error joining channel:", err);
+    } finally {
+      setJoining(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-900 text-white">
@@ -36,7 +67,6 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
         {/* Image and Stats */}
         <div className="grid md:grid-cols-4 gap-4">
-          {/* Stats */}
           <Card>
             <CardContent className="p-6 text-center">
               <p className="text-xs text-muted-foreground mb-1">ENTRY FEE</p>
@@ -51,7 +81,6 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             </CardContent>
           </Card>
 
-          {/* Image */}
           <div className="md:col-span-2">
             <Card>
               <CardContent className="p-2">
@@ -71,9 +100,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             <CardTitle>About</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-zinc-300 leading-relaxed">
-              {groupData.description}
-            </p>
+            <p className="text-zinc-300 leading-relaxed">{groupData.description}</p>
           </CardContent>
         </Card>
 
@@ -92,8 +119,12 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
               />
             </div>
 
-            <Button className="w-full max-w-sm bg-[#00FFA3] hover:bg-[#00e69b] text-black font-semibold rounded-md">
-              Join
+            <Button
+              className="w-full max-w-sm bg-[#00FFA3] hover:bg-[#00e69b] text-black font-semibold rounded-md"
+              onClick={handleJoin}
+              disabled={joining || joined}
+            >
+              {joining ? "Joining..." : joined ? "Joined" : "Join Now"}
             </Button>
           </div>
         </div>
