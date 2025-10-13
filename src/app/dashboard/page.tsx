@@ -6,7 +6,7 @@ import Sidebar from "@/components/Dashboard/sidebar";
 import { Header } from "@/components/Header";
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   Channel,
   Chat,
@@ -16,19 +16,41 @@ import {
   useCreateChatClient,
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
+import { GetUserByWallet } from "@/server/user";
+import { redirect } from "next/navigation";
+
 
 // Inner component that has access to ChatContext
 const DashboardContent = () => {
   const [showChat, setShowChat] = useState(false);
   const { client, channel } = useChatContext();
   const { user } = usePrivy();
-  // Listen for channel changes
+  if (!user) {
+    redirect("/");
+  }
+  const walletAddress = user?.wallet?.address;
+  if (!walletAddress) {
+    redirect("/login");
+  }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const existuser = await GetUserByWallet(walletAddress);
+      if (!existuser) {
+        redirect("/login");
+      }
+    };
+    fetchUserData();
+  }, [walletAddress]);
+
+  
+  
   useEffect(() => {
     if (channel) {
-      console.log("Active channel changed:", channel.id);
       setShowChat(true);
     }
   }, [channel]);
+
+
 
   return (
     <div className="flex flex-col h-screen">
