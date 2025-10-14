@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import stream from "@/lib/stream";
@@ -8,6 +8,8 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useChatContext } from "stream-chat-react";
 import { Channel } from "stream-chat-react";
 import { redirect } from "next/dist/server/api-utils";
+import {GetUserByWallet} from "@/server/user";
+import { User } from "lucide-react";
 
 interface FeaturedDetailsProps {
   groupData: {
@@ -27,7 +29,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const [joined, setJoined] = useState(false);
   const { user } = usePrivy();
   const userId = user?.wallet?.address || "guest";
-
+  const [userData, setUserData] = useState<{username: string} | null>(null);
   const membershipProgress = 70;
 
   const handleJoin = async () => {
@@ -44,6 +46,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
       const channel = stream.getChannelById("messaging", groupData.name, {});
       await channel.addMembers([userId]);
+    console.log(channel.watch());
       await stream.disconnectUser();
       setJoined(true);
       console.log(`User ${userId} joined channel ${groupData.id}`);
@@ -54,6 +57,20 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     }
   };
 
+  useEffect(() => {
+    const getuserbywallet = async () => {
+      if (user) {
+        const userData = await GetUserByWallet(user?.wallet?.address || "");
+        if (userData) {
+          console.log("User data found:", userData);
+          setUserData(userData);
+        }
+      }
+    };
+    console.log("User:", user);
+    getuserbywallet();
+  }, [user]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-900 text-white">
       <div className="max-w-6xl mx-auto py-8 px-4 space-y-8">
@@ -61,7 +78,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         <div>
           <h1 className="text-4xl font-bold mb-2">{groupData.name}</h1>
           <p className="text-sm text-zinc-400">
-            Created by <span className="text-zinc-200">{groupData.owner}</span>
+            Created by <span className="text-zinc-200">{userData?.username}</span>
           </p>
         </div>
 
