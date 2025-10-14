@@ -16,7 +16,7 @@ export async function CreateUser(username: string, bio: string, wallet_address: 
         username: username.toLowerCase(),
         bio: bio,
         walletAddress: wallet_address,
-        avatar: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${username}`
+        avatar: `https://api.dicebear.com/9.x/thumbs/svg?seed=${username}`
     }).returning();
     return newUser;
 }
