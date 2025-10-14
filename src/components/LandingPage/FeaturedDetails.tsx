@@ -29,9 +29,9 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const [joined, setJoined] = useState(false);
   const { user } = usePrivy();
   const userId = user?.wallet?.address || "guest";
-  const [userData, setUserData] = useState<{username: string} | null>(null);
+  const owner = groupData.owner;
   const membershipProgress = 70;
-
+ const [ownername, setOwnername] = useState<{username: string} | null>(null);
   const handleJoin = async () => {
     if (!user) return;
     setJoining(true);
@@ -46,7 +46,6 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
       const channel = stream.getChannelById("messaging", groupData.name, {});
       await channel.addMembers([userId]);
-    console.log(channel.watch());
       await stream.disconnectUser();
       setJoined(true);
       console.log(`User ${userId} joined channel ${groupData.id}`);
@@ -56,20 +55,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       setJoining(false);
     }
   };
-
-  useEffect(() => {
-    const getuserbywallet = async () => {
-      if (user) {
-        const userData = await GetUserByWallet(user?.wallet?.address || "");
-        if (userData) {
-          console.log("User data found:", userData);
-          setUserData(userData);
-        }
-      }
-    };
-    console.log("User:", user);
-    getuserbywallet();
-  }, [user]);
+    useEffect(() => {
+      const ownername = async () => {
+        const ownername = await GetUserByWallet(owner);
+        console.log(ownername, "owner details");
+        setOwnername(ownername);
+      };
+      ownername();
+    }, [owner]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-900 text-white">
@@ -78,7 +71,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         <div>
           <h1 className="text-4xl font-bold mb-2">{groupData.name}</h1>
           <p className="text-sm text-zinc-400">
-            Created by <span className="text-zinc-200">{userData?.username}</span>
+            Created by <span className="text-zinc-200">{ownername?.username}</span>
           </p>
         </div>
 
