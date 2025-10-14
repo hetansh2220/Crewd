@@ -14,14 +14,13 @@ export const user = pgTable("users", {
 export type user = typeof user.$inferInsert
 
 export const group = pgTable("groups", {
-  id: uuid().primaryKey().defaultRandom(),
+  id: uuid().primaryKey(),
   name: varchar({ length: 32 }).notNull().unique(),
   description: varchar({ length: 160 }).notNull(),
   image: text().notNull(),
   maxMembers: integer("max_members").notNull().default(10),
   entryFee: integer("entry_fee").notNull().default(0),
   owner: varchar("owner").notNull().references(() => user.walletAddress),
-  streamId: varchar("stream_id").notNull().unique(),
   createdAt : timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -30,7 +29,7 @@ export type group = typeof group.$inferInsert
 export const review = pgTable("reviews", {
   id: uuid().primaryKey().defaultRandom(),
   reviewer: varchar("reviewer").notNull().references(() => user.walletAddress), 
-  streamId: uuid("stream_id").notNull().references(() => group.streamId), 
+  groupId: uuid("group_id").notNull().references(() => group.id), 
   rating: integer("rating").notNull(), 
   comment: text("comment").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

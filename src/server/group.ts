@@ -11,15 +11,15 @@ export async function GetGroups() {
 }
 
 //CreateGroup
-export async function CreateGroup(name: string, description: string, image: string, maxMembers: number, entryFee: number, owner: string, streamId: string) {
+export async function CreateGroup(id: string, name: string, description: string, image: string, maxMembers: number, entryFee: number, owner: string,) {
     const newGroup = await db.insert(group).values({
+        id: id,
         name: name,
         description: description,
         image: image,
         maxMembers: maxMembers,
         entryFee: entryFee,
         owner: owner,
-        streamId: streamId
     }).returning();
     return newGroup;
 }

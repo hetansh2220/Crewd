@@ -55,7 +55,7 @@ export default function CreateGroup({
     }
 
     // id 
-  const id = crypto.randomUUID();
+    const id = crypto.randomUUID();
     // 1️⃣ Create Stream Chat channel
     const channel = chatClient.channel("messaging", id, {
       name: groupName,
@@ -64,7 +64,6 @@ export default function CreateGroup({
       bio: groupBio,
       maxMembers,
       entryFee,
-      sid: id,
     } as Record<string, unknown>);
 
     await channel.create();
@@ -72,13 +71,13 @@ export default function CreateGroup({
 
     try {
       const dbGroup = await CreateGroupDB(
+        id,
         groupName,
         groupBio,
         imageUrl || "",
         maxMembers,
         entryFee,
         userId,
-        id
       );
       console.log("Group saved in DB:", dbGroup);
     } catch (err) {

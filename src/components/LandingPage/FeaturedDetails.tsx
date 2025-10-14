@@ -8,7 +8,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useChatContext } from "stream-chat-react";
 import { Channel } from "stream-chat-react";
 import { redirect } from "next/dist/server/api-utils";
-import {GetUserByWallet} from "@/server/user";
+import { GetUserByWallet } from "@/server/user";
 import { User } from "lucide-react";
 
 interface FeaturedDetailsProps {
@@ -31,7 +31,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const userId = user?.wallet?.address || "guest";
   const owner = groupData.owner;
   const membershipProgress = 70;
- const [ownername, setOwnername] = useState<{username: string} | null>(null);
+  const [ownername, setOwnername] = useState<{ username: string } | null>(null);
   const handleJoin = async () => {
     if (!user) return;
     setJoining(true);
@@ -43,8 +43,8 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         },
         stream.devToken(groupData.owner)
       );
-
-      const channel = stream.getChannelById("messaging", groupData.name, {});
+      console.log("Connected to Stream as user:", groupData.id);
+      const channel = stream.getChannelById("messaging", groupData.id, {});
       await channel.addMembers([userId]);
       await stream.disconnectUser();
       setJoined(true);
@@ -55,14 +55,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       setJoining(false);
     }
   };
-    useEffect(() => {
-      const ownername = async () => {
-        const ownername = await GetUserByWallet(owner);
-        console.log(ownername, "owner details");
-        setOwnername(ownername);
-      };
-      ownername();
-    }, [owner]);
+  useEffect(() => {
+    const ownername = async () => {
+      const ownername = await GetUserByWallet(owner);
+      console.log(ownername, "owner details");
+      setOwnername(ownername);
+    };
+    ownername();
+  }, [owner]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-900 text-white">
