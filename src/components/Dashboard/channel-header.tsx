@@ -18,14 +18,14 @@ import { Button } from "@/components/ui/button";
 import { CreateReview } from "@/server/review";
 import { usePrivy } from "@privy-io/react-auth";
 import stream from "@/lib/stream";
-
+import { Skeleton } from "../ui/skeleton";
 interface Props {
   onBack?: () => void;
 }
 
 export default function ChannelHeaderWithMenu({ onBack }: Props) {
   const { channel } = useChannelStateContext();
-  const { user } = usePrivy();
+  const { user , ready } = usePrivy();
 
   const [showMembersDialog, setShowMembersDialog] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
@@ -66,7 +66,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
   };
 
   return (
-    <div className="flex justify-between items-center p-2 border-b dark:bg-gray-800">
+    <div className="flex justify-between items-center p-2 border-b dark:bg-background">
       <div className="flex items-center gap-2 flex-1">
         {onBack && (
           <button
@@ -76,7 +76,18 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
             <ArrowLeft size={22} className="text-gray-700 dark:text-gray-300" />
           </button>
         )}
-        <ChannelHeader />
+        {!ready && 
+         <div className="flex items-center space-x-4">
+      <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+
+        }
+        {ready  && <ChannelHeader />}
+
       </div>
 
       {/* Menu */}
@@ -162,7 +173,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Write your comment..."
-              className="w-full p-2 border rounded bg-accent"
+              className="w-full p-2 border rounded bg-background "
               rows={4}
             />
 

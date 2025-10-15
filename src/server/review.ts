@@ -10,10 +10,10 @@ export async function GetReviews() {
 }
 
 //CreateReview
-export async function CreateReview(reviewer: string, streamId: string, rating: number, comment: string) {
+export async function CreateReview(reviewer: string, groupId: string, rating: number, comment: string) {
     const newReview = await db.insert(review).values({
         reviewer: reviewer,
-        streamId: streamId,
+        groupId: groupId,
         rating: rating,
         comment: comment,
 
