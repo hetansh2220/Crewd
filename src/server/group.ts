@@ -27,6 +27,6 @@ export async function CreateGroup(id: string, name: string, description: string,
 //GetGroupById
 
 export async function GetGroupById(id: string) {
-  const result = await db.select().from(group).where(eq(group.id, id)).limit(1);
-  return result[0] || null;
+    const [groups] = await db.select().from(group).where(eq(group.id, id));
+    return groups;
 }

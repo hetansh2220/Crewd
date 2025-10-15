@@ -6,7 +6,8 @@ import { CaretRightIcon, CaretLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { CommunityCard } from "./community-card";
 import { GetGroups } from "@/server/group"; // ✅ your server function
-
+import { usePrivy } from "@privy-io/react-auth";
+import { Skeleton } from "../ui/skeleton";
 interface Group {
   id: string;
   name: string;
@@ -20,7 +21,8 @@ export function FeaturedSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [groups, setGroups] = useState<Group[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const { ready } = usePrivy();
 
   // ✅ Fetch groups using server action
   useEffect(() => {
@@ -31,8 +33,6 @@ export function FeaturedSection() {
         setGroups(data);
       } catch (error) {
         console.error("Error fetching groups:", error);
-      } finally {
-        setLoading(false);
       }
     })();
   }, []);
@@ -47,21 +47,6 @@ export function FeaturedSection() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        Loading featured groups...
-      </div>
-    );
-  }
-
-  if (groups.length === 0) {
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        No groups available yet.
-      </div>
-    );
-  }
 
   return (
     <section className="m-2 mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
@@ -94,24 +79,39 @@ export function FeaturedSection() {
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
       >
-        {groups.map((group, index) => (
-          <div
-            key={index}
-            className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] transition-all duration-300 cursor-pointer"
-            onClick={() => router.push(`/group/${group.id}`)}
-          >
-            <CommunityCard
-              name={group.name}
-              image={group.image || "/default-image.png"}
-              members={group.maxMembers}
-              rating={5}
-              reviews={10}
-              price={`${group.entryFee} SOL`}
-              description={group.description || "No description provided"}
-            />
-          </div>
-        ))}
+        {!ready ? (
+          // skeletons
+          [...Array(3)].map((_, index) => (
+            <div key={index} className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]">
+              <Skeleton className="h-[200px] w-full rounded-lg mb-4" />
+              <Skeleton className="h-6 w-3/4 rounded-lg mb-2" />
+              <Skeleton className="h-4 w-1/2 rounded-lg mb-2" />
+              <Skeleton className="h-8 w-full rounded-lg" />
+            </div>
+          ))
+        ) : (
+          groups.map((group, index) => (
+            <div
+              key={index}
+              className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] transition-all duration-300 cursor-pointer"
+              onClick={() => router.push(`/group/${group.id}`)}
+            >
+              <CommunityCard
+                name={group.name}
+                image={group.image || "/default-image.png"}
+                members={group.maxMembers}
+                rating={5}
+                reviews={10}
+                price={`${group.entryFee} SOL`}
+                description={group.description || "No description provided"}
+              />
+            </div>
+          ))
+        )}
+
+
       </div>
+
     </section>
   );
 }
