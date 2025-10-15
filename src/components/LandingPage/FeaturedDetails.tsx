@@ -27,34 +27,59 @@ interface FeaturedDetailsProps {
 export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const [joining, setJoining] = useState(false);
   const [joined, setJoined] = useState(false);
+  const [channel, setChannel] = useState(null as any);
   const { user } = usePrivy();
   const userId = user?.wallet?.address || "guest";
   const owner = groupData.owner;
   const membershipProgress = 70;
   const [ownername, setOwnername] = useState<{ username: string } | null>(null);
-  const handleJoin = async () => {
+
+  useEffect(() => {
+  const initChannel = async () => {
     if (!user) return;
-    setJoining(true);
 
     try {
+      // Connect current user
       await stream.connectUser(
-        {
-          id: groupData.owner,
-        },
-        stream.devToken(groupData.owner)
+        { id: userId },
+        stream.devToken(userId)
       );
-      console.log("Connected to Stream as user:", groupData.id);
-      const channel = stream.getChannelById("messaging", groupData.id, {});
-      await channel.addMembers([userId]);
-      await stream.disconnectUser();
-      setJoined(true);
-      console.log(`User ${userId} joined channel ${groupData.id}`);
+
+      // Get channel and watch it
+      const channel = stream.channel("team", groupData.id);
+      await channel.watch(); // loads members & state
+      setChannel(channel);
+
+      // Check if current user is already a member
+      const memberIds = Object.keys(channel.state.members);
+      if (memberIds.includes(userId)) {
+        setJoined(true);
+      }
+
+      console.log(channel.state.members, "members loaded");
     } catch (err) {
-      console.error("Error joining channel:", err);
-    } finally {
-      setJoining(false);
+      console.error("Error initializing channel:", err);
     }
   };
+
+  initChannel();
+}, [user, userId, groupData.id]);
+
+ const handleJoin = async () => {
+  if (!user || joined) return;
+  setJoining(true);
+
+  try {
+    await channel.addMembers([userId]);
+    setJoined(true);
+    console.log(`User ${userId} joined channel ${groupData.id}`);
+  } catch (err) {
+    console.error("Error joining channel:", err);
+  } finally {
+    setJoining(false);
+  }
+};
+
   useEffect(() => {
     const ownername = async () => {
       const ownername = await GetUserByWallet(owner);
@@ -63,6 +88,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     };
     ownername();
   }, [owner]);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-900 text-white">
@@ -136,6 +162,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             >
               {joining ? "Joining..." : joined ? "Joined" : "Join Now"}
             </Button>
+
           </div>
         </div>
       </div>

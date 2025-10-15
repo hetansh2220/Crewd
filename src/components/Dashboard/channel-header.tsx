@@ -38,7 +38,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
   const handleSubmitReview = () => {
     const reviewer = user?.wallet?.address;
     //@ts-ignore
-    const streamId = channel?.data?.sid;
+    const streamId = channel?.data?.id;
   
      
     if (!reviewer || !streamId) {
