@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CaretRightIcon, CaretLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { CommunityCard } from "./community-card";
-import { GetGroups } from "@/server/group"; // ✅ your server function
+import { GetGroups } from "@/server/group"; 
 import { usePrivy } from "@privy-io/react-auth";
 import { Skeleton } from "../ui/skeleton";
 interface Group {
@@ -21,21 +21,24 @@ export function FeaturedSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [groups, setGroups] = useState<Group[]>([]);
-
+  const [loading, setLoading] = useState(false);
   const { ready } = usePrivy();
 
   // ✅ Fetch groups using server action
   useEffect(() => {
-    (async () => {
-      try {
-        // You can directly call server actions this way in Next 13+ with `"use client"`
-        const data = await GetGroups();
-        setGroups(data);
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-      }
-    })();
-  }, []);
+  (async () => {
+    setLoading(true); // ✅ Start loading before fetch
+    try {
+      const data = await GetGroups();
+      setGroups(data);
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+    } finally {
+      setLoading(false); // ✅ Stop loading after fetch
+    }
+  })();
+}, []);
+
 
   const scroll = (direction: "left" | "right") => {
     const container = scrollRef.current;
@@ -46,6 +49,7 @@ export function FeaturedSection() {
       behavior: "smooth",
     });
   };
+ 
 
 
   return (
@@ -79,7 +83,7 @@ export function FeaturedSection() {
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
       >
-        {!ready ? (
+        {loading ? (
           // skeletons
           [...Array(3)].map((_, index) => (
             <div key={index} className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]">
