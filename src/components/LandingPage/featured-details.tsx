@@ -32,54 +32,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const userId = user?.wallet?.address || "guest";
   const owner = groupData.owner;
   const membershipProgress = 70;
-  const [ownername, setOwnername] = useState<{ username: string } | null>(null);
-
-  useEffect(() => {
-  const initChannel = async () => {
-    if (!user) return;
-
-    try {
-      // Connect current user
-      await stream.connectUser(
-        { id: userId },
-        stream.devToken(userId)
-      );
-
-      // Get channel and watch it
-      const channel = stream.channel("team", groupData.id);
-      await channel.watch(); // loads members & state
-      setChannel(channel);
-
-      // Check if current user is already a member
-      const memberIds = Object.keys(channel.state.members);
-      if (memberIds.includes(userId)) {
-        setJoined(true);
-      }
-
-      console.log(channel.state.members, "members loaded");
-    } catch (err) {
-      console.error("Error initializing channel:", err);
-    }
-  };
-
-  initChannel();
-}, [user, userId, groupData.id]);
-
- const handleJoin = async () => {
-  if (!user || joined) return;
-  setJoining(true);
-
-  try {
-    await channel.addMembers([userId]);
-    setJoined(true);
-    console.log(`User ${userId} joined channel ${groupData.id}`);
-  } catch (err) {
-    console.error("Error joining channel:", err);
-  } finally {
-    setJoining(false);
-  }
-};
-
+  const [ownername, setOwnername] = useState<{ username: string, walletAddress: string | null } | null>(null);
   useEffect(() => {
     const ownername = async () => {
       const ownername = await GetUserByWallet(owner);
@@ -88,6 +41,54 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     };
     ownername();
   }, [owner]);
+
+  useEffect(() => {
+    const initChannel = async () => {
+      if (!user) return;
+      console.log(ownername, "ownername");
+      try {
+        // Connect current user
+        await stream.connectUser(
+          { id: ownername?.walletAddress || "guest" },
+          stream.devToken(ownername?.walletAddress || "guest")
+        );
+
+        // Get channel and watch it
+        const channel = stream.channel("team", groupData.id);
+        await channel.watch(); // loads members & state
+        setChannel(channel);
+
+        // Check if current user is already a member
+        const memberIds = Object.keys(channel.state.members);
+        if (memberIds.includes(ownername?.walletAddress || "guest")) {
+          setJoined(true);
+        }
+
+        console.log(channel.state.members, "members loaded");
+      } catch (err) {
+        console.error("Error initializing channel:", err);
+      }
+    };
+
+    initChannel();
+  }, [user, ownername, groupData.id]);
+
+  const handleJoin = async () => {
+    if (!user || joined) return;
+    setJoining(true);
+
+    try {
+      await channel.addMembers([userId || "guest"]);
+      setJoined(true);
+      console.log(`User ${userId} joined channel ${groupData.id}`);
+    } catch (err) {
+      console.error("Error joining channel:", err);
+    } finally {
+      setJoining(false);
+    }
+  };
+
+
 
 
   return (
