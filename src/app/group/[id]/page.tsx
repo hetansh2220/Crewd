@@ -1,4 +1,4 @@
-import FeaturedDetails from "@/components/LandingPage/FeaturedDetails";
+import FeaturedDetails from "@/components/LandingPage/featured-details";
 import { GetGroupById } from "@/server/group";
 import { notFound } from "next/navigation";
 

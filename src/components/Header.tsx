@@ -80,7 +80,7 @@ export function Header() {
           </Button>
 
           {/* Auth Section */}
-          {ready ? (
+     
             <>
               {!authenticated ? (
                 <Button onClick={() => router.push("/login")}>Login</Button>
@@ -88,12 +88,17 @@ export function Header() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="ghost" className="p-0 rounded-full">
-                      <Avatar className="h-9 w-9">
+                      {!ready && authenticated ? (
+                        <Skeleton className="h-9 w-9 rounded-full" />
+                      ) : (
+                         <Avatar className="h-9 w-9">
                         <AvatarImage src={user?.avatar} alt={user?.username} />
                         <AvatarFallback>
                           {user?.username?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
+                      )}
+                     
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
@@ -131,7 +136,7 @@ export function Header() {
                 </Popover>
               )}
             </>
-          ) : <Skeleton className="h-10 w-10 rounded-full" />}
+        
         </div>
       </div>
     </header>

@@ -3,7 +3,7 @@
 import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
 import { use, useEffect, useState } from "react";
@@ -24,17 +24,17 @@ import { redirect } from "next/navigation";
 const DashboardContent = () => {
   const [showChat, setShowChat] = useState(false);
   const { client, channel } = useChatContext();
-  const { user ,ready} = usePrivy();
+  const { user, ready } = usePrivy();
   useEffect(() => {
-    if(ready){
+    if (ready) {
       if (!user) {
         redirect("/");
       }
     }
   }, [ready, user]);
 
-  
-  
+
+
   useEffect(() => {
     if (channel) {
       setShowChat(true);
