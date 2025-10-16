@@ -3,10 +3,10 @@
 import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
-import { Header } from "@/components/header";
+import { Header} from "@/components/header"
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Channel,
   Chat,
@@ -15,8 +15,7 @@ import {
   useChatContext,
   useCreateChatClient,
 } from "stream-chat-react";
-import "stream-chat-react/dist/css/v2/index.css";
-import { GetUserByWallet } from "@/server/user";
+import "stream-chat-react/dist/css/v2/index.css"
 import { redirect } from "next/navigation";
 
 
