@@ -434,3 +434,39 @@
     color: var(--str-chat__channel-list-empty-indicator-color);
   }
 }
+
+/* globals.css */
+.str-chat__quoted-message-preview {
+  border-radius: 8px 8px 0 0 !important;
+  padding: 8px 10px !important;
+  position: relative !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Optional: improve layout inside the preview */
+.str-chat__quoted-message-preview-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Optional: make it responsive for smaller viewports */
+@media (max-width: 768px) {
+  .str-chat__quoted-message-preview {
+    font-size: 14px !important;
+    padding: 6px 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .str-chat__quoted-message-preview {
+    font-size: 13px !important;
+    padding: 5px 6px !important;
+  }
+}
+

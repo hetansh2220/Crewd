@@ -3,13 +3,14 @@
 import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
-import { Header} from "@/components/header"
+import { Header } from "@/components/header"
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
 import {
   Channel,
   Chat,
+  Message,
   MessageList,
   Thread,
   useChatContext,
@@ -68,7 +69,6 @@ const DashboardContent = () => {
                 <MessageList />
                 <MessageInput />
               </div>
-              <Thread />
             </Channel>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-400">
