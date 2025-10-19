@@ -27,3 +27,12 @@ export async function GetUserByWallet(wallet_address: string) {
     return users;
 }
 
+
+//UpdateUser
+export async function UpdateUser(id: string, username: string, bio: string) {
+    const updatedUser = await db.update(user).set({
+        username: username.toLowerCase(),
+        bio: bio,
+    }).where(eq(user.id, id)).returning();
+    return updatedUser;
+}
