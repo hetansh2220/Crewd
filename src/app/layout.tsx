@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import './globals.css';
 import Providers from "../providers/privy-provider";
 import { ThemeProvider } from "../providers/theme-provider";
+import { Header } from "@/components/header";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,7 +37,17 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            {children}
+            {/* Sticky header */}
+            <div className="flex flex-col h-screen">
+              <div className="sticky top-0 z-50">
+                <Header />
+              </div>
+
+              {/* Page content below header */}
+              <main className="flex-1 overflow-auto">
+                {children}
+              </main>
+            </div>
           </Providers>
         </ThemeProvider>
       </body>

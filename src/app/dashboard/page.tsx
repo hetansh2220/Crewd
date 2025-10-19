@@ -43,7 +43,7 @@ const DashboardContent = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <Header />
+      {/* <Header /> */}
 
       <div className="flex flex-1 overflow-hidden p-2 gap-2">
         {/* Sidebar - visible on desktop or when showChat=false */}
