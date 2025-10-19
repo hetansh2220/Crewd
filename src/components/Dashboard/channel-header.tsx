@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { ChannelHeader, useChannelStateContext, Avatar } from "stream-chat-react";
 import { DotsThreeVertical, ArrowLeft } from "@phosphor-icons/react";
 import {
@@ -13,34 +13,45 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CreateReview } from "@/server/review";
 import { usePrivy } from "@privy-io/react-auth";
-import stream from "@/lib/stream";
 import { Skeleton } from "../ui/skeleton";
+import { cn } from "@/lib/utils";
+import {SendTip} from "@/components/send-tip";
+import stream from "@/lib/stream";
+
 interface Props {
   onBack?: () => void;
 }
 
 export default function ChannelHeaderWithMenu({ onBack }: Props) {
+
   const { channel } = useChannelStateContext();
-  const { user , ready } = usePrivy();
+  const { user, ready } = usePrivy();
 
   const [showMembersDialog, setShowMembersDialog] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [showTipDialog, setShowTipDialog] = useState(false);
   const [isPending, startTransition] = useTransition();
- console.log(channel, "Channel in Header");
+
   // Review state
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+
+  // Tip state
+  const [tipAmount, setTipAmount] = useState<number | null>(null);
+  const [customTip, setCustomTip] = useState("");
+  const presetAmounts = [5, 15, 30, 100];
 
   const handleSubmitReview = () => {
     const reviewer = user?.wallet?.address;
     //@ts-ignore
     const streamId = channel?.data?.id;
-  
-     
+
     if (!reviewer || !streamId) {
       alert("Missing reviewer or stream ID");
       return;
@@ -65,6 +76,17 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
     });
   };
 
+  const handleTip = () => {
+    const finalAmount = tipAmount || parseFloat(customTip);
+    if (!finalAmount || finalAmount <= 0) {
+      alert("Please enter a valid tip amount.");
+      return;
+    }
+
+    alert(`Redirecting to payment for $${finalAmount}`);
+    setShowTipDialog(false);
+  };
+
   return (
     <div className="flex justify-between items-center p-2 border-b dark:bg-background">
       <div className="flex items-center gap-2 flex-1">
@@ -76,18 +98,17 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
             <ArrowLeft size={22} className="text-gray-700 dark:text-gray-300" />
           </button>
         )}
-        {!ready && 
-         <div className="flex items-center space-x-4">
-      <Skeleton className="h-12 w-12 rounded-full" />
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-[250px]" />
-        <Skeleton className="h-4 w-[200px]" />
-      </div>
-    </div>
-
-        }
-        {ready  && <ChannelHeader />}
-
+        {!ready ? (
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        ) : (
+          <ChannelHeader />
+        )}
       </div>
 
       {/* Menu */}
@@ -114,6 +135,14 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
                 onClick={() => setShowReviewDialog(true)}
               >
                 Rate Group
+              </button>
+            </li>
+            <li>
+              <button
+                className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                onClick={() => setShowTipDialog(true)}
+              >
+                Send Tip
               </button>
             </li>
           </ul>
@@ -160,7 +189,9 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
                   type="button"
                   onClick={() => setRating(star)}
                   className={`text-2xl transition ${
-                    star <= rating ? "text-yellow-400" : "text-gray-400 dark:text-gray-500"
+                    star <= rating
+                      ? "text-yellow-400"
+                      : "text-gray-400 dark:text-gray-500"
                   }`}
                 >
                   ★
@@ -173,7 +204,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Write your comment..."
-              className="w-full p-2 border rounded bg-background "
+              className="w-full p-2 border rounded bg-background"
               rows={4}
             />
 
@@ -183,6 +214,9 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <SendTip open={showTipDialog} onOpenChange={setShowTipDialog} onDeposit={handleTip} />
+
     </div>
   );
 }

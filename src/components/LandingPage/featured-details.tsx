@@ -2,14 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Share2, Star } from "lucide-react";
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
-import { useChatContext } from "stream-chat-react";
-import { Channel } from "stream-chat-react";
-import { redirect } from "next/dist/server/api-utils";
 import { GetUserByWallet } from "@/server/user";
 
 interface FeaturedDetailsProps {

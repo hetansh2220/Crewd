@@ -16,7 +16,6 @@ export async function CreateReview(reviewer: string, groupId: string, rating: nu
         groupId: groupId,
         rating: rating,
         comment: comment,
-
     }).returning();
     return newReview;
 }
