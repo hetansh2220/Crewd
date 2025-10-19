@@ -1,6 +1,7 @@
 import stream from "@/lib/stream";
 import { max } from "drizzle-orm";
 import { integer, pgTable, varchar, uuid, text, timestamp} from "drizzle-orm/pg-core";
+import { id } from "zod/v4/locales";
 
 export const user = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
@@ -36,3 +37,24 @@ export const review = pgTable("reviews", {
 });
 
 export type review = typeof review.$inferInsert;
+
+export const tips = pgTable("tips", {
+  id: uuid().primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => user.walletAddress),
+  groupId: uuid("group_id").notNull().references(() => group.id),
+  amount: integer("amount").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export type tips = typeof tips.$inferInsert;
+
+export const transactions = pgTable("transactions", {
+  id: uuid().primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => user.walletAddress),
+  groupId: uuid("group_id").notNull().references(() => group.id),
+  transaction: text("transaction").notNull(),
+  amount: integer("amount").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export type transactions = typeof transactions.$inferInsert;

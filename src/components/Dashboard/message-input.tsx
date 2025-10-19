@@ -9,6 +9,7 @@ import {
     MessageInput as StreamMessageInput,
 } from "stream-chat-react";
 import { Smile } from "lucide-react";
+import { Input } from "../ui/input";
 
 const MessageInput = () => {
     const [open, setOpen] = useState(false);
@@ -39,7 +40,7 @@ const MessageInput = () => {
                     <Picker
                         data={emojiData}
                         onEmojiSelect={addEmoji}
-                        theme="dark"
+                        theme=""
                         emojiSize={24}
                         perLine={8}
                         previewPosition="none"

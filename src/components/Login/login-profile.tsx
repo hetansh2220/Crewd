@@ -36,12 +36,12 @@ export function LoginProfileStep({ onSubmit }: Props) {
     try {
       const users = await GetUser()
       console.log(users)
-      const existingUser = users.username === data.username
-      if (existingUser) {
-        // Show error in the form under the username input
-        form.setError('username', { message: 'Username is already taken' })
-        return
-      }
+      // const existingUser = users.username === data.username
+      // if (existingUser) {
+      //   // Show error in the form under the username input
+      //   form.setError('username', { message: 'Username is already taken' })
+      //   return
+      // }
 
       // Proceed with saving profile
       onSubmit(data)

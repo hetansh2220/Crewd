@@ -79,14 +79,16 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     fetchOwnerName();
   }, [owner]);
 
+  console.log(channel, "channel state");
+
   useEffect(() => {
     const initChannel = async () => {
       if (!user) return;
-      console.log(ownername, "ownername");
+
       try {
         await stream.connectUser(
-          { id: ownername?.walletAddress || "guest" },
-          stream.devToken(ownername?.walletAddress || "guest")
+          { id: owner || "guest" },
+          stream.devToken(owner || "guest")
         );
 
         const channel = stream.channel("team", groupData.id);
@@ -105,14 +107,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     };
 
     initChannel();
-  }, [user, ownername, groupData.id]);
+  }, [user, userId, groupData.id]);
 
   const handleJoin = async () => {
     if (!user || joined) return;
     setJoining(true);
 
     try {
-      await channel.addMembers([userId || "guest"]);
+      await channel.addMembers([userId]);
       setJoined(true);
       console.log(`User ${userId} joined channel ${groupData.id}`);
     } catch (err) {
