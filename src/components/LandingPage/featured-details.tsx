@@ -79,7 +79,8 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     fetchOwnerName();
   }, [owner]);
 
-  console.log(channel, "channel state");
+        console.log(channel, "channel initialized");
+  
 
   useEffect(() => {
     const initChannel = async () => {
@@ -91,10 +92,10 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
           stream.devToken(owner || "guest")
         );
 
-        const channel = stream.channel("team", groupData.id);
+        const channel = stream.channel("messaging", groupData.id);
         await channel.watch();
         setChannel(channel);
-
+        console.log(channel, "channel initialized");
         const memberIds = Object.keys(channel.state.members);
         if (memberIds.includes(ownername?.walletAddress || "guest")) {
           setJoined(true);

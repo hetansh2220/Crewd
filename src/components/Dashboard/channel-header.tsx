@@ -99,7 +99,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
         </PopoverTrigger>
 
         <PopoverContent className="w-40 p-2">
-          <ul className="space-y-2">
+          <ul className="space-y-2 ">
             <li>
               <button
                 className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
