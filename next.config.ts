@@ -11,9 +11,21 @@ const nextConfig: NextConfig = {
   },
 };
 
-// ✅ Add this after object definition (using assignment)
+// ✅ Use remotePatterns instead of domains
 nextConfig.images = {
-  domains: ["river.delivery"],
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: 'river.delivery',
+    },
+    {
+      protocol: 'https',
+      hostname: 'api.dicebear.com',
+    },
+  ],
+  dangerouslyAllowSVG: true,
+  contentDispositionType: 'attachment',
+  contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 };
 
 export default nextConfig;
