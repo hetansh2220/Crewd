@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import Logo from "../../logo/crewd.png";
 import { Skeleton } from "./ui/skeleton";
 import { UpdateUser } from "@/server/user";
+import {Settings} from '@/components/settings'
 
 export function Header() {
   const { authenticated, logout, user: privyUser, ready } = usePrivy();
@@ -38,7 +39,7 @@ export function Header() {
 
   const [user, setUser] = useState<User | null>(null);
   const [editedUser, setEditedUser] = useState<User | null>(null);
-
+  const [openSettings, setOpenSettings] = useState(false);
   useEffect(() => {
     const checkUser = async () => {
       if (!authenticated || !wallet) {
@@ -184,6 +185,13 @@ export function Header() {
                       Profile
                     </Button>
                     <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      onClick={() => setOpenSettings(true)}
+                    >
+                      Wallet
+                    </Button>
+                    <Button
                       variant="destructive"
                       className="w-full justify-start"
                       onClick={async () => {
@@ -253,6 +261,11 @@ export function Header() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Settings
+        open={openSettings}
+        onOpenChange={(setOpenSettings)}
+        onWithdraw={(amount: number) => {}}
+      />
     </>
   );
 }

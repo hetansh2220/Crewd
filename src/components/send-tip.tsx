@@ -10,7 +10,6 @@ import { usePrivy } from "@privy-io/react-auth"
 import { CreateTip } from "@/server/tips"
 import stream from "@/lib/stream";
 import { useChatContext } from "stream-chat-react"
-
 interface SetAmountDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void

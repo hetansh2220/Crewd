@@ -38,7 +38,7 @@ export default function RootLayout({
         >
           <Providers>
             {/* Sticky header */}
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col">
               <div className="sticky top-0 z-50">
                 <Header />
               </div>
