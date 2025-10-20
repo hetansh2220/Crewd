@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import QRCodeStyling from "qr-code-styling"
 import { usePrivy } from "@privy-io/react-auth"
+import { Checkbox } from "@/components/ui/checkbox" // ✅ make sure this exists in your ShadCN setup
+import { Label } from "@/components/ui/label"
+import { useExportWallet } from "@privy-io/react-auth/solana"
 
 interface WalletSettingsProps {
   open: boolean
@@ -22,16 +25,17 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
   const [amount, setAmount] = useState("")
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
   const [selectedTab, setSelectedTab] = useState("Deposit")
+  const [acknowledged, setAcknowledged] = useState(false) // ✅ NEW: controls checkbox
   const qrRef = useRef<HTMLDivElement>(null)
   const { user } = usePrivy()
+  const { exportWallet } = useExportWallet()
 
   const CRYPTO_ADDRESS = user?.wallet?.address || "not_available"
-  const PRIVATE_KEY = user?.wallet?.privateKey || "hidden_for_security"
 
   // Generate QR for Withdraw tab
   useEffect(() => {
     if (selectedTab === "Withdraw" && qrRef.current) {
-      qrRef.current.innerHTML = "" // clear previous QR
+      qrRef.current.innerHTML = ""
       const qrCode = new QRCodeStyling({
         width: 300,
         height: 300,
@@ -73,14 +77,19 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
     }
 
     if (selectedTab === "Export") {
-      await navigator.clipboard.writeText(PRIVATE_KEY)
+      if (!acknowledged) return // ✅ require confirmation
+      await exportWallet()
+      // await navigator.clipboard.writeText(privateKey)
       alert("Private key copied to clipboard.")
+      setAcknowledged(false) // reset checkbox
     }
   }
 
+  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-2xl border-border bg-background p-8">
+      <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
         <DialogHeader className="flex flex-row items-center justify-between space-y-0">
           <div className="flex items-center gap-3">
             <div className="rounded-lg border border-border bg-background/50 p-2">
@@ -104,25 +113,27 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
           </div>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 mt-4">
           {/* Tabs */}
           <div className="flex gap-2 rounded-lg border border-border bg-background/50 p-2">
             {TABS.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setSelectedTab(tab)}
-                className={`flex-1 rounded-lg py-3 text-center font-semibold transition-colors ${
-                  selectedTab === tab
-                    ? "bg-foreground/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                onClick={() => {
+                  setSelectedTab(tab)
+                  setAcknowledged(false) // ✅ reset when switching
+                }}
+                className={`flex-1 rounded-lg py-3 text-center font-semibold transition-colors ${selectedTab === tab
+                  ? "bg-foreground/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {tab}
               </button>
             ))}
           </div>
 
-          {/* Content */}
+          {/* Deposit */}
           {selectedTab === "Deposit" && (
             <div className="space-y-4 border-t border-border pt-6">
               <h3 className="text-lg font-semibold text-foreground">Deposit Amount</h3>
@@ -138,11 +149,10 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
                   <button
                     key={preset}
                     onClick={() => handlePresetClick(preset)}
-                    className={`rounded-2xl border-1 py-2 text-2xl font-semibold transition-colors ${
-                      selectedPreset === preset
-                        ? " bg-foreground/10 text-foreground"
-                        : "border-border text-foreground "
-                    }`}
+                    className={`rounded-2xl border py-2 text-2xl font-semibold transition-colors ${selectedPreset === preset
+                      ? "bg-foreground/10 text-foreground"
+                      : "border-border text-foreground"
+                      }`}
                   >
                     ${preset}
                   </button>
@@ -151,6 +161,7 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
             </div>
           )}
 
+          {/* Withdraw */}
           {selectedTab === "Withdraw" && (
             <div className="space-y-6 border-t border-border pt-6">
               <div className="flex justify-center">
@@ -165,15 +176,25 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
             </div>
           )}
 
+          {/* Export Private Key */}
           {selectedTab === "Export" && (
             <div className="space-y-6 border-t border-border pt-6">
               <h3 className="text-lg font-semibold text-foreground">Export Private Key</h3>
-              <div className="rounded-lg border border-border bg-background/50 p-4">
-                <p className="font-mono text-sm text-foreground">
-                  {PRIVATE_KEY === "hidden_for_security"
-                    ? "Private key not available in session."
-                    : PRIVATE_KEY.slice(0, 6) + "..." + PRIVATE_KEY.slice(-6)}
-                </p>
+              <p className="text-sm text-muted-foreground">
+                Your wallet mnemonic is a secret phrase that enables full access to your wallet and funds.
+                Never share this phrase with anyone or store it online.
+              </p>
+
+              {/* Checkbox */}
+              <div className="flex items-start gap-3 pt-2">
+                <Checkbox
+                  id="acknowledge"
+                  checked={acknowledged}
+                  onCheckedChange={(checked) => setAcknowledged(!!checked)}
+                />
+                <Label htmlFor="acknowledge" className="text-sm text-muted-foreground leading-snug">
+                  I understand that revealing my private key may compromise my funds and wallet security.
+                </Label>
               </div>
             </div>
           )}
@@ -181,14 +202,17 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
           {/* Action Button */}
           <Button
             onClick={handleAction}
-            disabled={selectedTab === "Deposit" && (!amount || parseFloat(amount) <= 0)}
+            disabled={
+              (selectedTab === "Deposit" && (!amount || parseFloat(amount) <= 0)) ||
+              (selectedTab === "Export" && !acknowledged)
+            }
             className="h-16 w-full rounded-2xl text-lg font-semibold"
           >
             {selectedTab === "Deposit"
               ? "Deposit"
               : selectedTab === "Withdraw"
-              ? "Copy Address"
-              : "Copy Private Key"}
+                ? "Copy Address"
+                : "Copy Private Key"}
           </Button>
         </div>
       </DialogContent>
