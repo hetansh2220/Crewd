@@ -47,7 +47,7 @@ export function CommunityCard({ name, image, members, rating, reviews, price, de
           <span className="text-xs sm:text-sm text-muted-foreground">({reviews})</span>
         </div>
 
-        <Button className="w-full mt-auto text-sm" size="sm">
+        <Button className="w-full mt-auto text-sm">
           {price}
         </Button>
       </div>

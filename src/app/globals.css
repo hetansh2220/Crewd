@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Inter, sans-serif;
+  --font-sans: Geist Mono, sans-serif;
   --font-mono: JetBrains Mono, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -77,7 +77,7 @@
   --card-foreground: oklch(0.3211 0 0);
   --popover: oklch(1.0000 0 0);
   --popover-foreground: oklch(0.3211 0 0);
---primary: oklch(0.6397 0.1720 36.4421);
+  --primary: oklch(0.6397 0.1720 36.4421);
   --primary-foreground: oklch(1.0000 0 0);
   --secondary: oklch(0.9670 0.0029 264.5419);
   --secondary-foreground: oklch(0.4461 0.0263 256.8018);
@@ -132,7 +132,7 @@
   --card-foreground: oklch(0.9219 0 0);
   --popover: oklch(0.2900 0.0249 268.3986);
   --popover-foreground: oklch(0.9219 0 0);
-   --primary: oklch(0.6397 0.1720 36.4421);
+  --primary: oklch(0.6397 0.1720 36.4421);
   --primary-foreground: oklch(1.0000 0 0);
   --secondary: oklch(0.3095 0.0266 266.7132);
   --secondary-foreground: oklch(0.9219 0 0);
@@ -184,6 +184,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
@@ -296,8 +297,8 @@
   --str-chat__box-shadow-color: var(--color-shadow-color) !important;
 
   --str-chat__info-color: var(--chart-3) !important;
-    --str-chat__message-input-background-color: var(--background) !important;
-     --str-chat__channel-list-border: none !important;
+  --str-chat__message-input-background-color: var(--background) !important;
+  --str-chat__channel-list-border: none !important;
 
 }
 
@@ -316,32 +317,32 @@
   top: -10px;
 }
 
-.str-chat__message--other.str-chat__message--pinned
-  .str-chat__message-bubble::before {
+.str-chat__message--other.str-chat__message--pinned .str-chat__message-bubble::before {
   right: -10px;
 }
 
-.str-chat__message--me.str-chat__message--pinned
-  .str-chat__message-bubble::before {
+.str-chat__message--me.str-chat__message--pinned .str-chat__message-bubble::before {
   left: -10px;
 }
+
 .str-chat__channel-header {
   background: none !important;
 }
 
 
-  .str-chat__dropzone-container {
-    background-color: var(--background);
-    color: var(--str-chat__dropzone-container-color);
-    backdrop-filter: var(--str-chat__dropzone-container-backdrop-filter);
-    font: var(--str-chat__subtitle-text);
-  }
+.str-chat__dropzone-container {
+  background-color: var(--background);
+  color: var(--str-chat__dropzone-container-color);
+  backdrop-filter: var(--str-chat__dropzone-container-backdrop-filter);
+  font: var(--str-chat__subtitle-text);
+}
 
 
 /* Hide scrollbars (works on Chrome, Safari, Firefox) */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -385,32 +386,22 @@
   --str-chat__channel-list-load-more-box-shadow: var(--str-chat__cta-button-box-shadow);
 
   /* Top border of the load more button */
-  --str-chat__channel-list-load-more-border-block-start: var(
-    --str-chat__cta-button-border-block-start
-  );
+  --str-chat__channel-list-load-more-border-block-start: var(--str-chat__cta-button-border-block-start);
 
   /* Bottom border of the load more button */
   --str-chat__channel-list-load-more-border-block-end: var(--str-chat__cta-button-border-block-end);
 
   /* Left (right in RTL layout) border of the load more button */
-  --str-chat__channel-list-load-more-border-inline-start: var(
-    --str-chat__cta-button-border-inline-start
-  );
+  --str-chat__channel-list-load-more-border-inline-start: var(--str-chat__cta-button-border-inline-start);
 
   /* Right (left in RTL layout) border of the load more button */
-  --str-chat__channel-list-load-more-border-inline-end: var(
-    --str-chat__cta-button-border-inline-end
-  );
+  --str-chat__channel-list-load-more-border-inline-end: var(--str-chat__cta-button-border-inline-end);
 
   /* The background color of the load more button in pressed state */
-  --str-chat__channel-list-load-more-pressed-background-color: var(
-    --str-chat__cta-button-pressed-background-color
-  );
+  --str-chat__channel-list-load-more-pressed-background-color: var(--str-chat__cta-button-pressed-background-color);
 
   /* The background color of the load more button in disabled state */
-  --str-chat__channel-list-load-more-disabled-background-color: var(
-    --str-chat__cta-button-disabled-background-color
-  );
+  --str-chat__channel-list-load-more-disabled-background-color: var(--str-chat__cta-button-disabled-background-color);
 
   /* The text/icon color of the load more button in disabled state */
   --str-chat__channel-list-load-more-disabled-color: var(--str-chat__cta-button-disabled-color);
@@ -455,6 +446,11 @@
   gap: 4px;
 }
 
+.str-chat__message-simple-name {
+  display: none !important;
+}
+
+
 /* Optional: make it responsive for smaller viewports */
 @media (max-width: 768px) {
   .str-chat__quoted-message-preview {
@@ -469,4 +465,3 @@
     padding: 5px 6px !important;
   }
 }
-

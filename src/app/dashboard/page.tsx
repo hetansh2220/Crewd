@@ -3,21 +3,20 @@
 import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
-import { Header } from "@/components/header"
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Channel,
   Chat,
-  Message,
   MessageList,
-  Thread,
+  Window,
+  MessageSimple,
   useChatContext,
-  useCreateChatClient,
+  useCreateChatClient
 } from "stream-chat-react";
-import "stream-chat-react/dist/css/v2/index.css"
-import { redirect } from "next/navigation";
+import "stream-chat-react/dist/css/v2/index.css";
 
 
 // Inner component that has access to ChatContext
@@ -86,7 +85,7 @@ const Dashboard = () => {
   const client = useCreateChatClient({
     apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
     tokenOrProvider: stream.devToken(user?.wallet?.address || "guest"),
-    userData: { id: user?.wallet?.address || "guest" },
+    userData: { id: user?.wallet?.address || "guest", name: "gg" },
   });
 
   if (!client) return null;
