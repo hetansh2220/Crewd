@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatCircleIcon, MoonIcon, SunIcon } from "@phosphor-icons/react";
+import { MoonIcon, SunIcon } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";

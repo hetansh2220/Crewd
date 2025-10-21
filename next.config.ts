@@ -9,23 +9,25 @@ const nextConfig: NextConfig = {
     config.externals["@solana-program/token"] = "commonjs @solana-program/token";
     return config;
   },
-};
-
-// ✅ Use remotePatterns instead of domains
-nextConfig.images = {
-  remotePatterns: [
-    {
-      protocol: 'https',
-      hostname: 'river.delivery',
-    },
-    {
-      protocol: 'https',
-      hostname: 'api.dicebear.com',
-    },
-  ],
-  dangerouslyAllowSVG: true,
-  contentDispositionType: 'attachment',
-  contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "river.delivery",
+      },
+      {
+        protocol: "https",
+        hostname: "api.dicebear.com",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com", // ✅ added Cloudinary
+      },
+    ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
 };
 
 export default nextConfig;

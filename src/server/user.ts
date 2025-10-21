@@ -46,25 +46,19 @@ export async function GetUserByUsername(username: string) {
 }
 
 //getUserGroups
-export async function GetUserGroups(wallet_address: string) {
-    const userGroups = await db
-        .select({
-            groupId: group.id,
-            groupName: group.name,
-            description: group.description,
-            image: group.image,
-            maxMembers: group.maxMembers,
-            entryFee: group.entryFee,
-            createdAt: group.createdAt,
-            owner: {
-                username: user.username,
-                avatar: user.avatar,
-                walletAddress: user.walletAddress,
-            },
-        })
-        .from(group)
-        .leftJoin(user, eq(group.owner, user.walletAddress))
-        .where(eq(group.owner, wallet_address));
+export async function GetUserCreatedGroups(wallet_address: string) {
+  const userGroups = await db
+    .select({
+      groupId: group.id,
+      groupName: group.name,
+      description: group.description,
+      image: group.image,
+      maxMembers: group.maxMembers,
+      entryFee: group.entryFee,
+      createdAt: group.createdAt,
+    })
+    .from(group)
+    .where(eq(group.owner, wallet_address));
 
-    return userGroups;
+  return userGroups;
 }
