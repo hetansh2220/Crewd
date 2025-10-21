@@ -205,7 +205,7 @@ async function UserProfileContent({ username }: { username: string }) {
                   {groups.map((group) => (
                     <Link
                       key={group.groupId}
-                      href={`/groups/${group.groupId}`}
+                      href={`/group/${group.groupId}`}
                       className="block group/card"
                     >
                       <div className="rounded-xl border border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-800/30 hover:bg-gray-100 dark:hover:bg-slate-800/60 p-6 transition-all duration-200 hover:border-gray-300 dark:hover:border-purple-500/40 hover:shadow-md">
