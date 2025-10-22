@@ -200,7 +200,7 @@ export default function CreateGroup({
         
         <Button
           onClick={handleCreateGroup}
-          className="h-12 w-full rounded-xl px-6 text-base font-semibold"
+          className=" w-full text-base font-semibold"
         >
           Create
         </Button>
