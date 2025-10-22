@@ -122,7 +122,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-gray-900 dark:text-white flex flex-col pb-40">
+    <div className="min-h-screen bg-background  m-2 flex flex-col pb-40">
       {/* Main Content */}
       <main className="flex-1 px-4 sm:px-8 py-8 sm:py-12 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
@@ -132,10 +132,6 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{groupData.name}</h1>
-                <div className="flex gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-white/20 flex items-center justify-center text-sm">✓</div>
-                  <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-white/20 flex items-center justify-center text-sm">⚙</div>
-                </div>
               </div>
               <p className="text-gray-600 dark:text-slate-400 text-sm sm:text-base">
                 By <span className="text-gray-900 dark:text-white font-medium">{ownername?.username || "0x..."}</span>
@@ -218,7 +214,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
           {/* Right Sidebar */}
           <div className="lg:col-span-4 space-y-4 xl:pl-8">
             {/* Logo Card */}
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-purple-100 to-gray-200 dark:from-purple-600/20 dark:to-slate-900 border border-gray-300 dark:border-slate-700 p-6 sm:p-8 flex items-center justify-center overflow-hidden">
+            <div className="aspect-square rounded-2xl bg-background border p-6 sm:p-8 flex items-center justify-center overflow-hidden">
               <img
                 src={groupData.image}
                 alt={groupData.name}
@@ -236,13 +232,13 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       </main>
 
       {/* Footer - Membership Bar */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-sm border-t border-gray-300 dark:border-slate-800">
+      <footer className="fixed bottom-0 left-0 right-0 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-stretch sm:items-end gap-4 sm:gap-8">
           <div className="flex-1 space-y-2">
-            <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-slate-300">Memberships Left</h3>
+            <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-slate-300">Members Left</h3>
             <div className="w-full bg-gray-300 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-purple-500 to-purple-600 h-full rounded-full transition-all"
+                className="bg-primary rounded-full transition-all"
                 style={{ width: `${membershipProgress}%` }}
               />
             </div>
@@ -253,7 +249,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
           <Button
             onClick={handleJoin}
             disabled={joining || joined}
-            className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white px-8 sm:px-12 h-10 sm:h-11 rounded-full font-semibold text-base sm:text-lg w-full sm:w-auto"
+            className="bg-primary text-white px-8 sm:px-12 h-10 sm:h-11 rounded-full font-semibold text-base sm:text-lg w-full sm:w-auto"
           >
             {joining ? "Joining..." : joined ? "Joined" : "Join"}
           </Button>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useTransition } from "react";
 import { ChannelHeader, useChannelStateContext, Avatar } from "stream-chat-react";
-import { DotsThreeVertical, ArrowLeft } from "@phosphor-icons/react";
+import { DotsThreeVertical, ArrowLeft, UserList} from "@phosphor-icons/react";
 import {
   Popover,
   PopoverContent,
@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -119,11 +120,11 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-40 p-2">
+        <PopoverContent className="w-40 p-3">
           <ul className="space-y-2 ">
             <li>
               <button
-                className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-md"
                 onClick={() => setShowMembersDialog(true)}
               >
                 View Members
@@ -131,7 +132,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
             </li>
             <li>
               <button
-                className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-md"
                 onClick={() => setShowReviewDialog(true)}
               >
                 Rate Group
@@ -139,7 +140,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
             </li>
             <li>
               <button
-                className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                className="w-full text-left px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-md"
                 onClick={() => setShowTipDialog(true)}
               >
                 Send Tip
@@ -151,69 +152,112 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
 
       {/* Members Dialog */}
       <Dialog open={showMembersDialog} onOpenChange={setShowMembersDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Group Members</DialogTitle>
-          </DialogHeader>
-          <ul className="mt-4 space-y-2 max-h-96 overflow-y-auto">
-            {channel.state.members &&
-              Object.values(channel.state.members).map((member) => (
-                <li key={member.user_id} className="flex items-center gap-3">
-                  <Avatar
-                    image={member.user?.image || "/default-avatar.png"}
-                    name={member.user?.name || member.user_id}
-                    className="px-2 py-1 rounded-full dark:border-gray-700 shadow-sm"
-                  />
-                  <span className="text-gray-800 dark:text-gray-200 font-medium">
-                    {member.user?.name || member.user_id}
-                  </span>
-                </li>
-              ))}
-          </ul>
-        </DialogContent>
-      </Dialog>
+  <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
+    <DialogHeader className="space-y-2">
+      <div className="flex items-center gap-3">
+        <div className="rounded-lg border border-border bg-background/50 p-2">
+          <UserList className="h-6 w-6 text-foreground" />
+        </div>
+        <DialogTitle className="text-2xl font-semibold text-foreground">
+          Group Members
+        </DialogTitle>
+      </div>
+      <DialogDescription className="text-muted-foreground text-left">
+        View all members in this group.
+      </DialogDescription>
+    </DialogHeader>
+
+    <ul className="mt-6 space-y-3 max-h-96 overflow-y-auto border-t border-border pt-4">
+      {channel.state.members &&
+        Object.values(channel.state.members).map((member) => (
+          <li
+            key={member.user_id}
+            className="flex items-center gap-3 rounded-xl border border-border bg-background/50 p-3 transition hover:bg-accent/50"
+          >
+            <Avatar
+              image={member.user?.image || "/default-avatar.png"}
+              name={member.user?.name || member.user_id}
+              className="h-10 w-10 rounded-full border border-border shadow-sm"
+            />
+            <span className="text-foreground font-medium">
+              {member.user?.name || member.user_id}
+            </span>
+          </li>
+        ))}
+    </ul>
+  </DialogContent>
+</Dialog>
+
 
       {/* Review Dialog */}
       <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Rate Group</DialogTitle>
-          </DialogHeader>
-
-          <div className="mt-4 flex flex-col gap-4">
-            {/* Star Rating */}
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  className={`text-2xl transition ${
-                    star <= rating
-                      ? "text-yellow-400"
-                      : "text-gray-400 dark:text-gray-500"
-                  }`}
-                >
-                  ★
-                </button>
-              ))}
-            </div>
-
-            {/* Comment */}
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Write your comment..."
-              className="w-full p-2 border rounded bg-background"
-              rows={4}
+  <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
+    <DialogHeader className="space-y-2">
+      <div className="flex items-center gap-3">
+        <div className="rounded-lg border border-border bg-background/50 p-2">
+          <svg
+            className="h-6 w-6 text-foreground"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.91c.969 0 1.371 1.24.588 1.81l-3.974 2.888a1 1 0 00-.364 1.118l1.518 4.674c.3.921-.755 1.688-1.54 1.118l-3.975-2.888a1 1 0 00-1.175 0l-3.975 2.888c-.784.57-1.838-.197-1.539-1.118l1.518-4.674a1 1 0 00-.364-1.118L2.082 10.1c-.783-.57-.38-1.81.588-1.81h4.91a1 1 0 00.95-.69l1.519-4.674z"
             />
+          </svg>
+        </div>
+        <DialogTitle className="text-2xl font-semibold text-foreground">
+          Rate Group
+        </DialogTitle>
+      </div>
+      <DialogDescription className="text-muted-foreground text-left">
+        Share your experience with this group.
+      </DialogDescription>
+    </DialogHeader>
 
-            <Button onClick={handleSubmitReview} disabled={isPending}>
-              {isPending ? "Submitting..." : "Submit Review"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+    <div className="space-y-6 mt-6">
+      {/* Star Rating */}
+      <div className="flex items-center justify-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => setRating(star)}
+            className={`text-5xl transition ${
+              star <= rating
+                ? "text-yellow-400"
+                : "text-gray-400 dark:text-gray-500"
+            }`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
+      {/* Comment */}
+      <div className="border-t border-border pt-6">
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Write your comment..."
+          className="w-full min-h-[120px] rounded-xl border border-border bg-background text-foreground p-4 text-base focus:outline-none focus:ring-2 focus:ring-foreground/20 transition"
+        />
+      </div>
+
+      <Button
+        onClick={handleSubmitReview}
+        disabled={isPending}
+        className="h-12 w-full rounded-xl text-lg font-semibold"
+      >
+        {isPending ? "Submitting..." : "Submit Review"}
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
 
       <SendTip open={showTipDialog} onOpenChange={setShowTipDialog} onDeposit={handleTip} />
 

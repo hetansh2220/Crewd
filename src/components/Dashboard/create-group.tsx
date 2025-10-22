@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { uploadToCloudinary } from "@/providers/cloudinary-provider";
 import { CreateGroup as CreateGroupDB } from "@/server/group";
 
@@ -112,80 +112,108 @@ export default function CreateGroup({
 
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create Group</DialogTitle>
-          <DialogDescription>
-            Fill in the details to create a new group chat.
-          </DialogDescription>
-        </DialogHeader>
+<Dialog open={open} onOpenChange={onOpenChange}>
+  <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
+    <DialogHeader className="space-y-2">
+      <div className="flex items-center gap-3">
+        <div className="rounded-lg border border-border bg-background/50 p-2">
+          <Users size={24} className="text-foreground" />
+        </div>
+        <DialogTitle className="text-2xl font-semibold text-foreground">
+          Create Group
+        </DialogTitle>
+      </div>
+      <DialogDescription className="text-muted-foreground text-left">
+        Fill in the details to create a new group chat.
+      </DialogDescription>
+    </DialogHeader>
 
-        <div className="space-y-4 py-2">
-          {/* Image Upload with + Icon */}
-          <div
-            className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition relative overflow-hidden"
-            onClick={handleImageClick}
-          >
-            {previewUrl ? (
-              <img
-                src={previewUrl}
-                alt="Group"
-                className="w-full h-full object-cover rounded-full"
-              />
-            ) : (
-              <Plus className="w-8 h-8 text-muted-foreground" />
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
+    <div className="space-y-6 mt-4">
+      {/* Image Upload with + Icon */}
+      <div
+        className="w-28 h-28 mx-auto rounded-full bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition relative overflow-hidden border border-border"
+        onClick={handleImageClick}
+      >
+        {previewUrl ? (
+          <img
+            src={previewUrl}
+            alt="Group"
+            className="w-full h-full object-cover rounded-full"
+          />
+        ) : (
+          <Plus className="w-8 h-8 text-muted-foreground" />
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      </div>
 
+      <div className="space-y-4 border-t border-border pt-6">
+        <Input
+          placeholder="Group Name"
+          value={groupName}
+          onChange={(e) => setGroupName(e.target.value)}
+          className="h-12 border-border bg-background text-lg text-foreground"
+        />
+
+        <Textarea
+          placeholder="Group Bio"
+          value={groupBio}
+          onChange={(e) => setGroupBio(e.target.value)}
+          className="border-border bg-background text-lg text-foreground"
+        />
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">
+            Maximum Members
+          </label>
           <Input
-            placeholder="Group Name"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
+            type="number"
+            placeholder="Maximum Members"
+            value={maxMembers}
+            onChange={(e) => setMaxMembers(Number(e.target.value))}
+            min={1}
+            className="h-12 border-border bg-background text-lg text-foreground"
           />
-          <Textarea
-            placeholder="Group Bio"
-            value={groupBio}
-            onChange={(e) => setGroupBio(e.target.value)}
-          />
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Maximum Members</label>
-            <Input
-              type="number"
-              placeholder="Maximum Members"
-              value={maxMembers}
-              onChange={(e) => setMaxMembers(Number(e.target.value))}
-              min={1}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Entry Fee(sol)</label>
-            <Input
-              type="number"
-              placeholder="Entry Fee"
-              value={entryFee}
-              onChange={(e) => setEntryFee(Number(e.target.value))}
-              min={0}
-            />
-          </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleCreateGroup}>Create</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">
+            Entry Fee (SOL)
+          </label>
+          <Input
+            type="number"
+            placeholder="Entry Fee"
+            value={entryFee}
+            onChange={(e) => setEntryFee(Number(e.target.value))}
+            min={0}
+            className="h-12 border-border bg-background text-lg text-foreground"
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-3 pt-4 border-t border-border">
+        <Button
+          variant="outline"
+          onClick={() => onOpenChange(false)}
+          className="h-12 rounded-xl px-6 text-base"
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleCreateGroup}
+          className="h-12 rounded-xl px-6 text-base font-semibold"
+        >
+          Create
+        </Button>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+
   );
 }

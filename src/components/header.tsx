@@ -20,6 +20,7 @@ import Logo from "../../logo/crewd.png";
 import { Skeleton } from "./ui/skeleton";
 import { UpdateUser } from "@/server/user";
 import {Settings} from '@/components/settings'
+import { User } from "lucide-react";
 
 export function Header() {
   const { authenticated, logout, user: privyUser, ready } = usePrivy();
@@ -113,7 +114,7 @@ export function Header() {
                   <button
                     key={item.name}
                     onClick={() => router.push(item.href)}
-                    className={`text-sm font-medium transition-colors ${
+                    className={`text-md font-medium transition-colors ${
                       active
                         ? "text-primary border-b-2 border-primary pb-1"
                         : "text-muted-foreground hover:text-foreground"
@@ -165,8 +166,8 @@ export function Header() {
                     align="end"
                     className="w-48 p-2 flex flex-col gap-2"
                   >
-                    <div className="flex flex-col items-center text-sm text-center border-b pb-2">
-                      <Avatar className="h-10 w-10 mb-1">
+                    <div className="flex flex-col items-center t text-center border-b pb-2 px-8">
+                      <Avatar className="h-12 w-12 mb-1">
                         <AvatarImage
                           src={user?.avatar}
                           alt={user?.username}
@@ -175,25 +176,25 @@ export function Header() {
                           {user?.username?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-semibold">{user?.username}</span>
+                      <span className="font-semibold text-md">{user?.username}</span>
                     </div>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start"
+                      className="w-full text-md justify-start"
                       onClick={() => setOpenProfileDialog(true)}
                     >
                       Profile
                     </Button>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start"
+                      className="w-full text-md justify-start"
                       onClick={() => setOpenSettings(true)}
                     >
                       Wallet
                     </Button>
                     <Button
                       variant="destructive"
-                      className="w-full justify-start"
+                      className=" text-md w-full justify-start"
                       onClick={async () => {
                         await logout();
                         setUser(null);
@@ -212,55 +213,72 @@ export function Header() {
 
       {/* Profile Dialog */}
       <Dialog open={openProfileDialog} onOpenChange={setOpenProfileDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col gap-4 py-2">
-            <div className="flex flex-col items-center gap-2">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={editedUser?.avatar} />
-                <AvatarFallback>
-                  {editedUser?.username?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <p className="text-xs text-muted-foreground">
-                {editedUser?.username}
-              </p>
-            </div>
+  <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
+    <DialogHeader className="flex flex-row items-center justify-between space-y-0">
+      <div className="flex items-center gap-3">
+        <div className="rounded-lg border border-border bg-background/50 p-2">
+          <User size={24} />
+        </div>
+        <DialogTitle className="text-2xl font-semibold text-foreground">
+          Edit Profile
+        </DialogTitle>
+      </div>
+    </DialogHeader>
 
-            <div className="grid gap-3">
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  value={editedUser?.username || ""}
-                  onChange={(e) =>
-                    setEditedUser((prev) =>
-                      prev ? { ...prev, username: e.target.value } : prev
-                    )
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor="bio">Bio</Label>
-                <Input
-                  id="bio"
-                  value={editedUser?.bio || ""}
-                  onChange={(e) =>
-                    setEditedUser((prev) =>
-                      prev ? { ...prev, bio: e.target.value } : prev
-                    )
-                  }
-                />
-              </div>
-            </div>
+    <div className="space-y-6 mt-4">
+      <div className="flex flex-col items-center gap-3 border-t border-border pt-6">
+        <Avatar className="h-20 w-20">
+          <AvatarImage src={editedUser?.avatar} />
+          <AvatarFallback>
+            {editedUser?.username?.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <p className="text-sm text-muted-foreground">
+          {editedUser?.username}
+        </p>
+      </div>
+
+      <div className="space-y-4 border-t border-border pt-6">
+        <div className="grid gap-4">
+          <div className="">
+            <Label htmlFor="username" className="p-2">Username</Label>
+            <Input
+              id="username"
+              value={editedUser?.username || ""}
+              onChange={(e) =>
+                setEditedUser((prev) =>
+                  prev ? { ...prev, username: e.target.value } : prev
+                )
+              }
+              className="h-12 border-border bg-background text-lg text-foreground"
+            />
           </div>
-          <DialogFooter>
-            <Button onClick={handleSaveProfile}>Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <div>
+            <Label htmlFor="bio" className="p-2">Bio</Label>
+            <Input
+              id="bio"
+              value={editedUser?.bio || ""}
+              onChange={(e) =>
+                setEditedUser((prev) =>
+                  prev ? { ...prev, bio: e.target.value } : prev
+                )
+              }
+              className="h-12 border-border bg-background text-lg text-foreground"
+            />
+          </div>
+        </div>
+      </div>
+
+      <Button
+        onClick={handleSaveProfile}
+        className="h-16 w-full rounded-2xl text-lg font-semibold"
+      >
+        Save Changes
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
       <Settings
         open={openSettings}
         onOpenChange={(setOpenSettings)}
