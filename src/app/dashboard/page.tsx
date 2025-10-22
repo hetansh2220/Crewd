@@ -11,8 +11,6 @@ import {
   Channel,
   Chat,
   MessageList,
-  Window,
-  MessageSimple,
   useChatContext,
   useCreateChatClient
 } from "stream-chat-react";

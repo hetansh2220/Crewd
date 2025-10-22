@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import Picker from "@emoji-mart/react";
 import emojiData from "@emoji-mart/data";
-import {
-    useMessageInputContext,
-    useMessageComposer,
-    MessageInput as StreamMessageInput,
-} from "stream-chat-react";
+import Picker from "@emoji-mart/react";
 import { Smile } from "lucide-react";
-import { Input } from "../ui/input";
+import { useState } from "react";
+import {
+    MessageInput as StreamMessageInput,
+    useMessageComposer,
+    useMessageInputContext,
+} from "stream-chat-react";
 
 const MessageInput = () => {
     const [open, setOpen] = useState(false);
     const { textareaRef } = useMessageInputContext("MessageInput");
     const { textComposer } = useMessageComposer();
 
-    const addEmoji = (emoji: any) => {
+    const addEmoji = (emoji: { native: string }) => {
         textComposer.insertText({ text: emoji.native });
         textareaRef.current?.focus();
     };

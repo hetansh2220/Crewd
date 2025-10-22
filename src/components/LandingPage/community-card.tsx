@@ -1,5 +1,6 @@
-import { Users, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Star, Users } from "lucide-react"
+import Image from "next/image"
 
 interface CommunityCardProps {
   name: string
@@ -18,7 +19,7 @@ export function CommunityCard({ name, image, members, rating, reviews, price, de
   return (
     <div className="group rounded-xl bg-card shadow-sm hover:shadow-md transition-all duration-300 border border-border overflow-hidden h-full flex flex-col">
       <div className="aspect-[4/3] overflow-hidden">
-        <img
+        <Image
           src={image || "/placeholder.svg"}
           alt={name}
           className="h-full w-full object-cover "

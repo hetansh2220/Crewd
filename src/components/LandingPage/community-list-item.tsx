@@ -71,7 +71,7 @@ export function CommunityListItem({
                 <span className="text-xs sm:text-sm text-muted-foreground">({reviews})</span>
               </div>
 
-              <Button size="sm" className="text-xs sm:text-sm h-8">
+              <Button size="sm" className="text-xs sm:text-sm cursor-pointer ">
                 {price}
               </Button>
             </div>

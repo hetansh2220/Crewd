@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db/index";
-import { user, group, transactions  } from "@/db/schema";
-import { eq, sql, and } from "drizzle-orm";
+import { group, user } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 //GetUser
 export async function GetUser() {
@@ -11,7 +11,7 @@ export async function GetUser() {
 }
 
 //CreateUser
-export async function CreateUser(username: string, bio: string, wallet_address: string, avatar: string) {
+export async function CreateUser(username: string, bio: string, wallet_address: string) {
     const newUser = await db.insert(user).values({
         username: username,
         bio: bio,
@@ -47,18 +47,18 @@ export async function GetUserByUsername(username: string) {
 
 //getUserGroups
 export async function GetUserCreatedGroups(wallet_address: string) {
-  const userGroups = await db
-    .select({
-      groupId: group.id,
-      groupName: group.name,
-      description: group.description,
-      image: group.image,
-      maxMembers: group.maxMembers,
-      entryFee: group.entryFee,
-      createdAt: group.createdAt,
-    })
-    .from(group)
-    .where(eq(group.owner, wallet_address));
+    const userGroups = await db
+        .select({
+            groupId: group.id,
+            groupName: group.name,
+            description: group.description,
+            image: group.image,
+            maxMembers: group.maxMembers,
+            entryFee: group.entryFee,
+            createdAt: group.createdAt,
+        })
+        .from(group)
+        .where(eq(group.owner, wallet_address));
 
-  return userGroups;
+    return userGroups;
 }

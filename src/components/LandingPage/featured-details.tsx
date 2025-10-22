@@ -7,6 +7,8 @@ import { Share2, Star } from "lucide-react";
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
 import { GetUserByWallet } from "@/server/user";
+import { Channel } from "stream-chat";
+import Image from "next/image";
 
 interface FeaturedDetailsProps {
   groupData: {
@@ -24,7 +26,7 @@ interface FeaturedDetailsProps {
 export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const [joining, setJoining] = useState(false);
   const [joined, setJoined] = useState(false);
-  const [channel, setChannel] = useState(null as any);
+  const [channel, setChannel] = useState<Channel>();
   const { user } = usePrivy();
   const userId = user?.wallet?.address || "guest";
   const owner = groupData.owner;
@@ -75,8 +77,8 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     fetchOwnerName();
   }, [owner]);
 
-        console.log(channel, "channel initialized");
-  
+  console.log(channel, "channel initialized");
+
 
   useEffect(() => {
     const initChannel = async () => {
@@ -104,14 +106,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     };
 
     initChannel();
-  }, [user, userId, groupData.id]);
+  }, [user, userId, groupData.id, ownername, owner]);
 
   const handleJoin = async () => {
     if (!user || joined) return;
     setJoining(true);
 
     try {
-      await channel.addMembers([userId]);
+      await channel?.addMembers([userId]);
       setJoined(true);
       console.log(`User ${userId} joined channel ${groupData.id}`);
     } catch (err) {
@@ -215,7 +217,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
           <div className="lg:col-span-4 space-y-4 xl:pl-8">
             {/* Logo Card */}
             <div className="aspect-square rounded-2xl bg-background border p-6 sm:p-8 flex items-center justify-center overflow-hidden">
-              <img
+              <Image
                 src={groupData.image}
                 alt={groupData.name}
                 className="w-full h-full object-cover rounded-lg"

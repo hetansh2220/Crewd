@@ -1,15 +1,15 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect, useRef } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import QRCodeStyling from "qr-code-styling"
-import { usePrivy } from "@privy-io/react-auth"
-import { Checkbox } from "@/components/ui/checkbox" // ✅ make sure this exists in your ShadCN setup
-import { Label } from "@/components/ui/label"
-import { useExportWallet } from "@privy-io/react-auth/solana"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox"; // ✅ make sure this exists in your ShadCN setup
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { usePrivy } from "@privy-io/react-auth";
+import { useExportWallet } from "@privy-io/react-auth/solana";
+import QRCodeStyling from "qr-code-styling";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface WalletSettingsProps {
   open: boolean
@@ -21,7 +21,7 @@ interface WalletSettingsProps {
 const PRESET_AMOUNTS = [5, 15, 30, 100]
 const TABS = ["Deposit", "Withdraw", "Export"]
 
-export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSettingsProps) {
+export function Settings({ open, onOpenChange, onDeposit }: WalletSettingsProps) {
   const [amount, setAmount] = useState("")
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
   const [selectedTab, setSelectedTab] = useState("Deposit")
@@ -85,7 +85,7 @@ export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSe
     }
   }
 
-  
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

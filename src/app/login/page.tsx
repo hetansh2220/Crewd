@@ -1,20 +1,16 @@
 'use client'
 
-import { use, useState } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { useLoginWithEmail } from '@privy-io/react-auth'
-import { LoginEmailStep } from '@/components/Login/login-email'
 import { LoginCodeStep } from '@/components/Login/login-code'
+import { LoginEmailStep } from '@/components/Login/login-email'
 import { LoginProfileStep } from '@/components/Login/login-profile'
-import { CreateUser } from '@/server/user'
-import {
-  usePrivy,
-} from "@privy-io/react-auth";
-import { useCreateWallet } from '@privy-io/react-auth/solana';
-import { GetUserByWallet } from '@/server/user'
+import { CreateUser, GetUserByWallet } from '@/server/user'
+import { useLoginWithEmail, usePrivy } from '@privy-io/react-auth'
+import { useCreateWallet } from '@privy-io/react-auth/solana'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useState } from 'react'
 
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter()
   const params = useSearchParams()
   const urlStage = params.get('stage')
@@ -24,7 +20,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const { user } = usePrivy()
   const { createWallet } = useCreateWallet();
-  
+
   const { sendCode, loginWithCode } = useLoginWithEmail({
     onComplete: async ({ user, isNewUser }) => {
       try {
@@ -88,7 +84,7 @@ export default function LoginPage() {
     try {
       setIsLoading(true)
       const walletAddress = user?.wallet?.address || ''
-      await CreateUser(data.username, data.bio || '', walletAddress, '')
+      await CreateUser(data.username, data.bio || '', walletAddress)
       router.push('/dashboard')
     } catch (err) {
       console.error(err)
@@ -121,5 +117,13 @@ export default function LoginPage() {
         {stage === 2 && <LoginProfileStep onSubmit={handleProfileSubmit} />}
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
   )
 }

@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { CaretRightIcon, CaretLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { CommunityCard } from "./community-card";
-import { GetGroups } from "@/server/group"; 
-import { usePrivy } from "@privy-io/react-auth";
+import { GetGroups } from "@/server/group";
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
+import { CommunityCard } from "./community-card";
 interface Group {
   id: string;
   name: string;
@@ -22,22 +21,21 @@ export function FeaturedSection() {
   const router = useRouter();
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(false);
-  const { ready } = usePrivy();
 
   // ✅ Fetch groups using server action
   useEffect(() => {
-  (async () => {
-    setLoading(true); // ✅ Start loading before fetch
-    try {
-      const data = await GetGroups();
-      setGroups(data);
-    } catch (error) {
-      console.error("Error fetching groups:", error);
-    } finally {
-      setLoading(false); // ✅ Stop loading after fetch
-    }
-  })();
-}, []);
+    (async () => {
+      setLoading(true); // ✅ Start loading before fetch
+      try {
+        const data = await GetGroups();
+        setGroups(data);
+      } catch (error) {
+        console.error("Error fetching groups:", error);
+      } finally {
+        setLoading(false); // ✅ Stop loading after fetch
+      }
+    })();
+  }, []);
 
 
   const scroll = (direction: "left" | "right") => {
@@ -49,7 +47,7 @@ export function FeaturedSection() {
       behavior: "smooth",
     });
   };
- 
+
 
 
   return (

@@ -1,14 +1,13 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
   Field,
   FieldDescription,
   FieldGroup,
-  FieldLabel,
-  FieldSeparator,
+  FieldLabel
 } from "@/components/ui/field"
+import { Input } from '@/components/ui/input'
 import { cn } from "@/lib/utils"
 import { GalleryVerticalEnd } from "lucide-react"
 
@@ -44,7 +43,7 @@ export function LoginEmailStep({
               <span className="sr-only">Acme Inc.</span>
             </a>
             <h1 className="text-xl font-bold">Welcome to Chat-App</h1>
-               <FieldDescription>
+            <FieldDescription>
               Sign in with your email to continue
             </FieldDescription>
           </div>

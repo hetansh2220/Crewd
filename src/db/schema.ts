@@ -1,7 +1,4 @@
-import stream from "@/lib/stream";
-import { max } from "drizzle-orm";
-import { integer, pgTable, varchar, uuid, text, timestamp} from "drizzle-orm/pg-core";
-import { id } from "zod/v4/locales";
+import { integer, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const user = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
@@ -9,7 +6,7 @@ export const user = pgTable("users", {
   bio: varchar({ length: 160 }).notNull(),
   walletAddress: varchar("wallet_address").unique(),
   avatar: text().notNull(),
-  createdAt : timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type user = typeof user.$inferInsert
@@ -22,16 +19,16 @@ export const group = pgTable("groups", {
   maxMembers: integer("max_members").notNull().default(10),
   entryFee: integer("entry_fee").notNull().default(0),
   owner: varchar("owner").notNull().references(() => user.walletAddress),
-  createdAt : timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type group = typeof group.$inferInsert
 
 export const review = pgTable("reviews", {
   id: uuid().primaryKey().defaultRandom(),
-  reviewer: varchar("reviewer").notNull().references(() => user.walletAddress), 
-  groupId: uuid("group_id").notNull().references(() => group.id), 
-  rating: integer("rating").notNull(), 
+  reviewer: varchar("reviewer").notNull().references(() => user.walletAddress),
+  groupId: uuid("group_id").notNull().references(() => group.id),
+  rating: integer("rating").notNull(),
   comment: text("comment").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { MagnifyingGlassIcon, PlusIcon } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
 import { StreamChat } from "stream-chat";
 import { ChannelList } from "stream-chat-react";
-import { PlusIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import CreateGroup from "./create-group";
-import { usePrivy } from "@privy-io/react-auth";
 
 interface SidebarProps {
-  client: StreamChat ;
+  client: StreamChat;
   currentUserId: string;
 }
 
@@ -16,8 +15,6 @@ export default function Sidebar({ client, currentUserId }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const { user, ready } = usePrivy();
-
 
   useEffect(() => {
     const handler = setTimeout(() => {

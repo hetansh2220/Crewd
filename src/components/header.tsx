@@ -1,26 +1,26 @@
 "use client";
 
-import { MoonIcon, SunIcon } from "lucide-react";
-import { usePrivy } from "@privy-io/react-auth";
-import { Button } from "./ui/button";
-import { useTheme } from "next-themes";
-import { useRouter, usePathname } from "next/navigation";
-import { GetUserByWallet } from "@/server/user";
-import { useEffect, useState } from "react";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Settings } from '@/components/settings';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { GetUserByWallet, UpdateUser } from "@/server/user";
+import { usePrivy } from "@privy-io/react-auth";
+import { MoonIcon, SunIcon, User } from "lucide-react";
+import { useTheme } from "next-themes";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Logo from "../../logo/crewd.png";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
-import { UpdateUser } from "@/server/user";
-import {Settings} from '@/components/settings'
-import { User } from "lucide-react";
+import Image from 'next/image';
+
 
 export function Header() {
   const { authenticated, logout, user: privyUser, ready } = usePrivy();
@@ -72,23 +72,23 @@ export function Header() {
   ];
 
   const handleSaveProfile = async () => {
-  if (!editedUser) return;
+    if (!editedUser) return;
 
-  try {
-    // Call your server function directly
-    const updated = await UpdateUser(editedUser.id, editedUser.username, editedUser.bio);
+    try {
+      // Call your server function directly
+      const updated = await UpdateUser(editedUser.id, editedUser.username, editedUser.bio);
 
-    if (updated) {
-      setUser(editedUser); // Update UI immediately
-      setOpenProfileDialog(false);
-    } else {
-      alert("Failed to update user");
+      if (updated) {
+        setUser(editedUser); // Update UI immediately
+        setOpenProfileDialog(false);
+      } else {
+        alert("Failed to update user");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong");
-  }
-};
+  };
 
 
   return (
@@ -97,7 +97,7 @@ export function Header() {
         <div className="max-w-9xl mx-auto flex h-16 items-center justify-between px-4">
           {/* Left: Logo */}
           <div className="flex items-center gap-2">
-            <img
+            <Image
               src={Logo.src}
               alt="Crewd Logo"
               className="h-32 w-32 cursor-pointer"
@@ -114,11 +114,10 @@ export function Header() {
                   <button
                     key={item.name}
                     onClick={() => router.push(item.href)}
-                    className={`text-md font-medium transition-colors ${
-                      active
-                        ? "text-primary border-b-2 border-primary pb-1"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
+                    className={`text-md font-medium transition-colors ${active
+                      ? "text-primary border-b-2 border-primary pb-1"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
                   >
                     {item.name}
                   </button>
@@ -213,76 +212,76 @@ export function Header() {
 
       {/* Profile Dialog */}
       <Dialog open={openProfileDialog} onOpenChange={setOpenProfileDialog}>
-  <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
-    <DialogHeader className="flex flex-row items-center justify-between space-y-0">
-      <div className="flex items-center gap-3">
-        <div className="rounded-lg border border-border bg-background/50 p-2">
-          <User size={24} />
-        </div>
-        <DialogTitle className="text-2xl font-semibold text-foreground">
-          Edit Profile
-        </DialogTitle>
-      </div>
-    </DialogHeader>
+        <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
+          <DialogHeader className="flex flex-row items-center justify-between space-y-0">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg border border-border bg-background/50 p-2">
+                <User size={24} />
+              </div>
+              <DialogTitle className="text-2xl font-semibold text-foreground">
+                Edit Profile
+              </DialogTitle>
+            </div>
+          </DialogHeader>
 
-    <div className="space-y-6 mt-4">
-      <div className="flex flex-col items-center gap-3 border-t border-border pt-6">
-        <Avatar className="h-20 w-20">
-          <AvatarImage src={editedUser?.avatar} />
-          <AvatarFallback>
-            {editedUser?.username?.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <p className="text-sm text-muted-foreground">
-          {editedUser?.username}
-        </p>
-      </div>
+          <div className="space-y-6 mt-4">
+            <div className="flex flex-col items-center gap-3 border-t border-border pt-6">
+              <Avatar className="h-20 w-20">
+                <AvatarImage src={editedUser?.avatar} />
+                <AvatarFallback>
+                  {editedUser?.username?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <p className="text-sm text-muted-foreground">
+                {editedUser?.username}
+              </p>
+            </div>
 
-      <div className="space-y-4 border-t border-border pt-6">
-        <div className="grid gap-4">
-          <div className="">
-            <Label htmlFor="username" className="p-2">Username</Label>
-            <Input
-              id="username"
-              value={editedUser?.username || ""}
-              onChange={(e) =>
-                setEditedUser((prev) =>
-                  prev ? { ...prev, username: e.target.value } : prev
-                )
-              }
-              className="h-12 border-border bg-background text-lg text-foreground"
-            />
+            <div className="space-y-4 border-t border-border pt-6">
+              <div className="grid gap-4">
+                <div className="">
+                  <Label htmlFor="username" className="p-2">Username</Label>
+                  <Input
+                    id="username"
+                    value={editedUser?.username || ""}
+                    onChange={(e) =>
+                      setEditedUser((prev) =>
+                        prev ? { ...prev, username: e.target.value } : prev
+                      )
+                    }
+                    className="h-12 border-border bg-background text-lg text-foreground"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="bio" className="p-2">Bio</Label>
+                  <Input
+                    id="bio"
+                    value={editedUser?.bio || ""}
+                    onChange={(e) =>
+                      setEditedUser((prev) =>
+                        prev ? { ...prev, bio: e.target.value } : prev
+                      )
+                    }
+                    className="h-12 border-border bg-background text-lg text-foreground"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={handleSaveProfile}
+              className="h-16 w-full rounded-2xl text-lg font-semibold"
+            >
+              Save Changes
+            </Button>
           </div>
-          <div>
-            <Label htmlFor="bio" className="p-2">Bio</Label>
-            <Input
-              id="bio"
-              value={editedUser?.bio || ""}
-              onChange={(e) =>
-                setEditedUser((prev) =>
-                  prev ? { ...prev, bio: e.target.value } : prev
-                )
-              }
-              className="h-12 border-border bg-background text-lg text-foreground"
-            />
-          </div>
-        </div>
-      </div>
-
-      <Button
-        onClick={handleSaveProfile}
-        className="h-16 w-full rounded-2xl text-lg font-semibold"
-      >
-        Save Changes
-      </Button>
-    </div>
-  </DialogContent>
-</Dialog>
+        </DialogContent>
+      </Dialog>
 
       <Settings
         open={openSettings}
         onOpenChange={(setOpenSettings)}
-        onWithdraw={(amount: number) => {}}
+        onWithdraw={() => { }}
       />
     </>
   );
