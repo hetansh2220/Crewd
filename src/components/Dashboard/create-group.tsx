@@ -196,17 +196,11 @@ export default function CreateGroup({
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-border">
-        <Button
-          variant="outline"
-          onClick={() => onOpenChange(false)}
-          className="h-12 rounded-xl px-6 text-base"
-        >
-          Cancel
-        </Button>
+      <div className=" pt-4 border-t border-border">
+        
         <Button
           onClick={handleCreateGroup}
-          className="h-12 rounded-xl px-6 text-base font-semibold"
+          className="h-12 w-full rounded-xl px-6 text-base font-semibold"
         >
           Create
         </Button>
