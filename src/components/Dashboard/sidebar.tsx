@@ -9,7 +9,6 @@ import { usePrivy } from "@privy-io/react-auth";
 
 
 export default function Sidebar() {
-  const { client} = useChatContext();
   const { user } = usePrivy();
   const currentUserId = user?.wallet?.address || "guest";
   const [searchQuery, setSearchQuery] = useState("");

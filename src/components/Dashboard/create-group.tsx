@@ -29,7 +29,6 @@ export default function CreateGroup({
 }: CreateGroupProps) {
    const { client} = useChatContext();
   const userId = usePrivy().user?.wallet?.address || "guest";
-  const { user } = usePrivy();
   const [groupName, setGroupName] = useState("");
   const [groupBio, setGroupBio] = useState("");
   const [groupImage, setGroupImage] = useState<File | null>(null);
