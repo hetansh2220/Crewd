@@ -48,10 +48,7 @@ const DashboardContent = () => {
           className={`transition-all duration-300 ${showChat ? "hidden md:flex" : "flex"
             } flex-col w-full md:w-[320px] `}
         >
-          <Sidebar
-            client={client}
-            currentUserId={user?.wallet?.address || "guest"}
-          />
+          <Sidebar/>
         </div>
 
         {/* Chat area - visible on desktop or when showChat=true */}

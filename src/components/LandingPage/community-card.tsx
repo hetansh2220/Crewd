@@ -21,6 +21,8 @@ export function CommunityCard({ name, image, members, rating, reviews, price, de
       <div className="aspect-[4/3] overflow-hidden">
         <Image
           src={image || "/placeholder.svg"}
+          width={400}
+          height={300}
           alt={name}
           className="h-full w-full object-cover "
         />

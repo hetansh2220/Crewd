@@ -2,16 +2,16 @@
 
 import { MagnifyingGlassIcon, PlusIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { StreamChat } from "stream-chat";
+import { useChatContext} from "stream-chat-react";
 import { ChannelList } from "stream-chat-react";
 import CreateGroup from "./create-group";
+import { usePrivy } from "@privy-io/react-auth";
 
-interface SidebarProps {
-  client: StreamChat;
-  currentUserId: string;
-}
 
-export default function Sidebar({ client, currentUserId }: SidebarProps) {
+export default function Sidebar() {
+  const { client} = useChatContext();
+  const { user } = usePrivy();
+  const currentUserId = user?.wallet?.address || "guest";
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -67,8 +67,6 @@ export default function Sidebar({ client, currentUserId }: SidebarProps) {
 
       {/* Create Group */}
       <CreateGroup
-        chatClient={client}
-        userId={currentUserId}
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
       />

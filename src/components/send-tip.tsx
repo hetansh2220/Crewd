@@ -134,7 +134,7 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
             disabled={!amount || Number.parseFloat(amount) <= 0}
             className="h-14 w-full rounded-2xl text-lg font-semibold"
           >
-            {isLoading ? "Processing..." : `Send $${amount} Tip`}
+            {isLoading ? "Processing..." : `Send Tip`}
           </Button>
         </div>
       </DialogContent>

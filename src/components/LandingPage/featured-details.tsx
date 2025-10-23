@@ -219,6 +219,8 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             <div className="aspect-square rounded-2xl bg-background border p-6 sm:p-8 flex items-center justify-center overflow-hidden">
               <Image
                 src={groupData.image}
+                width={400}
+                height={400}
                 alt={groupData.name}
                 className="w-full h-full object-cover rounded-lg"
               />

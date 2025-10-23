@@ -99,6 +99,8 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Image
               src={Logo.src}
+              width={128}
+              height={128}
               alt="Crewd Logo"
               className="h-32 w-32 cursor-pointer"
               onClick={() => router.push("/")}
@@ -134,12 +136,9 @@ export function Header() {
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === "dark" ? (
-                <SunIcon size={24} />
-              ) : (
-                <MoonIcon size={24} />
-              )}
+              {theme === "dark" ? <SunIcon size={24} /> : <MoonIcon size={24} />}
             </Button>
+
 
             {/* Auth section */}
             <>

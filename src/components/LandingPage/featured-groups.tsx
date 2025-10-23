@@ -59,7 +59,7 @@ export function FeaturedSection() {
             Featured
           </h2>
           <p className="text-muted-foreground text-xs sm:text-sm truncate">
-            This week&#39;s curated towns
+            This week&#39;s curated groups
           </p>
         </div>
 

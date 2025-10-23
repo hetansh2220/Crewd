@@ -15,21 +15,21 @@ import { CreateGroup as CreateGroupDB } from "@/server/group";
 import { Plus, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
-import { StreamChat } from "stream-chat";
+import { useChatContext} from "stream-chat-react";
+import {usePrivy} from "@privy-io/react-auth";
 
 interface CreateGroupProps {
-  chatClient: StreamChat;
-  userId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export default function CreateGroup({
-  chatClient,
-  userId,
   open,
   onOpenChange,
 }: CreateGroupProps) {
+   const { client} = useChatContext();
+  const userId = usePrivy().user?.wallet?.address || "guest";
+  const { user } = usePrivy();
   const [groupName, setGroupName] = useState("");
   const [groupBio, setGroupBio] = useState("");
   const [groupImage, setGroupImage] = useState<File | null>(null);
@@ -57,7 +57,7 @@ export default function CreateGroup({
     // id 
     const id = crypto.randomUUID();
     // 1️⃣ Create Stream Chat channel
-    const channel = chatClient.channel("messaging", id, {
+    const channel = client.channel("messaging", id, {
       name: groupName,
       members: [userId],
       image: imageUrl || undefined,
