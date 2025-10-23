@@ -11,7 +11,7 @@ export function TopSection() {
       members: 1600,
       rating: 5.0,
       reviews: 20,
-      price: "0.01 ETH",
+      price: "0.01 SOL",
       description: "Mine Together, Rise Forever",
     },
     {
@@ -22,7 +22,7 @@ export function TopSection() {
       members: 1,
       rating: 5.0,
       reviews: 1,
-      price: "0.005 ETH",
+      price: "0.005 SOL",
       description: "When the fun stops, deposit m...",
     },
     {
@@ -33,7 +33,7 @@ export function TopSection() {
       members: 603,
       rating: 5.0,
       reviews: 21,
-      price: "~0.001 ETH",
+      price: "~0.001 SOL",
       description: "Creator Central is a place for re...",
     },
     {
@@ -44,7 +44,7 @@ export function TopSection() {
       members: 173000,
       rating: 5.0,
       reviews: 2,
-      price: "0.006 ETH",
+      price: "0.006 SOL",
       description: "where every voice has a seat at...",
     },
     {
@@ -55,7 +55,7 @@ export function TopSection() {
       members: 55000,
       rating: 5.0,
       reviews: 1,
-      price: "0.005 ETH",
+      price: "0.005 SOL",
       description: "Game Dev: Decentralized",
     },
     {
@@ -66,7 +66,7 @@ export function TopSection() {
       members: 220000,
       rating: 5.0,
       reviews: 21,
-      price: "0.005 ETH",
+      price: "0.005 SOL",
       description: "A home for the innovators, a ha...",
     },
   ]

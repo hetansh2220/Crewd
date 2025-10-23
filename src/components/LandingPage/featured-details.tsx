@@ -35,7 +35,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
   const stats = [
     { label: "REVIEWS", value: "5.0", icon: "⭐" },
-    { label: "ENTRY", value: `0.0005 ETH`, icon: "💰" },
+    { label: "ENTRY", value: `0.0005 SOL`, icon: "💰" },
     { label: "TIPS", value: "$127", icon: "💵" },
     { label: "STAKED", value: "65K", icon: "🔒" },
   ];
