@@ -13,7 +13,7 @@ interface Group {
   description: string | null;
   image: string | null;
   maxMembers: number;
-  entryFee: number;
+  entryFee: string;
 }
 
 export function FeaturedSection() {

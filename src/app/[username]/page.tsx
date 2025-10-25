@@ -242,7 +242,7 @@ async function UserProfileContent({ username }: { username: string }) {
                                 </svg>
                                 {group.maxMembers} max
                               </span>
-                              {group.entryFee > 0 && (
+                              {Number(group.entryFee) > 0 && (
                                 <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-slate-800/50 px-3 py-1.5 rounded border border-gray-300 dark:border-slate-700/50 text-purple-600 dark:text-purple-400">
                                   <svg
                                     className="w-3.5 h-3.5"

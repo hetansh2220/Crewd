@@ -11,11 +11,12 @@ export async function GetTips() {
 }
 
 //CreateTip
-export async function CreateTip( userId: string, groupId: string, amount: number) {
+export async function CreateTip(userId: string, groupId: string, amount: number, transaction: string) {
     const newTip = await db.insert(tips).values({
         userId: userId,
         groupId: groupId,
-        amount: amount,
+        amount: amount.toString(),
+        transaction: transaction,
     }).returning();
     return newTip;
 }

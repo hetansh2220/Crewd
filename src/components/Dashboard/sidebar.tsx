@@ -2,7 +2,6 @@
 
 import { MagnifyingGlassIcon, PlusIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { useChatContext} from "stream-chat-react";
 import { ChannelList } from "stream-chat-react";
 import CreateGroup from "./create-group";
 import { usePrivy } from "@privy-io/react-auth";

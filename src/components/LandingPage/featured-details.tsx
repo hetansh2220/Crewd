@@ -9,6 +9,10 @@ import { usePrivy } from "@privy-io/react-auth";
 import { GetUserByWallet } from "@/server/user";
 import { Channel } from "stream-chat";
 import Image from "next/image";
+import useTransfer from "@/hooks/use-transfer";
+import { useSignAndSendTransaction, useWallets } from '@privy-io/react-auth/solana';
+import { createTransaction } from "@/server/transaction";
+import { useRouter } from "next/navigation";
 
 interface FeaturedDetailsProps {
   groupData: {
@@ -17,7 +21,7 @@ interface FeaturedDetailsProps {
     description: string;
     image: string;
     maxMembers: number;
-    entryFee: number;
+    entryFee: string;
     owner: string;
     createdAt: Date;
   };
@@ -32,6 +36,10 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const owner = groupData.owner;
   const membershipProgress = 92;
   const [ownername, setOwnername] = useState<{ username: string, walletAddress: string | null } | null>(null);
+  const { transfer } = useTransfer();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
+  const { wallets } = useWallets();
+  const router = useRouter();
 
   const stats = [
     { label: "REVIEWS", value: "5.0", icon: "⭐" },
@@ -94,8 +102,9 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         await channel.watch();
         setChannel(channel);
         console.log(channel, "channel initialized");
-        const memberIds = Object.keys(channel.state.members);
-        if (memberIds.includes(ownername?.walletAddress || "guest")) {
+        const memberIds = Object.values(channel.state.members);
+        console.log(memberIds, "member ids", user.wallet?.address);
+        if (memberIds.find((member) => member.user_id === user.wallet?.address)) {
           setJoined(true);
         }
 
@@ -108,14 +117,50 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     initChannel();
   }, [user, userId, groupData.id, ownername, owner]);
 
+  console.log(wallets[0]?.address, "wallet address");
+
   const handleJoin = async () => {
-    if (!user || joined) return;
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+
+    if (joined || joining) return;
     setJoining(true);
 
     try {
-      await channel?.addMembers([userId]);
+      let signatureHash: Uint8Array<ArrayBufferLike> | undefined;
+
+      if (Number(groupData.entryFee) > 0) {
+        const transaction = await transfer(
+          user.wallet!.address!,
+          groupData.owner,
+          Number(groupData.entryFee)
+        );
+
+        const { signature } = await signAndSendTransaction({
+          transaction: new Uint8Array(transaction.serialize({
+            requireAllSignatures: false,
+          })),
+          wallet: wallets[0],
+        });
+
+        signatureHash = signature;
+      }
+
+      await channel?.addMembers([user.wallet!.address!]);
+
+      await createTransaction({
+        userId: user.wallet!.address!,
+        groupId: groupData.id,
+        transaction: signatureHash ? signatureHash.toString() : "",
+        amount: Number(groupData.entryFee),
+      });
+
       setJoined(true);
-      console.log(`User ${userId} joined channel ${groupData.id}`);
+      console.log(`User ${user.wallet!.address!} joined group ${groupData.id}`);
     } catch (err) {
       console.error("Error joining channel:", err);
     } finally {

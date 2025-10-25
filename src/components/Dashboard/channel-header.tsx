@@ -21,6 +21,7 @@ import { useState, useTransition } from "react";
 import { Avatar, ChannelHeader, useChannelStateContext } from "stream-chat-react";
 import { Skeleton } from "../ui/skeleton";
 
+
 interface Props {
   onBack?: () => void;
 }
@@ -41,9 +42,9 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
 
   const handleSubmitReview = () => {
     const reviewer = user?.wallet?.address;
-    const streamId = channel?.data?.id;
-    if (!reviewer || !streamId) {
-      alert("Missing reviewer or stream ID");
+    const groupId = channel?.data?.id;
+    if (!reviewer || !groupId) {
+      alert("Missing reviewer or group ID");
       return;
     }
 
@@ -54,7 +55,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
 
     startTransition(async () => {
       try {
-        await CreateReview(reviewer, streamId, rating, comment);
+        await CreateReview(reviewer, groupId, rating, comment);
         alert("Review submitted successfully!");
         setShowReviewDialog(false);
         setRating(0);

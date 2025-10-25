@@ -53,10 +53,13 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
 
     setIsLoading(true)
     try {
+      if (!channel?.data?.id) return;
+
       const newTip = await CreateTip(
         user.wallet.address,
-        channel?.data?.id || "unknown-channel",
-        numAmount
+        channel?.data?.id,
+        numAmount,
+        "transaction-placeholder"
       )
 
       console.log("✅ Tip stored:", newTip)
