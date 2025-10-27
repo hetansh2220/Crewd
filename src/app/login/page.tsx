@@ -47,10 +47,6 @@ function LoginPageContent() {
     },
   });
 
-
-
-  console.log(user)
-  /** STEP 0 — Send OTP */
   const handleSendCode = async () => {
     if (!email) return alert('Please enter your email')
     try {
@@ -65,7 +61,6 @@ function LoginPageContent() {
     }
   }
 
-  /** STEP 1 — Verify OTP */
   const handleVerifyCode = async () => {
     if (!code || code.length !== 6) return alert('Enter a 6-digit code');
     try {
@@ -79,7 +74,6 @@ function LoginPageContent() {
     }
   }
 
-  /** STEP 2 — Profile */
   const handleProfileSubmit = async (data: { username: string; bio?: string }) => {
     try {
       setIsLoading(true)
@@ -93,7 +87,6 @@ function LoginPageContent() {
       setIsLoading(false)
     }
   }
-
 
   return (
     <div className="flex min-h-screen items-center justify-center ">

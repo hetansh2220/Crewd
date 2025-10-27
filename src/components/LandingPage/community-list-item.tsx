@@ -36,7 +36,7 @@ export function CommunityListItem({
       <CardContent className="p-2 sm:p-3">
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Rank and Avatar */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <span className="text-xl sm:text-2xl font-bold text-muted-foreground w-6 sm:w-8">{rank}</span>
             <Avatar className="h-16 w-16 sm:h-26 sm:w-26 rounded-lg">
               <AvatarImage src={image || "/placeholder.svg"} alt={name} className="object-cover" />
@@ -53,7 +53,7 @@ export function CommunityListItem({
               </div>
               <Badge
                 variant="secondary"
-                className="bg-background/80 text-muted-foreground hover:bg-background/80 flex-shrink-0 text-xs"
+                className="bg-background/80 text-muted-foreground hover:bg-background/80 shrink-0 text-xs"
               >
                 <Users className="mr-1 h-3 w-3" />
                 {formatMembers(members)}

@@ -63,7 +63,7 @@ export function FeaturedSection() {
           </p>
         </div>
 
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <Button onClick={() => scroll("left")} size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
             <CaretLeftIcon size={16} />
           </Button>
@@ -84,7 +84,7 @@ export function FeaturedSection() {
         {loading ? (
           // skeletons
           [...Array(3)].map((_, index) => (
-            <div key={index} className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]">
+            <div key={index} className="shrink-0 w-[280px] sm:w-[300px] md:w-xs">
               <Skeleton className="h-[200px] w-full rounded-lg mb-4" />
               <Skeleton className="h-6 w-3/4 rounded-lg mb-2" />
               <Skeleton className="h-4 w-1/2 rounded-lg mb-2" />
@@ -95,7 +95,7 @@ export function FeaturedSection() {
           groups.map((group, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] transition-all duration-300 cursor-pointer"
+              className="shrink-0 w-[280px] sm:w-[300px] md:w-xs transition-all duration-300 cursor-pointer"
               onClick={() => router.push(`/group/${group.id}`)}
             >
               <CommunityCard

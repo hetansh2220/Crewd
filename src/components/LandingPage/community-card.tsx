@@ -18,7 +18,7 @@ export function CommunityCard({ name, image, members, rating, reviews, price, de
 
   return (
     <div className="group rounded-xl bg-card shadow-sm hover:shadow-md transition-all duration-300 border border-border overflow-hidden h-full flex flex-col">
-      <div className="aspect-[4/3] overflow-hidden">
+      <div className="aspect-4/3 overflow-hidden">
         <Image
           src={image || "/placeholder.svg"}
           width={400}
@@ -34,7 +34,7 @@ export function CommunityCard({ name, image, members, rating, reviews, price, de
             <h3 className="font-semibold text-card-foreground line-clamp-1 text-sm sm:text-base">{name}</h3>
             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{description}</p>
           </div>
-          <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground flex-shrink-0">
+          <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground shrink-0">
             <Users className="h-3 w-3 sm:h-4 sm:w-4" />
             <span>{formatMembers(members)}</span>
           </div>

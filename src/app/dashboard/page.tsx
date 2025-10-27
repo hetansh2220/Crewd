@@ -46,7 +46,7 @@ const DashboardContent = () => {
         {/* Sidebar - visible on desktop or when showChat=false */}
         <div
           className={`transition-all duration-300 ${showChat ? "hidden md:flex" : "flex"
-            } flex-col w-full md:w-[320px] `}
+            } flex-col w-full md:w-xs `}
         >
           <Sidebar/>
         </div>

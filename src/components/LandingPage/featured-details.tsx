@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Share2, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import stream from "@/lib/stream";
 import { usePrivy } from "@privy-io/react-auth";
 import { GetUserByWallet } from "@/server/user";
@@ -13,6 +13,7 @@ import useTransfer from "@/hooks/use-transfer";
 import { useSignAndSendTransaction, useWallets } from '@privy-io/react-auth/solana';
 import { createTransaction } from "@/server/transaction";
 import { useRouter } from "next/navigation";
+import bs58 from 'bs58';
 
 interface FeaturedDetailsProps {
   groupData: {
@@ -43,21 +44,11 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
   const stats = [
     { label: "REVIEWS", value: "5.0", icon: "⭐" },
-    { label: "ENTRY", value: `0.0005 SOL`, icon: "💰" },
+    { label: "ENTRY", value: groupData.entryFee, icon: "💰" },
     { label: "TIPS", value: "$127", icon: "💵" },
     { label: "STAKED", value: "65K", icon: "🔒" },
   ];
-
-  const members = [
-    { initials: "ZA", color: "bg-cyan-500" },
-    { initials: "AB", color: "bg-purple-500" },
-    { initials: "CD", color: "bg-pink-500" },
-    { initials: "EF", color: "bg-yellow-500" },
-    { initials: "GH", color: "bg-orange-500" },
-    { initials: "IJ", color: "bg-purple-600" },
-    { initials: "KL", color: "bg-gray-600" },
-    { initials: "MN", color: "bg-blue-500" },
-  ];
+  console.log(channel, "channel initialized");
 
   const reviews = [
     {
@@ -155,7 +146,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       await createTransaction({
         userId: user.wallet!.address!,
         groupId: groupData.id,
-        transaction: signatureHash ? signatureHash.toString() : "",
+        transaction: signatureHash ? bs58.encode(Buffer.from(signatureHash)) : "",
         amount: Number(groupData.entryFee),
       });
 
@@ -167,6 +158,17 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       setJoining(false);
     }
   };
+
+  const members = channel?.state?.members
+    ? Object.values(channel.state.members).slice(0, 8).map((member) => {
+      const initial = member.user && typeof member.user.id === "string"
+        ? member.user.id.slice(0, 2).toUpperCase()
+        : "XX";
+      return { initial, id: member.user?.id || null };
+
+    })
+    : [];
+
 
   return (
     <div className="min-h-screen bg-background  m-2 flex flex-col pb-40">
@@ -189,15 +191,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             <div className="bg-gray-100 dark:bg-slate-800/50 rounded-xl border border-gray-300 dark:border-slate-700/50 p-4 sm:p-6">
               <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-gray-300 dark:divide-slate-600/50">
                 {stats.map((stat, idx) => (
-                  <div key={idx} className="px-3 sm:px-6 py-4 sm:py-0 first:pl-0 last:pr-0 sm:[&:nth-child(1)]:pl-0 sm:[&:nth-child(2)]:pl-6 sm:[&:nth-child(3)]:pl-6 sm:[&:nth-child(4)]:pl-6 [&:nth-child(1)]:pt-0 [&:nth-child(2)]:pt-0 sm:[&:nth-child(3)]:pt-0 sm:[&:nth-child(4)]:pt-0 [&:nth-child(3)]:pb-0 [&:nth-child(4)]:pb-0">
+                  <div key={idx} className="px-3 sm:px-6 py-4 sm:py-0 first:pl-0 last:pr-0 sm:nth-1:pl-0 m:nth-2:pl-6 sm:nth-3:pl-6 sm:nth-4:pl-6 nth-1:pt-0 nth-2:pt-0 sm:nth-3:pt-0 sm:nth-4:pt-0 nth-3:pb-0 nth-4:pb-0">
                     <div className="text-center space-y-1 sm:space-y-2">
                       <p className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wider">{stat.label}</p>
                       <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
                       <p className="text-xs text-gray-500 dark:text-slate-400">
                         {idx === 0 && "⭐⭐⭐⭐⭐"}
-                        {idx === 1 && "Per Year"}
+                        {idx === 1 && "SOL"}
                         {idx === 2 && "Sent"}
-                        {idx === 3 && "42nd Overall"}
                       </p>
                     </div>
                   </div>
@@ -213,18 +214,20 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
             {/* Members Section */}
             <div className="space-y-3">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">768 Members</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{members.length} Members</h2>
               <div className="flex flex-wrap gap-2">
-                {members.map((member, idx) => (
-                  <Avatar key={idx} className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-gray-300 dark:border-slate-700">
-                    <AvatarFallback className={`${member.color} text-white text-xs font-bold`}>
-                      {member.initials}
-                    </AvatarFallback>
-                  </Avatar>
-                ))}
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 dark:bg-slate-800 border-2 border-gray-300 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-slate-300">
-                  +758
-                </div>
+                {members.map((member, idx) => {
+                  const seed = member.id || member.initial; // unique seed for each member
+                  const avatarUrl = `https://api.dicebear.com/9.x/thumbs/svg?seed=${seed}`;
+                  return (
+                    <Avatar key={idx} className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-gray-300 dark:border-slate-700">
+                      <AvatarImage src={avatarUrl} alt={member.id || "Member"} />
+                      <AvatarFallback className="bg-gray-500 text-white text-xs font-bold">
+                        {member.initial}
+                      </AvatarFallback>
+                    </Avatar>
+                  );
+                })}
               </div>
             </div>
 
@@ -234,14 +237,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
               <div className="space-y-4">
                 {reviews.map((review, idx) => (
                   <div key={idx} className="flex gap-3 sm:gap-4 bg-gray-100 dark:bg-white/5 p-3 sm:p-4 rounded-lg border border-gray-300 dark:border-slate-800">
-                    <Avatar className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
+                    <Avatar className="w-10 h-10 sm:w-12 sm:h-12 shrink-0">
                       <AvatarImage src={review.avatar} alt={review.author} />
                       <AvatarFallback className="bg-gray-300 dark:bg-slate-700 text-gray-900 dark:text-white">{review.author[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-white">{review.author}</p>
-                        <div className="flex gap-0.5 flex-shrink-0">
+                        <div className="flex gap-0.5 shrink-0">
                           {Array(review.rating)
                             .fill(0)
                             .map((_, i) => (
@@ -272,10 +275,10 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             </div>
 
             {/* Share Button */}
-            <Button className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-white/10 dark:hover:bg-white/20 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-700 gap-2">
+            {/* <Button className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-white/10 dark:hover:bg-white/20 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-700 gap-2">
               <Share2 className="w-4 h-4" />
               Share Link
-            </Button>
+            </Button> */}
           </div>
         </div>
       </main>

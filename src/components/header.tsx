@@ -21,6 +21,7 @@ import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import Image from 'next/image';
 
+const hideHeaderRoutes = ['/login'];
 
 export function Header() {
   const { authenticated, logout, user: privyUser, ready } = usePrivy();
@@ -29,6 +30,7 @@ export function Header() {
   const pathname = usePathname();
   const [openProfileDialog, setOpenProfileDialog] = useState(false);
   const wallet = privyUser?.wallet?.address;
+  // List of routes where header should be hidden
 
   type User = {
     id: string;
@@ -90,6 +92,9 @@ export function Header() {
     }
   };
 
+  if (hideHeaderRoutes.includes(pathname)) {
+    return null;
+  }
 
   return (
     <>
