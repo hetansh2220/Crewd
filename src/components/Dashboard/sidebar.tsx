@@ -2,7 +2,6 @@
 
 import { MagnifyingGlassIcon, PlusIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { useChatContext} from "stream-chat-react";
 import { ChannelList } from "stream-chat-react";
 import CreateGroup from "./create-group";
 import { usePrivy } from "@privy-io/react-auth";
@@ -29,7 +28,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="h-full border  bg-background/80 backdrop-blur-sm flex flex-col  mb-2 rounded">
+    <div className="h-full border  bg-background/80 backdrop-blur-sm flex flex-col  mb-22 rounded">
       {/* Header */}
       <div className="flex items-center justify-between p-3 dark:bg-background border-b">
         <p className="text-lg font-semibold">Chat</p>

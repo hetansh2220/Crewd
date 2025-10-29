@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import bs58 from 'bs58';
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -9,14 +9,16 @@ import { CreateTip } from "@/server/tips"
 import { usePrivy } from "@privy-io/react-auth"
 import { useState } from "react"
 import { useChatContext } from "stream-chat-react"
-
+import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana"
+import useTransfer from "@/hooks/use-transfer"
+import {ChannelData} from "stream-chat"
 
 interface SetAmountDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-const PRESET_AMOUNTS = [5, 15, 30, 100]
+const PRESET_AMOUNTS = [0.01, 0.05, 0.1, 0.25]
 
 
 export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
@@ -26,6 +28,9 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
   const { user } = usePrivy()
   const [isLoading, setIsLoading] = useState(false)
+  const { wallets } = useWallets()
+  const { signAndSendTransaction } = useSignAndSendTransaction()
+  const { transfer } = useTransfer()
 
   const handlePresetClick = (preset: number) => {
     setAmount(preset.toString())
@@ -38,25 +43,50 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
     setSelectedPreset(null)
   }
 
+  const data = channel?.data as ChannelData & { owner?: string }
+
+  const ownerAddress = data?.owner
+
+  console.log(ownerAddress, "asddd")
+
   const handleDeposit = async () => {
     const numAmount = Number.parseFloat(amount)
     if (isNaN(numAmount) || numAmount <= 0) return
 
-    // Ensure user + group context exist
     if (!user?.wallet?.address) {
       alert("Wallet not connected.")
       return
     }
 
-    // ✅ You'll pass groupId via props
+    if (!ownerAddress) {
+      return alert("Channel owner address not found.")
+    }
 
+    if (!channel?.data?.id) {
+      alert("No channel context.")
+      return
+    }
 
     setIsLoading(true)
     try {
+      const transaction = await transfer(
+        user.wallet.address,
+        ownerAddress,
+        numAmount
+      )
+
+      const { signature } = await signAndSendTransaction({
+        transaction: new Uint8Array(transaction.serialize({ requireAllSignatures: false })),
+        wallet: wallets[0],
+      })
+
+      const hash = bs58.encode(Buffer.from(signature));
+
       const newTip = await CreateTip(
         user.wallet.address,
-        channel?.data?.id || "unknown-channel",
-        numAmount
+        channel.data.id,
+        numAmount,
+        hash
       )
 
       console.log("✅ Tip stored:", newTip)
@@ -75,7 +105,7 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[90vw] max-w-2xl border border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
+      <DialogContent className="w-[90vw] max-w-2xl border border-border bg-background p-7 sm:p-8 mx-auto my-auto rounded-2xl">
         <DialogHeader className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="rounded-lg border border-border bg-background/50 p-2">
@@ -118,12 +148,12 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
               <button
                 key={preset}
                 onClick={() => handlePresetClick(preset)}
-                className={`rounded-2xl border py-4 text-lg font-semibold transition-colors ${selectedPreset === preset
+                className={`rounded-2xl border py-4   text-lg font-semibold transition-colors ${selectedPreset === preset
                   ? "bg-foreground/10 text-foreground"
                   : "border-border text-foreground hover:border-foreground/50"
                   }`}
               >
-                ${preset}
+                {preset} SOL
               </button>
             ))}
           </div>

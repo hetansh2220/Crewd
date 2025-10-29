@@ -1,4 +1,4 @@
-import { integer, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { integer, numeric, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const user = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
@@ -13,11 +13,11 @@ export type user = typeof user.$inferInsert
 
 export const group = pgTable("groups", {
   id: uuid().primaryKey(),
-  name: varchar({ length: 32 }).notNull().unique(),
+  name: varchar({ length: 32 }).notNull(),
   description: varchar({ length: 160 }).notNull(),
   image: text().notNull(),
   maxMembers: integer("max_members").notNull().default(10),
-  entryFee: integer("entry_fee").notNull().default(0),
+  entryFee: numeric("entry_fee").notNull().default("0"),
   owner: varchar("owner").notNull().references(() => user.walletAddress),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -39,7 +39,8 @@ export const tips = pgTable("tips", {
   id: uuid().primaryKey().defaultRandom(),
   userId: varchar("user_id").notNull().references(() => user.walletAddress),
   groupId: uuid("group_id").notNull().references(() => group.id),
-  amount: integer("amount").notNull(),
+  amount: numeric("amount").notNull(),
+  transaction: text("transaction").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -50,7 +51,7 @@ export const transactions = pgTable("transactions", {
   userId: varchar("user_id").notNull().references(() => user.walletAddress),
   groupId: uuid("group_id").notNull().references(() => group.id),
   transaction: text("transaction").notNull(),
-  amount: integer("amount").notNull(),
+  amount: numeric("amount").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 

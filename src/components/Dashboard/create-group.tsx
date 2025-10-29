@@ -12,11 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { uploadToCloudinary } from "@/providers/cloudinary-provider";
 import { CreateGroup as CreateGroupDB } from "@/server/group";
+import { usePrivy } from "@privy-io/react-auth";
 import { Plus, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
-import { useChatContext} from "stream-chat-react";
-import {usePrivy} from "@privy-io/react-auth";
+import { useChatContext } from "stream-chat-react";
 
 interface CreateGroupProps {
   open: boolean;
@@ -27,8 +27,8 @@ export default function CreateGroup({
   open,
   onOpenChange,
 }: CreateGroupProps) {
-   const { client} = useChatContext();
-  const userId = usePrivy().user?.wallet?.address || "guest";
+  const { client } = useChatContext();
+  const { user } = usePrivy()
   const [groupName, setGroupName] = useState("");
   const [groupBio, setGroupBio] = useState("");
   const [groupImage, setGroupImage] = useState<File | null>(null);
@@ -53,30 +53,40 @@ export default function CreateGroup({
       }
     }
 
-    // id 
+
     const id = crypto.randomUUID();
-    // 1️⃣ Create Stream Chat channel
     const channel = client.channel("messaging", id, {
       name: groupName,
-      members: [userId],
+      members: [user?.wallet?.address],
       image: imageUrl || undefined,
       bio: groupBio,
       maxMembers,
       entryFee,
+      owner: user?.wallet?.address,
     } as Record<string, unknown>);
 
     await channel.create();
     console.log(channel.data);
 
     try {
-      const dbGroup = await CreateGroupDB(
-        id,
+      if (!user?.wallet || !imageUrl) return;
+      console.log(id,
         groupName,
         groupBio,
-        imageUrl || "",
+        imageUrl,
         maxMembers,
         entryFee,
-        userId,
+        user?.wallet?.address)
+      const dbGroup = await CreateGroupDB(
+        {
+          id: id,
+          name: groupName,
+          description: groupBio,
+          image: imageUrl,
+          maxMembers,
+          entryFee: entryFee.toString(),
+          owner: user?.wallet?.address,
+        }
       );
       console.log("Group saved in DB:", dbGroup);
     } catch (err) {
@@ -135,6 +145,8 @@ export default function CreateGroup({
           >
             {previewUrl ? (
               <Image
+                width={112}
+                height={112}
                 src={previewUrl}
                 alt="Group"
                 className="w-full h-full object-cover rounded-full"
