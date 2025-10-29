@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox"; // ✅ make sure this exists in your ShadCN setup
+import { Checkbox } from "@/components/ui/checkbox"; // make sure this exists in your ShadCN setup
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import { useExportWallet } from "@privy-io/react-auth/solana";
 import QRCodeStyling from "qr-code-styling";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 
 interface WalletSettingsProps {
   open: boolean
@@ -19,37 +20,54 @@ interface WalletSettingsProps {
 }
 
 const PRESET_AMOUNTS = [5, 15, 30, 100]
-const TABS = ["Deposit", "Withdraw", "Export"]
+const TABS = ["Withdraw", "Deposit", "Export"]
 
 export function Settings({ open, onOpenChange, onDeposit }: WalletSettingsProps) {
   const [amount, setAmount] = useState("")
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
   const [selectedTab, setSelectedTab] = useState("Deposit")
-  const [acknowledged, setAcknowledged] = useState(false) // ✅ NEW: controls checkbox
+  const [acknowledged, setAcknowledged] = useState(false) // NEW: controls checkbox
   const qrRef = useRef<HTMLDivElement>(null)
   const { user } = usePrivy()
   const { exportWallet } = useExportWallet()
+  const { theme } = useTheme()
 
   const CRYPTO_ADDRESS = user?.wallet?.address || "not_available"
 
-  // Generate QR for Withdraw tab
-  useEffect(() => {
-    if (selectedTab === "Withdraw" && qrRef.current) {
-      qrRef.current.innerHTML = ""
-      const qrCode = new QRCodeStyling({
-        width: 300,
-        height: 300,
-        data: CRYPTO_ADDRESS,
-        image: "https://s2.coinmarketcap.com/static/img/coins/200x200/5426.png",
-        imageOptions: { hideBackgroundDots: true, margin: 8 },
-        dotsOptions: { color: "#ffffff", type: "dots" },
-        backgroundOptions: { color: "transparent" },
-        cornersSquareOptions: { color: "#ffffff", type: "extra-rounded" },
-        cornersDotOptions: { color: "#ffffff", type: "extra-rounded" },
-      })
-      qrCode.append(qrRef.current)
-    }
-  }, [selectedTab, CRYPTO_ADDRESS])
+  // Generate QR for Deposit tab
+useEffect(() => {
+  if (selectedTab === "Deposit" && qrRef.current) {
+    qrRef.current.innerHTML = "";
+
+    const isLight = theme === "light";
+
+    const qrCode = new QRCodeStyling({
+      width: 300,
+      height: 300,
+      data: CRYPTO_ADDRESS,
+      image: "https://s2.coinmarketcap.com/static/img/coins/200x200/5426.png",
+      imageOptions: { hideBackgroundDots: true, margin: 8 },
+      dotsOptions: {
+        color: isLight ? "#000000" : "#ffffff",
+        type: "dots",
+      },
+      backgroundOptions: {
+        color: "transparent",
+      },
+      cornersSquareOptions: {
+        color: isLight ? "#000000" : "#ffffff",
+        type: "extra-rounded",
+      },
+      cornersDotOptions: {
+        color: isLight ? "#000000" : "#ffffff",
+        type: "extra-rounded",
+      },
+    });
+
+    qrCode.append(qrRef.current);
+  }
+}, [selectedTab, CRYPTO_ADDRESS, theme]);
+
 
   const handlePresetClick = (preset: number) => {
     setAmount(preset.toString())
@@ -64,14 +82,14 @@ export function Settings({ open, onOpenChange, onDeposit }: WalletSettingsProps)
   const handleAction = async () => {
     const numAmount = parseFloat(amount)
 
-    if (selectedTab === "Deposit" && numAmount > 0) {
+    if (selectedTab === "Withdraw" && numAmount > 0) {
       onDeposit?.(numAmount)
       setAmount("")
       setSelectedPreset(null)
       onOpenChange(false)
     }
 
-    if (selectedTab === "Withdraw") {
+    if (selectedTab === "Deposit") {
       await navigator.clipboard.writeText(CRYPTO_ADDRESS)
       alert("Crypto address copied to clipboard.")
     }
@@ -134,7 +152,7 @@ export function Settings({ open, onOpenChange, onDeposit }: WalletSettingsProps)
           </div>
 
           {/* Deposit */}
-          {selectedTab === "Deposit" && (
+          {selectedTab === "Withdraw" && (
             <div className="space-y-4 border-t border-border pt-6">
               <h3 className="text-lg font-semibold text-foreground">Deposit Amount</h3>
               <Input
@@ -162,7 +180,7 @@ export function Settings({ open, onOpenChange, onDeposit }: WalletSettingsProps)
           )}
 
           {/* Withdraw */}
-          {selectedTab === "Withdraw" && (
+          {selectedTab === "Deposit" && (
             <div className="space-y-6 border-t border-border pt-6">
               <div className="flex justify-center">
                 <div ref={qrRef} />
@@ -188,6 +206,7 @@ export function Settings({ open, onOpenChange, onDeposit }: WalletSettingsProps)
               {/* Checkbox */}
               <div className="flex items-start gap-3 pt-2">
                 <Checkbox
+                  className="border-black dark:border-white"
                   id="acknowledge"
                   checked={acknowledged}
                   onCheckedChange={(checked) => setAcknowledged(!!checked)}

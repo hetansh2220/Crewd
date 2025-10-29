@@ -20,6 +20,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import Image from 'next/image';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export function Header() {
@@ -81,6 +83,20 @@ export function Header() {
       if (updated) {
         setUser(editedUser);
         setOpenProfileDialog(false);
+        //Toast
+        toast.success('Profile Updated!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+            });
+        <ToastContainer />
+        
       } else {
         alert("Failed to update user");
       }
@@ -184,9 +200,6 @@ export function Header() {
                         </AvatarFallback>
                       </Avatar>
                       <span className="font-bold text-base text-foreground">{user?.username}</span>
-                      <span className="text-xs text-muted-foreground mt-0.5">
-                        {user?.walletAddress?.slice(0, 6)}...{user?.walletAddress?.slice(-4)}
-                      </span>
                     </div>
                     
                     <div className="space-y-1">

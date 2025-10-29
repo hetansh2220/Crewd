@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "stream-chat-react/dist/css/v2/index.css";
 @import "tw-animate-css";
+@import "react-toastify/dist/ReactToastify.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -464,4 +465,8 @@
     font-size: 13px !important;
     padding: 5px 6px !important;
   }
+}
+
+.Toastify__progress-bar--success {
+  background: var(--primary) !important;
 }
