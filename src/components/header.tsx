@@ -123,7 +123,7 @@ export function Header() {
               width={128}
               height={128}
               alt="Crewd Logo"
-              className={`h-32 w-32 cursor-pointer ${theme === 'light' ? 'invert' : ''}`}
+              className={`h-32 w-32 cursor-pointer`}
               onClick={() => router.push("/")}
             />
           </div>

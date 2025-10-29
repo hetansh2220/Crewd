@@ -43,9 +43,7 @@ export function LoginCodeStep({ code, setCode, onVerify, isLoading }: Props) {
               width={128}
               height={128}
               alt="Crewd Logo"
-              className={`h-28 w-28 cursor-pointer transition-all -mb-4 ${
-                theme === 'light' ? 'invert' : ''
-              }`}
+              className={`h-28 w-28 cursor-pointer transition-all -mb-4`}
             />
 
             {/* Heading + description */}

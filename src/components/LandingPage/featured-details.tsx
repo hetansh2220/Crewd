@@ -454,7 +454,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       </main>
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-background">
+      <footer className="fixed bottom-0 left-0 right-0 bg-background border-t">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-stretch sm:items-end gap-4 sm:gap-8">
           <div className="flex-1 space-y-2">
             <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-slate-300">
