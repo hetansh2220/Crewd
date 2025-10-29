@@ -15,7 +15,8 @@ import { createTransaction } from "@/server/transaction";
 import { useRouter } from "next/navigation";
 import bs58 from "bs58";
 import { GetReviewsByGroupId } from "@/server/review";
-import { GetTips } from "@/server/tips";
+import { GetTipByGroupId } from "@/server/tips";
+import Link from "next/link";
 
 // Type definitions
 type UserData = {
@@ -77,7 +78,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const stats = [
     { label: "REVIEWS", value: reviews.length, icon: "⭐" },
     { label: "ENTRY", value: groupData.entryFee, icon: "💰" },
-    { label: "TIPS", value: `${totalTips.toFixed(4)} SOL`, icon: "💵" },
+    { label: "TIPS", value: `${totalTips === 0 ? 0 : totalTips.toFixed(4)} SOL`, icon: "💵" },
   ];
 
   // Owner info
@@ -122,25 +123,23 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   }, [groupData.id]);
 
   // Fetch and sum up all tips
-  const GetTipsData = async () => {
-    try {
-      const tipsData = await GetTips();
-      const total = tipsData.reduce((sum, tip) => {
-        const amount = parseFloat(tip.amount || "0");
-        return sum + amount;
-      }, 0);
-
-      setTotalTips(total);
-    } catch (err) {
-      console.error("Error fetching tips:", err);
-    }
-  };
-
   useEffect(() => {
-    GetTipsData();
-    const interval = setInterval(GetTipsData, 10000);
-    return () => clearInterval(interval);
-  }, []);
+    const fetchTips = async () => {
+      try {
+        const tipsData = await GetTipByGroupId(groupData.id);
+        const total = tipsData.reduce((sum, tip) => {
+          const amount = parseFloat(tip.amount || "0");
+          return sum + amount;
+        }, 0);
+
+        setTotalTips(total);
+      } catch (err) {
+        console.error("Error fetching tips:", err);
+      }
+    };
+
+    fetchTips();
+  }, [groupData.id]);
 
   // Init Stream Chat
   useEffect(() => {
@@ -218,14 +217,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   // Members
   const members = channel?.state?.members
     ? Object.values(channel.state.members)
-        .slice(0, 8)
-        .map((member) => {
-          const initial =
-            member.user && typeof member.user.id === "string"
-              ? member.user.id.slice(0, 2).toUpperCase()
-              : "XX";
-          return { initial, id: member.user?.id || null };
-        })
+      .slice(0, 8)
+      .map((member) => {
+        const initial =
+          member.user && typeof member.user.id === "string"
+            ? member.user.id.slice(0, 2).toUpperCase()
+            : "XX";
+        return { initial, id: member.user?.id || null };
+      })
     : [];
 
   // Show skeleton while not ready
@@ -302,36 +301,20 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             </div>
 
             {/* Stats */}
-            <div className="bg-gray-100 dark:bg-slate-800/50 rounded-2xl border border-gray-300 dark:border-slate-700/50 p-4 sm:p-6">
-              <div
-                className="
-                  grid
-                  grid-cols-1
-                  xs:grid-cols-2
-                  md:grid-cols-3
-                  gap-4 sm:gap-6
-                  text-center
-                "
-              >
+            <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 shadow-sm">
+              <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-6 text-center">
                 {stats.map((stat, idx) => (
                   <div
                     key={idx}
-                    className="
-                      flex flex-col items-center justify-center
-                       lg:border-r
-                       md:border-r
-                       
-                      p-4 sm:p-5
-                      shadow-sm
-                    "
+                    className="flex flex-col items-center justify-center space-y-1"
                   >
-                    <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                    <p className="text-sm font-medium text-gray-500 dark:text-slate-400 tracking-wide uppercase">
                       {stat.label}
                     </p>
-                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
                       {stat.value}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-gray-400 dark:text-slate-500">
                       {idx === 0 && "⭐⭐⭐⭐⭐"}
                       {idx === 1 && "SOL"}
                       {idx === 2 && "Sent"}
@@ -340,6 +323,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
                 ))}
               </div>
             </div>
+
 
             {/* About */}
             <div className="space-y-3">
@@ -397,38 +381,45 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
                 </div>
               ) : reviews.length > 0 ? (
                 <div className="space-y-4">
-                  {reviews.map((review, idx) => {
-                    const reviewerInfo = reviewersData[review.reviewer];
-                    return (
-                      <div
-                        key={idx}
-                        className="flex gap-3 sm:gap-4 bg-gray-100 dark:bg-white/5 p-3 sm:p-4 rounded-lg border border-gray-300 dark:border-slate-800"
-                      >
-                        <Avatar className="w-10 h-10 sm:w-12 sm:h-12 shrink-0">
-                          <AvatarImage
-                            src={reviewerInfo?.avatar}
-                            alt={reviewerInfo?.username}
-                          />
-                          <AvatarFallback className="bg-gray-300 dark:bg-slate-700 text-gray-900 dark:text-white">
-                            {reviewerInfo?.username?.[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-white">
-                              {reviewerInfo?.username || "Anonymous"}
-                            </p>
-                          </div>
-                          <p className="text-xs sm:text-sm text-gray-700 dark:text-slate-300 mb-1">
-                            {review.comment}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-slate-500">
-                            {review.handle}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+                {reviews.map((review, idx) => {
+  const reviewerInfo = reviewersData[review.reviewer];
+  return (
+    <div
+      key={idx}
+      className="flex gap-3 sm:gap-4 bg-gray-100 dark:bg-white/5 p-3 sm:p-4 rounded-lg border border-gray-300 dark:border-slate-800"
+    >
+      <Link
+        href={`/${reviewerInfo?.username}`}
+        className="shrink-0 hover:opacity-90 transition-opacity"
+      >
+        <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
+          <AvatarImage
+            src={reviewerInfo?.avatar}
+            alt={reviewerInfo?.username}
+          />
+          <AvatarFallback className="bg-gray-300 dark:bg-slate-700 text-gray-900 dark:text-white">
+            {reviewerInfo?.username?.[0]}
+          </AvatarFallback>
+        </Avatar>
+      </Link>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <p className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-white">
+            {reviewerInfo?.username || "Anonymous"}
+          </p>
+        </div>
+        <p className="text-xs sm:text-sm text-gray-700 dark:text-slate-300 mb-1">
+          {review.comment}
+        </p>
+        <p className="text-xs text-gray-500 dark:text-slate-500">
+          {review.handle}
+        </p>
+      </div>
+    </div>
+  );
+})}
+
                 </div>
               ) : (
                 <p className="text-sm text-gray-500 dark:text-slate-400">

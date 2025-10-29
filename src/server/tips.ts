@@ -2,13 +2,7 @@
 
 import { db } from "@/db/index";
 import { tips } from "@/db/schema";
-
-
-//GetTips
-export async function GetTips() {
-    const tipsData = await db.select().from(tips);
-    return tipsData;
-}
+import { eq } from "drizzle-orm";
 
 //CreateTip
 export async function CreateTip(userId: string, groupId: string, amount: number, transaction: string) {
@@ -19,4 +13,10 @@ export async function CreateTip(userId: string, groupId: string, amount: number,
         transaction: transaction,
     }).returning();
     return newTip;
+}
+
+//GetTipByGroupId
+export async function GetTipByGroupId(groupId: string) {
+    const tipData = await db.select().from(tips).where(eq(tips.groupId, groupId));
+    return tipData;
 }
