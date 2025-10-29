@@ -11,99 +11,113 @@ import QRCodeStyling from "qr-code-styling";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
+import { ToastContainer, Bounce, toast } from "react-toastify";
 
 interface WalletSettingsProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onDeposit?: (amount: number) => void
-  onWithdraw?: (amount: number) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onDeposit?: (amount: number) => void;
+  onWithdraw?: (address: string, amount: number) => void; // updated onWithdraw to include address
 }
 
-const PRESET_AMOUNTS = [5, 15, 30, 100]
-const TABS = ["Withdraw", "Deposit", "Export"]
+const PRESET_AMOUNTS = [5, 15, 30, 100];
+const TABS = ["Withdraw", "Deposit", "Export"];
 
-export function Settings({ open, onOpenChange, onDeposit }: WalletSettingsProps) {
-  const [amount, setAmount] = useState("")
-  const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
-  const [selectedTab, setSelectedTab] = useState("Deposit")
-  const [acknowledged, setAcknowledged] = useState(false) // NEW: controls checkbox
-  const qrRef = useRef<HTMLDivElement>(null)
-  const { user } = usePrivy()
-  const { exportWallet } = useExportWallet()
-  const { theme } = useTheme()
+export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSettingsProps) {
+  const [amount, setAmount] = useState("");
+  const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
+  const [selectedTab, setSelectedTab] = useState("Deposit");
+  const [acknowledged, setAcknowledged] = useState(false); // NEW: controls checkbox
+  const [walletAddress, setWalletAddress] = useState(""); // State for wallet address in Withdraw
+  const qrRef = useRef<HTMLDivElement>(null);
+  const { user } = usePrivy();
+  const { exportWallet } = useExportWallet();
+  const { theme } = useTheme();
 
-  const CRYPTO_ADDRESS = user?.wallet?.address || "not_available"
+  const CRYPTO_ADDRESS = user?.wallet?.address || "not_available";
 
   // Generate QR for Deposit tab
-useEffect(() => {
-  if (selectedTab === "Deposit" && qrRef.current) {
-    qrRef.current.innerHTML = "";
+  useEffect(() => {
+    if (selectedTab === "Deposit" && qrRef.current) {
+      qrRef.current.innerHTML = "";
 
-    const isLight = theme === "light";
+      const isLight = theme === "light";
 
-    const qrCode = new QRCodeStyling({
-      width: 300,
-      height: 300,
-      data: CRYPTO_ADDRESS,
-      image: "https://s2.coinmarketcap.com/static/img/coins/200x200/5426.png",
-      imageOptions: { hideBackgroundDots: true, margin: 8 },
-      dotsOptions: {
-        color: isLight ? "#000000" : "#ffffff",
-        type: "dots",
-      },
-      backgroundOptions: {
-        color: "transparent",
-      },
-      cornersSquareOptions: {
-        color: isLight ? "#000000" : "#ffffff",
-        type: "extra-rounded",
-      },
-      cornersDotOptions: {
-        color: isLight ? "#000000" : "#ffffff",
-        type: "extra-rounded",
-      },
-    });
+      const qrCode = new QRCodeStyling({
+        width: 300,
+        height: 300,
+        data: CRYPTO_ADDRESS,
+        image: "https://s2.coinmarketcap.com/static/img/coins/200x200/5426.png",
+        imageOptions: { hideBackgroundDots: true, margin: 8 },
+        dotsOptions: {
+          color: isLight ? "#000000" : "#ffffff",
+          type: "dots",
+        },
+        backgroundOptions: {
+          color: "transparent",
+        },
+        cornersSquareOptions: {
+          color: isLight ? "#000000" : "#ffffff",
+          type: "extra-rounded",
+        },
+        cornersDotOptions: {
+          color: isLight ? "#000000" : "#ffffff",
+          type: "extra-rounded",
+        },
+      });
 
-    qrCode.append(qrRef.current);
-  }
-}, [selectedTab, CRYPTO_ADDRESS, theme]);
-
+      qrCode.append(qrRef.current);
+    }
+  }, [selectedTab, CRYPTO_ADDRESS, theme]);
 
   const handlePresetClick = (preset: number) => {
-    setAmount(preset.toString())
-    setSelectedPreset(preset)
-  }
+    setAmount(preset.toString());
+    setSelectedPreset(preset);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(e.target.value)
-    setSelectedPreset(null)
-  }
+    setAmount(e.target.value);
+    setSelectedPreset(null);
+  };
+
+  const handleWalletAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWalletAddress(e.target.value);
+  };
 
   const handleAction = async () => {
-    const numAmount = parseFloat(amount)
+    const numAmount = parseFloat(amount);
 
-    if (selectedTab === "Withdraw" && numAmount > 0) {
-      onDeposit?.(numAmount)
-      setAmount("")
-      setSelectedPreset(null)
-      onOpenChange(false)
+    if (selectedTab === "Withdraw" && numAmount > 0 && walletAddress) {
+      onWithdraw?.(walletAddress, numAmount); // Pass wallet address along with amount
+      setAmount("");
+      setSelectedPreset(null);
+      setWalletAddress(""); // Reset wallet address after withdrawal
+      onOpenChange(false);
     }
 
     if (selectedTab === "Deposit") {
-      await navigator.clipboard.writeText(CRYPTO_ADDRESS)
-      alert("Crypto address copied to clipboard.")
+      await navigator.clipboard.writeText(CRYPTO_ADDRESS);
+      //Toast
+        toast.success('Wallet address copied!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+            });
+      <ToastContainer />
     }
 
     if (selectedTab === "Export") {
-      if (!acknowledged) return // ✅ require confirmation
-      await exportWallet()
-      // await navigator.clipboard.writeText(privateKey)
-      alert("Private key copied to clipboard.")
-      setAcknowledged(false) // reset checkbox
+      if (!acknowledged) return; // ✅ require confirmation
+      await exportWallet();        
+      setAcknowledged(false); // reset checkbox
     }
-  }
-
-
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -125,9 +139,7 @@ useEffect(() => {
                 />
               </svg>
             </div>
-            <DialogTitle className="text-2xl font-semibold text-foreground">
-              Wallet Settings
-            </DialogTitle>
+            <DialogTitle className="text-2xl font-semibold text-foreground">Wallet Settings</DialogTitle>
           </div>
         </DialogHeader>
 
@@ -138,8 +150,8 @@ useEffect(() => {
               <button
                 key={tab}
                 onClick={() => {
-                  setSelectedTab(tab)
-                  setAcknowledged(false) // ✅ reset when switching
+                  setSelectedTab(tab);
+                  setAcknowledged(false);
                 }}
                 className={`flex-1 rounded-lg py-3 text-center font-semibold transition-colors ${selectedTab === tab
                   ? "bg-foreground/10 text-foreground"
@@ -151,10 +163,18 @@ useEffect(() => {
             ))}
           </div>
 
-          {/* Deposit */}
+          {/* Withdraw */}
           {selectedTab === "Withdraw" && (
             <div className="space-y-4 border-t border-border pt-6">
-              <h3 className="text-lg font-semibold text-foreground">Deposit Amount</h3>
+              <h3 className="text-lg font-semibold text-foreground">Enter Wallet Address</h3>
+              <Input
+                type="text"
+                placeholder="Enter wallet address"
+                value={walletAddress}
+                onChange={handleWalletAddressChange}
+                className="h-12 border-border bg-background text-lg text-foreground mt-2" // Reduced margin here
+              />
+              <h3 className="text-lg font-semibold text-foreground mt-4">Withdraw Amount</h3>
               <Input
                 type="number"
                 placeholder="Enter custom amount"
@@ -162,24 +182,25 @@ useEffect(() => {
                 onChange={handleInputChange}
                 className="h-12 border-border bg-background text-lg text-foreground"
               />
-              <div className="grid grid-cols-4 gap-4">
+            
+              <div className="grid grid-cols-4 gap-4 mt-4">
                 {PRESET_AMOUNTS.map((preset) => (
                   <button
                     key={preset}
                     onClick={() => handlePresetClick(preset)}
-                    className={`rounded-2xl border py-2 text-2xl font-semibold transition-colors ${selectedPreset === preset
+                    className={`rounded border py-2 text-md font-semibold transition-colors ${selectedPreset === preset
                       ? "bg-foreground/10 text-foreground"
                       : "border-border text-foreground"
                       }`}
                   >
-                    ${preset}
+                    {preset} SOL
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Withdraw */}
+          {/* Deposit */}
           {selectedTab === "Deposit" && (
             <div className="space-y-6 border-t border-border pt-6">
               <div className="flex justify-center">
@@ -222,19 +243,20 @@ useEffect(() => {
           <Button
             onClick={handleAction}
             disabled={
-              (selectedTab === "Deposit" && (!amount || parseFloat(amount) <= 0)) ||
+              (selectedTab === "Withdraw" && (!amount || parseFloat(amount) <= 0 || !walletAddress)) ||
               (selectedTab === "Export" && !acknowledged)
             }
             className="h-16 w-full rounded-2xl text-lg font-semibold"
           >
-            {selectedTab === "Deposit"
-              ? "Deposit"
-              : selectedTab === "Withdraw"
+            {selectedTab === "Withdraw"
+              ? "Withdraw"
+              : selectedTab === "Deposit"
                 ? "Copy Address"
-                : "Copy Private Key"}
+                : "Export Private Key"
+            }
           </Button>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

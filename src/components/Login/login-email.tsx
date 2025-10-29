@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
 import { cn } from "@/lib/utils"
-import { GalleryVerticalEnd } from "lucide-react"
+import Image from 'next/image'
+import Logo from '../../../logo/crewd.png'
+import { useTheme } from 'next-themes'
 
 interface LoginEmailStepProps extends React.HTMLAttributes<HTMLDivElement> {
   email: string
@@ -26,8 +28,10 @@ export function LoginEmailStep({
   className,
   ...props
 }: LoginEmailStepProps) {
+  const { theme } = useTheme()
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 ", className)} {...props}>
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -35,18 +39,23 @@ export function LoginEmailStep({
         }}
       >
         <FieldGroup>
-          <div className="flex flex-col items-center gap-2 text-center">
-            <a href="#" className="flex flex-col items-center gap-2 font-medium">
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
-              </div>
-              <span className="sr-only">Acme Inc.</span>
-            </a>
-            <h1 className="text-xl font-bold">Welcome to Chat-App</h1>
-            <FieldDescription>
-              Sign in with your email to continue
-            </FieldDescription>
-          </div>
+          <div className="flex flex-col items-center text-center">
+              {/* Logo */}
+              <Image
+                src={Logo.src}
+                width={128}
+                height={128}
+                alt="Crewd Logo"
+                className={`h-28 w-28 cursor-pointer transition-all  -mb-4 ${theme === 'light' ? 'invert' : ''}`}
+          />
+
+      {/* Heading and description */}
+      <h1 className="text-xl font-bold leading-tight -mt-3">Welcome to Crewd</h1>
+      <FieldDescription className="mt-4 text-gray-400">
+        Sign in with your email to continue
+      </FieldDescription>
+    </div>
+
 
           <Field>
             <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -54,6 +63,7 @@ export function LoginEmailStep({
               id="email"
               type="email"
               placeholder="m@example.com"
+              className='border-gray-300 dark:border-gray-500'
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
