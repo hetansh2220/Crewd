@@ -23,11 +23,11 @@ interface WalletSettingsProps {
 const PRESET_AMOUNTS = [5, 15, 30, 100];
 const TABS = ["Withdraw", "Deposit", "Export"];
 
-export function Settings({ open, onOpenChange, onDeposit, onWithdraw }: WalletSettingsProps) {
+export function Settings({ open, onOpenChange, onWithdraw }: WalletSettingsProps) {
   const [amount, setAmount] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
   const [selectedTab, setSelectedTab] = useState("Deposit");
-  const [acknowledged, setAcknowledged] = useState(false); // NEW: controls checkbox
+  const [acknowledged, setAcknowledged] = useState(false); // controls checkbox
   const [walletAddress, setWalletAddress] = useState(""); // State for wallet address in Withdraw
   const qrRef = useRef<HTMLDivElement>(null);
   const { user } = usePrivy();

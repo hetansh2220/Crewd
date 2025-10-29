@@ -135,7 +135,7 @@ async function UserProfileContent({ username }: { username: string }) {
                   d="M12 8v8m4-4H8m8 4a8 8 0 11-16 0 8 8 0 0116 0z"
                 />
               </svg>
-              <p className="text-gray-600 dark:text-slate-400 mb-6">You haven't created any groups yet.</p>
+              <p className="text-gray-600 dark:text-slate-400 mb-6">You haven&apos;t created any groups yet.</p>
               <Link
                 href="/groups/create"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[rgb(224,93,56)] to-[rgb(244,113,76)] hover:from-[rgb(244,113,76)] hover:to-[rgb(224,93,56)] text-white font-semibold rounded-xl shadow-md hover:shadow-[rgb(224,93,56)]/40 transition-all duration-200"

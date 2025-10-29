@@ -45,7 +45,8 @@ export function LoginProfileStep({ onSubmit }: Props) {
 
       // Ensure users is treated as an array
       const usersArray = Array.isArray(users) ? users : [users]
-      const existingUser = usersArray.some((user: any) => user.username === data.username)
+
+      const existingUser = usersArray.some((user: { username: string }) => user.username === data.username)
       if (existingUser) {
         form.setError('username', { message: 'Username is already taken' })
         setLoading(false) // Set loading to false if username is taken

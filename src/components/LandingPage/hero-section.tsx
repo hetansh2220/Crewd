@@ -10,7 +10,7 @@ export function HeroSection() {
       
       <section className="relative z-10 flex flex-col items-center text-center gap-6 py-8 md:py-12">
         <h1 className="text-4xl md:text-6xl font-bold max-w-4xl leading-tight">
-          The internet's most{" "}
+          The internet&apos;s most{" "}
           <span className="text-primary bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-lg inline-block">
             valuable conversations
           </span>
