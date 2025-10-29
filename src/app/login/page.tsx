@@ -89,7 +89,7 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center ">
+    <div className="flex h-200 items-center justify-center ">
       <div className="w-full max-w-md p-6  space-y-6 ">
         {stage === 0 && (
           <LoginEmailStep
