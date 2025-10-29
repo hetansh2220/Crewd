@@ -17,6 +17,30 @@ import bs58 from "bs58";
 import { GetReviewsByGroupId } from "@/server/review";
 import { GetTips } from "@/server/tips";
 
+// Type definitions
+type UserData = {
+  id: string;
+  username: string;
+  bio: string;
+  walletAddress: string | null;
+  avatar: string;
+  createdAt: Date;
+};
+
+// Update the Review type definition
+type Review = {
+  id: string;
+  groupId: string;
+  reviewer: string;
+  rating: number;
+  comment: string;
+  handle?: string;  // Make handle optional
+  createdAt: Date;
+};
+
+
+
+
 interface FeaturedDetailsProps {
   groupData: {
     id: string;
@@ -46,8 +70,8 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const [totalTips, setTotalTips] = useState<number>(0);
 
   // Reviews
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [reviewersData, setReviewersData] = useState<Record<string, any>>({});
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewersData, setReviewersData] = useState<Record<string, UserData>>({});
   const [loadingReviews, setLoadingReviews] = useState(true);
 
   const stats = [
@@ -84,7 +108,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         const reviewerMap = reviewerResults.reduce((acc, { wallet, data }) => {
           acc[wallet] = data;
           return acc;
-        }, {} as Record<string, any>);
+        }, {} as Record<string, UserData>);
 
         setReviewersData(reviewerMap);
       } catch (err) {
@@ -101,7 +125,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const GetTipsData = async () => {
     try {
       const tipsData = await GetTips();
-      const total = tipsData.reduce((sum: number, tip: any) => {
+      const total = tipsData.reduce((sum, tip) => {
         const amount = parseFloat(tip.amount || "0");
         return sum + amount;
       }, 0);
@@ -134,10 +158,6 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         if (memberList.find((member) => member.user_id === userId)) {
           setJoined(true);
         }
-
-        // ✅ Calculate dynamic membership percentage
-        const currentCount = memberList.length;
-        const maxCount = groupData.maxMembers || 1;
       } catch (err) {
         console.error("Error initializing channel:", err);
       }
@@ -282,44 +302,44 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
             </div>
 
             {/* Stats */}
-         <div className="bg-gray-100 dark:bg-slate-800/50 rounded-2xl border border-gray-300 dark:border-slate-700/50 p-4 sm:p-6">
-  <div
-    className="
-      grid
-      grid-cols-1
-      xs:grid-cols-2
-      md:grid-cols-3
-      gap-4 sm:gap-6
-      text-center
-    "
-  >
-    {stats.map((stat, idx) => (
-      <div
-        key={idx}
-        className="
-          flex flex-col items-center justify-center
-           lg:border-r
-           md:border-r
-           
-          p-4 sm:p-5
-          shadow-sm
-        "
-      >
-        <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-          {stat.label}
-        </p>
-        <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-          {stat.value}
-        </p>
-        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-          {idx === 0 && "⭐⭐⭐⭐⭐"}
-          {idx === 1 && "SOL"}
-          {idx === 2 && "Sent"}
-        </p>
-      </div>
-    ))}
-  </div>
-</div>
+            <div className="bg-gray-100 dark:bg-slate-800/50 rounded-2xl border border-gray-300 dark:border-slate-700/50 p-4 sm:p-6">
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  xs:grid-cols-2
+                  md:grid-cols-3
+                  gap-4 sm:gap-6
+                  text-center
+                "
+              >
+                {stats.map((stat, idx) => (
+                  <div
+                    key={idx}
+                    className="
+                      flex flex-col items-center justify-center
+                       lg:border-r
+                       md:border-r
+                       
+                      p-4 sm:p-5
+                      shadow-sm
+                    "
+                  >
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                      {stat.label}
+                    </p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                      {stat.value}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                      {idx === 0 && "⭐⭐⭐⭐⭐"}
+                      {idx === 1 && "SOL"}
+                      {idx === 2 && "Sent"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* About */}
             <div className="space-y-3">
