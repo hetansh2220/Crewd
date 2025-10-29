@@ -53,7 +53,7 @@ const DashboardContent = () => {
 
         {/* Chat area - visible on desktop or when showChat=true */}
         <div
-          className={`p-2 mb-2 border rounded flex-1 flex flex-col transition-all duration-300 ${showChat ? "flex" : "hidden md:flex"
+          className={`p-2 mb-22 border rounded flex-1 flex flex-col transition-all duration-300 ${showChat ? "flex" : "hidden md:flex"
             }`}
         >
           {channel ? (

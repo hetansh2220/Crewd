@@ -141,14 +141,14 @@ export function Header() {
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === "dark" ? <SunIcon size={24} /> : <MoonIcon size={24} />}
+              {theme === "dark" ? <SunIcon size={40} /> : <MoonIcon size={40} />}
             </Button>
 
 
             {/* Auth section */}
             <>
               {!authenticated && ready ? (
-                <Button onClick={() => router.push("/login")}>Login</Button>
+                <Button className='px-6 text-sm font-bold' onClick={() => router.push("/login")}>Login</Button>
               ) : (
                 <Popover>
                   <PopoverTrigger asChild>

@@ -1,11 +1,12 @@
 "use server"
 
-import {db} from "@/db/index";
-import {review} from "@/db/schema";
+import { db } from "@/db/index";
+import { review } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
-//GetReviews
-export async function GetReviews() {
-    const reviews = await db.select().from(review);
+//GetReviewsByGroupId
+export async function GetReviewsByGroupId(groupId: string) {
+    const reviews = await db.select().from(review).where(eq(review.groupId, groupId));
     return reviews;
 }
 
