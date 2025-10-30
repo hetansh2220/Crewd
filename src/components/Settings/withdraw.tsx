@@ -8,9 +8,11 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana";
 import useTransfer from "@/hooks/use-transfer";
 
+
+
 const PRESET_AMOUNTS = [5, 15, 30, 100];
 
-export function Withdraw({ onClose }: { onClose: () => void }) {
+export function Withdraw() {
   const [amount, setAmount] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
@@ -73,9 +75,8 @@ export function Withdraw({ onClose }: { onClose: () => void }) {
               setAmount(preset.toString());
               setSelectedPreset(preset);
             }}
-            className={`rounded border py-2 text-md font-semibold ${
-              selectedPreset === preset ? "bg-foreground/10" : "border-border"
-            }`}
+            className={`rounded border py-2 text-md font-semibold ${selectedPreset === preset ? "bg-foreground/10" : "border-border"
+              }`}
           >
             {preset} SOL
           </button>

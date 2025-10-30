@@ -17,11 +17,14 @@ import {
 import "stream-chat-react/dist/css/v2/index.css";
 
 
+
 // Inner component that has access to ChatContext
 const DashboardContent = () => {
   const [showChat, setShowChat] = useState(false);
   const { channel } = useChatContext();
   const { user, ready } = usePrivy();
+
+
   useEffect(() => {
     if (ready) {
       if (!user) {
@@ -76,11 +79,11 @@ const DashboardContent = () => {
 };
 
 const Dashboard = () => {
-  const { user } = usePrivy()
+  const { user} = usePrivy();
   const client = useCreateChatClient({
     apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
     tokenOrProvider: stream.devToken(user?.wallet?.address || "guest"),
-    userData: { id: user?.wallet?.address || "guest", name: "gg" },
+    userData: { id: user?.wallet?.address || "guest"},
   });
 
   if (!client) return null;

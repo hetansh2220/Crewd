@@ -44,10 +44,7 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
   }
 
   const data = channel?.data as ChannelData & { owner?: string }
-
   const ownerAddress = data?.owner
-
-  console.log(ownerAddress, "asddd")
 
   const handleDeposit = async () => {
     const numAmount = Number.parseFloat(amount)

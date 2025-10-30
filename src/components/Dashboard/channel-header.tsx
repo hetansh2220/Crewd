@@ -17,9 +17,14 @@ import {
 import { CreateReview } from "@/server/review";
 import { ArrowLeftIcon, DotsThreeVerticalIcon, UserListIcon } from "@phosphor-icons/react";
 import { usePrivy } from "@privy-io/react-auth";
-import { useState, useTransition } from "react";
-import { Avatar, ChannelHeader, useChannelStateContext } from "stream-chat-react";
+import { useEffect, useState, useTransition } from "react";
+import { ChannelHeader, useChatContext } from "stream-chat-react";
 import { Skeleton } from "../ui/skeleton";
+import { GetUserByWallet } from "@/server/user";
+import { AvatarFallback, AvatarImage, Avatar } from "../ui/avatar";
+import Link from "next/link";
+
+
 
 
 interface Props {
@@ -28,17 +33,24 @@ interface Props {
 
 export default function ChannelHeaderWithMenu({ onBack }: Props) {
 
-  const { channel } = useChannelStateContext();
   const { user, ready } = usePrivy();
-
   const [showMembersDialog, setShowMembersDialog] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showTipDialog, setShowTipDialog] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { channel } = useChatContext();
 
   // Review state
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [memberDetails, setMemberDetails] = useState<{
+    id: string;
+    username: string;
+    bio: string;
+    walletAddress: string | null;
+    avatar: string;
+    createdAt: Date;
+  }[]>();
 
   const handleSubmitReview = () => {
     const reviewer = user?.wallet?.address;
@@ -66,6 +78,26 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
       }
     });
   };
+
+
+  const members = channel?.state?.members ? Object.values(channel.state.members) : [];
+
+  useEffect(() => {
+    const fetchMemberDetails = async () => {
+      const details = await Promise.all(
+        members.map(async (member) => {
+          const userDetails = await GetUserByWallet(member.user_id as string);
+          return userDetails;
+        })
+      );
+      console.log("dsds:", details);
+      setMemberDetails(details);
+    };
+
+    if (members.length && ready && !memberDetails) {
+      fetchMemberDetails();
+    }
+  }, [members, ready, memberDetails]);
 
   return (
     <div className="flex justify-between items-center p-2 border-b dark:bg-background">
@@ -147,22 +179,29 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
           </DialogHeader>
 
           <ul className="mt-6 space-y-3 max-h-96 overflow-y-auto border-t border-border pt-4">
-            {channel.state.members &&
-              Object.values(channel.state.members).map((member) => (
-                <li
-                  key={member.user_id}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-background/50 p-3 transition hover:bg-accent/50"
-                >
-                  <Avatar
-                    image={member.user?.image || "/default-avatar.png"}
-                    name={member.user?.name || member.user_id}
-                    className="h-10 w-10 rounded-full border border-border shadow-sm"
-                  />
+            {memberDetails && memberDetails.map((member) => (
+              <Link
+                key={member.id}
+                href={`/${member.username}`}
+                onClick={() => setShowMembersDialog(false)}
+                className="flex items-center gap-3 rounded border bg-background/50 p-3 transition hover:bg-accent/50"
+              >
+                <Avatar>
+                  <AvatarImage src={member.avatar} alt={member.username} />
+                  <AvatarFallback>{member.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
                   <span className="text-foreground font-medium">
-                    {member.user?.name || member.user_id}
+                    {member.username}
                   </span>
-                </li>
-              ))}
+                  {member.bio && (
+                    <span className="text-sm text-muted-foreground truncate max-w-[200px]">
+                      {member.bio}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
           </ul>
         </DialogContent>
       </Dialog>

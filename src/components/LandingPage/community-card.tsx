@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Star, Users } from "lucide-react"
 import Image from "next/image"
-
 interface CommunityCardProps {
   name: string
   image: string
@@ -11,6 +10,9 @@ interface CommunityCardProps {
   price: string
   description: string
 }
+
+   //Get average rating
+    
 
 export function CommunityCard({ name, image, members, rating, reviews, price, description }: CommunityCardProps) {
   const formatMembers = (num: number) =>

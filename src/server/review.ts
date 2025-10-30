@@ -2,7 +2,7 @@
 
 import { db } from "@/db/index";
 import { review } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { avg, eq } from "drizzle-orm";
 
 //GetReviewsByGroupId
 export async function GetReviewsByGroupId(groupId: string) {
@@ -20,3 +20,13 @@ export async function CreateReview(reviewer: string, groupId: string, rating: nu
     }).returning();
     return newReview;
 }
+
+export async function getAverageRating(groupId: string) {
+    const [result] = await db
+        .select({
+            averageRating: avg(review.rating),
+        })
+        .from(review)
+        .where(eq(review.groupId, groupId));
+    return result;
+}   

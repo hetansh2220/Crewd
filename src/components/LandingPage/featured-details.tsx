@@ -17,6 +17,7 @@ import bs58 from "bs58";
 import { GetReviewsByGroupId } from "@/server/review";
 import { GetTipByGroupId } from "@/server/tips";
 import Link from "next/link";
+import {getAverageRating} from "@/server/review";
 
 // Type definitions
 type UserData = {
@@ -60,7 +61,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const [joined, setJoined] = useState(false);
   const [channel, setChannel] = useState<Channel>();
   const { user, ready } = usePrivy();
-  const userId = user?.wallet?.address || "guest";
+  const userId = user?.wallet?.address;
   const owner = groupData.owner;
   const membershipProgress = 92;
   const [ownername, setOwnername] = useState<{ username: string; walletAddress: string | null } | null>(null);
@@ -205,8 +206,9 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         transaction: signatureHash ? bs58.encode(Buffer.from(signatureHash)) : "",
         amount: Number(groupData.entryFee),
       });
-
+       router.push("/dashboard");
       setJoined(true);
+     
     } catch (err) {
       console.error("Error joining channel:", err);
     } finally {
@@ -226,6 +228,18 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         return { initial, id: member.user?.id || null };
       })
     : [];
+
+ useEffect(() => {
+       const fetchAverageRating = async () => {
+         try {
+           await getAverageRating(groupData.id);
+         } catch (err) {
+           console.error("Error fetching average rating:", err);
+         }
+       };
+   
+       fetchAverageRating();
+     }, [groupData.id]);
 
   // Show skeleton while not ready
   if (!ready) {

@@ -470,3 +470,8 @@
 .Toastify__progress-bar--success {
   background: var(--primary) !important;
 }
+
+.str-chat__li{
+  color: var(--primary) !important;
+
+}

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { CommunityCard } from "./community-card";
+import { getAverageRating } from "@/server/review";
 interface Group {
   id: string;
   name: string;
@@ -21,6 +22,7 @@ export function FeaturedSection() {
   const router = useRouter();
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(false);
+const [averageRatings, setAverageRatings] = useState<Record<string, number>>({});
 
   // ✅ Fetch groups using server action
   useEffect(() => {
@@ -36,6 +38,31 @@ export function FeaturedSection() {
       }
     })();
   }, []);
+
+ useEffect(() => {
+  const fetchRatings = async () => {
+    const ratingsMap: Record<string, number> = {};
+    
+    // Use Promise.all instead of forEach with async
+    const results = await Promise.all(
+      groups.map(async (group) => {
+        const result = await getAverageRating(group.id);
+        return { 
+          id: group.id, 
+          rating: Number(result.averageRating) || 0 
+        };
+      })
+    );
+    
+    results.forEach(({ id, rating }) => {
+      ratingsMap[id] = rating;
+    });
+    
+    setAverageRatings(ratingsMap);
+  };
+  
+  fetchRatings();
+}, [groups]);
 
 
   const scroll = (direction: "left" | "right") => {
@@ -102,7 +129,7 @@ export function FeaturedSection() {
                 name={group.name}
                 image={group.image || "/default-image.png"}
                 members={group.maxMembers}
-                rating={5}
+                rating={averageRatings[group.id] || 0}
                 reviews={10}
                 price={`${group.entryFee} SOL`}
                 description={group.description || "No description provided"}

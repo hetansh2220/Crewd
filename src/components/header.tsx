@@ -130,7 +130,7 @@ export function Header() {
 
           {/* Middle: Navigation */}
           {authenticated && ready && (
-            <nav className="hidden md:flex items-center gap-2">
+            <nav className="md:flex items-center gap-2">
               {navItems.map((item) => {
                 const active = pathname === item.href;
                 return (
@@ -159,10 +159,11 @@ export function Header() {
               className="rounded-full hover:bg-secondary/80 transition-colors"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === "dark" ? 
-                <SunIcon size={20} className="text-amber-500" /> : 
-                <MoonIcon size={20} className="text-slate-700" />
-              }
+              {theme === "dark" ? (
+                <SunIcon className="h-5 w-5" />
+              ) : (
+                <MoonIcon className="h-5 w-5" />
+              )}
             </Button>
 
             {/* Auth section */}

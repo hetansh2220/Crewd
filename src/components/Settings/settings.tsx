@@ -37,11 +37,10 @@ export function Settings({ open, onOpenChange }: { open: boolean; onOpenChange: 
               <button
                 key={tab}
                 onClick={() => setSelectedTab(tab)}
-                className={`flex-1 rounded-lg py-3 text-center font-semibold transition-colors ${
-                  selectedTab === tab
-                    ? "bg-foreground/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`flex-1 rounded-lg py-3 text-center font-semibold transition-colors ${selectedTab === tab
+                  ? "bg-foreground/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {tab}
               </button>
@@ -49,7 +48,7 @@ export function Settings({ open, onOpenChange }: { open: boolean; onOpenChange: 
           </div>
 
           {/* Render tab content */}
-          {selectedTab === "Withdraw" && <Withdraw onClose={() => onOpenChange(false)} />}
+          {selectedTab === "Withdraw" && <Withdraw />}
           {selectedTab === "Deposit" && <Deposit />}
           {selectedTab === "Export" && <ExportWallet />}
         </div>
