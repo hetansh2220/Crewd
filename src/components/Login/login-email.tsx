@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from "@/lib/utils"
 import Image from 'next/image'
 import Logo from '../../../logo/crewd.png'
-import { useTheme } from 'next-themes'
+
 
 interface LoginEmailStepProps extends React.HTMLAttributes<HTMLDivElement> {
   email: string
@@ -28,7 +28,6 @@ export function LoginEmailStep({
   className,
   ...props
 }: LoginEmailStepProps) {
-  const { theme } = useTheme()
 
   return (
     <div className={cn("flex flex-col gap-6 ", className)} {...props}>

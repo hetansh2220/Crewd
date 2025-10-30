@@ -19,7 +19,7 @@ function ProfileSkeleton() {
         {/* PROFILE SECTION */}
         <div className="flex gap-6 items-start mb-12">
           {/* Avatar Placeholder */}
-          <div className="w-44 h-44 rounded-2xl bg-gray-200 dark:bg-slate-800 ring-2 ring-[rgb(224,93,56)]/30 shadow-lg shadow-[rgb(224,93,56)]/10 flex-shrink-0" />
+          <div className="w-44 h-44 rounded-2xl bg-gray-200 dark:bg-slate-800 ring-2 ring-[rgb(224,93,56)]/30 shadow-lg shadow-[rgb(224,93,56)]/10 shrink-0" />
 
           {/* Text & Stats */}
           <div className="flex flex-col justify-center space-y-3 flex-1 min-w-0">
@@ -74,7 +74,7 @@ async function UserProfileContent({ username }: { username: string }) {
       <div className="max-w-7xl mx-auto">
         {/* PROFILE SECTION */}
         <div className="flex gap-6 items-start mb-12">
-          <div className="relative w-44 h-44 rounded-2xl overflow-hidden ring-2 ring-[rgb(224,93,56)]/40 shadow-lg shadow-[rgb(224,93,56)]/20 flex-shrink-0">
+          <div className="relative w-44 h-44 rounded-2xl overflow-hidden ring-2 ring-[rgb(224,93,56)]/40 shadow-lg shadow-[rgb(224,93,56)]/20 shrink-0">
             <Image
               src={user.avatar}
               alt={user.username}

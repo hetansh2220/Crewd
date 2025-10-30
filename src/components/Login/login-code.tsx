@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/input-otp'
 import Image from 'next/image'
 import Logo from '../../../logo/crewd.png'
-import { useTheme } from 'next-themes'
+
 
 interface Props {
   code: string
@@ -25,7 +25,6 @@ interface Props {
 }
 
 export function LoginCodeStep({ code, setCode, onVerify, isLoading }: Props) {
-  const { theme } = useTheme()
 
   return (
     <div className="flex flex-col gap-6">
