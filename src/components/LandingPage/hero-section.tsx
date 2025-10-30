@@ -10,15 +10,12 @@ export function HeroSection() {
       
       <section className="relative z-10 flex flex-col items-center text-center gap-6 py-8 md:py-12">
         <h1 className="text-4xl md:text-6xl font-bold max-w-4xl leading-tight">
-          The internet&apos;s most{" "}
-          <span className="text-primary bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-lg inline-block">
-            valuable conversations
+          Monetize Your <span className="text-primary bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-lg inline-block">
+            Alpha
           </span>
-          ,<br />
-          owned by the people who power them.
         </h1>
         <p className="text-lg md:text-xl max-w-2xl text-muted-foreground leading-relaxed">
-          Join a new kind of social space where creators earn, members engage, and every message holds value.
+          Create, manage, and monetize private groups with <br />on-chain access and ownership.
         </p>
       </section>
     </div>
