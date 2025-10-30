@@ -39,7 +39,7 @@ const DashboardContent = () => {
   }, [channel]);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       {/* <Header /> */}
 
       <div className="flex flex-1 overflow-hidden p-2 gap-2">
@@ -53,7 +53,7 @@ const DashboardContent = () => {
 
         {/* Chat area - visible on desktop or when showChat=true */}
         <div
-          className={`p-2 mb-22 border rounded flex-1 flex flex-col transition-all duration-300 ${showChat ? "flex" : "hidden md:flex"
+          className={`p-2 mb-2 border rounded flex-1 flex flex-col transition-all duration-300 ${showChat ? "flex" : "hidden md:flex"
             }`}
         >
           {channel ? (
@@ -86,7 +86,7 @@ const Dashboard = () => {
   if (!client) return null;
 
   return (
-    <div className="h-screen">
+    <div className="h-[calc(100vh-84px)]">
       <Chat client={client} theme="str-chat__theme-dark">
         <DashboardContent />
       </Chat>

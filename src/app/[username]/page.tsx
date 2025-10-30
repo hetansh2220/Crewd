@@ -147,27 +147,8 @@ async function UserProfileContent({ username }: { username: string }) {
                 />
               </svg>
               <p className="text-gray-600 dark:text-slate-400 mb-6">
-                You haven&apos;t created any groups yet.
+                User haven&apos;t created any groups yet.
               </p>
-              <Link
-                href="/groups/create"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[rgb(224,93,56)] to-[rgb(244,113,76)] hover:from-[rgb(244,113,76)] hover:to-[rgb(224,93,56)] text-white font-semibold rounded-xl shadow-md hover:shadow-[rgb(224,93,56)]/40 transition-all duration-200"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                Create Group
-              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
