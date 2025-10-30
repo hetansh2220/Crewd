@@ -16,8 +16,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { Plus, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
-import { useChatContext } from "stream-chat-react";
-
+import client from "@/lib/stream";
 interface CreateGroupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,7 +26,6 @@ export default function CreateGroup({
   open,
   onOpenChange,
 }: CreateGroupProps) {
-  const { client } = useChatContext();
   const { user } = usePrivy()
   const [groupName, setGroupName] = useState("");
   const [groupBio, setGroupBio] = useState("");

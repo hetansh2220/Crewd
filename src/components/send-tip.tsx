@@ -11,7 +11,7 @@ import { useState } from "react"
 import { useChatContext } from "stream-chat-react"
 import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana"
 import useTransfer from "@/hooks/use-transfer"
-import {ChannelData} from "stream-chat"
+import { ChannelData } from "stream-chat"
 import { Bounce, toast, ToastContainer } from "react-toastify";
 
 interface SetAmountDialogProps {
@@ -88,22 +88,22 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
       )
       //Toast
       toast.success('Tip successfully sent!', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-            transition: Bounce,
-            });
-        <ToastContainer />
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+      <ToastContainer />
 
       setAmount("")
       setSelectedPreset(null)
       onOpenChange(false)
-    } catch (err) {
+    } catch {
       //toast error
       toast.error('Failed to send tip.', {
         position: "top-right",
@@ -168,7 +168,7 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
               <button
                 key={preset}
                 onClick={() => handlePresetClick(preset)}
-                className={`rounded-2xl border py-4   text-lg font-semibold transition-colors ${selectedPreset === preset
+                className={`rounded-2xl border py-4 text-sm font-semibold transition-colors ${selectedPreset === preset
                   ? "bg-foreground/10 text-foreground"
                   : "border-border text-foreground hover:border-foreground/50"
                   }`}

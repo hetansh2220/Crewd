@@ -23,6 +23,8 @@ import { Skeleton } from "../ui/skeleton";
 import { GetUserByWallet } from "@/server/user";
 import { AvatarFallback, AvatarImage, Avatar } from "../ui/avatar";
 import Link from "next/link";
+import { Bounce, toast, ToastContainer } from "react-toastify";
+
 
 
 
@@ -68,13 +70,37 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
     startTransition(async () => {
       try {
         await CreateReview(reviewer, groupId, rating, comment);
-        alert("Review submitted successfully!");
+        // toast
+        toast.success('Review submitted successfully!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
+        <ToastContainer />
         setShowReviewDialog(false);
         setRating(0);
         setComment("");
       } catch (error) {
+
         console.error("Error submitting review:", error);
-        alert("Failed to submit review.");
+        // toast error
+        toast.error("Failed to submit review.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
       }
     });
   };

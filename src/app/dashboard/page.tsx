@@ -4,6 +4,7 @@ import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
 import client from "@/lib/stream";
+import { getStreamToken } from "@/server/stream";
 import { GetUserByWallet } from "@/server/user";
 import { usePrivy } from "@privy-io/react-auth";
 import { redirect } from "next/navigation";
@@ -87,13 +88,14 @@ const Dashboard = () => {
       if (!user?.wallet?.address) return;
       const userData = await GetUserByWallet(user.wallet.address);
       if (!userData.walletAddress) return;
+      const token = await getStreamToken(userData.walletAddress);
       await client.connectUser(
         {
           id: userData.walletAddress,
           name: userData.username,
           image: userData.avatar,
         },
-        client.devToken(userData.walletAddress)
+        token
       );
     } catch (error) {
       console.log("Error fetching user:", error);

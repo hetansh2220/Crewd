@@ -160,9 +160,9 @@ async function UserProfileContent({ username }: { username: string }) {
                 >
                   <CommunityCard
                     name={group.groupName}
+                    id={group.groupId}
                     image={group.image || "/default-image.png"}
                     members={group.maxMembers}
-                    rating={5}
                     reviews={10}
                     price={`${group.entryFee} ETH`}
                     description={group.description || "No description provided"}

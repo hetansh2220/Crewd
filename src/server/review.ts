@@ -22,11 +22,11 @@ export async function CreateReview(reviewer: string, groupId: string, rating: nu
 }
 
 export async function getAverageRating(groupId: string) {
-    const [result] = await db
+    const result = await db
         .select({
             averageRating: avg(review.rating),
         })
         .from(review)
         .where(eq(review.groupId, groupId));
-    return result;
+    return result[0].averageRating;
 }   

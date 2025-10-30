@@ -1,22 +1,41 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
+import { getAverageRating } from "@/server/review"
 import { Star, Users } from "lucide-react"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 interface CommunityCardProps {
   name: string
   image: string
   members: number
-  rating: number
   reviews: number
   price: string
   description: string
+  id: string
 }
 
-   //Get average rating
-    
+//Get average rating
 
-export function CommunityCard({ name, image, members, rating, reviews, price, description }: CommunityCardProps) {
+
+export function CommunityCard({ id, name, image, members, reviews, price, description }: CommunityCardProps) {
+  const [rating, setRating] = useState<number>(0);
   const formatMembers = (num: number) =>
     num >= 1000000 ? `${(num / 1000000).toFixed(1)}M` : num >= 1000 ? `${(num / 1000).toFixed(0)}K` : num.toString()
+
+  useEffect(() => {
+    const fetchAverageRating = async () => {
+      const data = await getAverageRating(id);
+      if (!data) {
+        setRating(0);
+      } else {
+        setRating(Math.round(parseInt(data)));
+      }
+    }
+
+    fetchAverageRating()
+  }, [id])
+
 
   return (
     <div className="group rounded-xl bg-card shadow-sm hover:shadow-md transition-all duration-300 border border-border overflow-hidden h-full flex flex-col">
@@ -53,7 +72,7 @@ export function CommunityCard({ name, image, members, rating, reviews, price, de
         </div>
 
         <Button className="w-full mt-auto text-sm">
-          {price}
+          {price === "0" ? "Free" : price + " SOL"}
         </Button>
       </div>
     </div>
