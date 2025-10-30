@@ -255,6 +255,7 @@
   --str-chat__box-shadow-color: var(--color-shadow-color) !important;
 
   --str-chat__info-color: var(--chart-3) !important;
+  --str-chat__own-message-bubble-background-color: var(--secondary) !important;
 }
 
 .str-chat__theme-dark,
@@ -300,7 +301,7 @@
   --str-chat__info-color: var(--chart-3) !important;
   --str-chat__message-input-background-color: var(--background) !important;
   --str-chat__channel-list-border: none !important;
-
+  --str-chat__own-message-bubble-background-color: var(--secondary) !important;
 }
 
 .str-chat__message--pinned .str-chat__message-bubble::before {
@@ -447,9 +448,9 @@
   gap: 4px;
 }
 
-.str-chat__message-simple-name {
+/* .str-chat__message-simple-name {
   display: none !important;
-}
+} */
 
 
 /* Optional: make it responsive for smaller viewports */
@@ -471,7 +472,12 @@
   background: var(--primary) !important;
 }
 
-.str-chat__li{
+.str-chat__li {
   color: var(--primary) !important;
 
+}
+
+.str-chat__quoted-message-preview {
+  background-color: oklch(0.14 0.00 0) !important;
+  border-radius: 14px !important;
 }

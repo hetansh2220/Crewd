@@ -3,7 +3,8 @@
 import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
-import stream from "@/lib/stream";
+import client from "@/lib/stream";
+import { GetUserByWallet } from "@/server/user";
 import { usePrivy } from "@privy-io/react-auth";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,11 +12,9 @@ import {
   Channel,
   Chat,
   MessageList,
-  useChatContext,
-  useCreateChatClient
+  useChatContext
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
-
 
 
 // Inner component that has access to ChatContext
@@ -41,6 +40,7 @@ const DashboardContent = () => {
     }
   }, [channel]);
 
+
   return (
     <div className="flex flex-col h-full">
       {/* <Header /> */}
@@ -51,7 +51,7 @@ const DashboardContent = () => {
           className={`transition-all duration-300 ${showChat ? "hidden md:flex" : "flex"
             } flex-col w-full md:w-xs `}
         >
-          <Sidebar/>
+          <Sidebar />
         </div>
 
         {/* Chat area - visible on desktop or when showChat=true */}
@@ -79,14 +79,38 @@ const DashboardContent = () => {
 };
 
 const Dashboard = () => {
-  const { user} = usePrivy();
-  const client = useCreateChatClient({
-    apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
-    tokenOrProvider: stream.devToken(user?.wallet?.address || "guest"),
-    userData: { id: user?.wallet?.address || "guest"},
-  });
+  const { user } = usePrivy();
+  const [isLoading, setIsLoading] = useState(true)
 
-  if (!client) return null;
+  const fetchUser = async () => {
+    try {
+      if (!user?.wallet?.address) return;
+      const userData = await GetUserByWallet(user.wallet.address);
+      if (!userData.walletAddress) return;
+      await client.connectUser(
+        {
+          id: userData.walletAddress,
+          name: userData.username,
+          image: userData.avatar,
+        },
+        client.devToken(userData.walletAddress)
+      );
+    } catch (error) {
+      console.log("Error fetching user:", error);
+    } finally {
+      setIsLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    if (user?.wallet?.address) {
+      fetchUser();
+    }
+  }, [user]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="h-[calc(100vh-84px)]">

@@ -12,6 +12,7 @@ import { useChatContext } from "stream-chat-react"
 import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana"
 import useTransfer from "@/hooks/use-transfer"
 import {ChannelData} from "stream-chat"
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 interface SetAmountDialogProps {
   open: boolean
@@ -79,26 +80,48 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
 
       const hash = bs58.encode(Buffer.from(signature));
 
-      const newTip = await CreateTip(
+      await CreateTip(
         user.wallet.address,
         channel.data.id,
         numAmount,
         hash
       )
-
-      console.log("✅ Tip stored:", newTip)
-      alert("Tip successfully sent!")
+      //Toast
+      toast.success('Tip successfully sent!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+            });
+        <ToastContainer />
 
       setAmount("")
       setSelectedPreset(null)
       onOpenChange(false)
     } catch (err) {
-      console.error("❌ Error sending tip:", err)
-      alert("Failed to send tip.")
+      //toast error
+      toast.error('Failed to send tip.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+
     } finally {
       setIsLoading(false)
     }
   }
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
