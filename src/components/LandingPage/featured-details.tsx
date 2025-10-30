@@ -1,23 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import stream from "@/lib/stream";
-import { usePrivy } from "@privy-io/react-auth";
-import { GetUserByWallet } from "@/server/user";
-import { Channel } from "stream-chat";
-import Image from "next/image";
 import useTransfer from "@/hooks/use-transfer";
-import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana";
-import { createTransaction } from "@/server/transaction";
-import { useRouter } from "next/navigation";
-import bs58 from "bs58";
-import { GetReviewsByGroupId } from "@/server/review";
+import { getAverageRating, GetReviewsByGroupId } from "@/server/review";
+import { getStreamToken } from "@/server/stream";
 import { GetTipByGroupId } from "@/server/tips";
+import { createTransaction } from "@/server/transaction";
+import { GetUserByWallet } from "@/server/user";
+import { usePrivy } from "@privy-io/react-auth";
+import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana";
+import bs58 from "bs58";
+import Image from "next/image";
 import Link from "next/link";
-import {getAverageRating} from "@/server/review";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Channel, StreamChat } from "stream-chat";
 
 // Type definitions
 type UserData = {
@@ -145,12 +144,17 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   // Init Stream Chat
   useEffect(() => {
     const initChannel = async () => {
+      const client = StreamChat.getInstance(
+        process.env.NEXT_PUBLIC_STREAM_API_KEY!,
+      );
+
       try {
-        await stream.connectUser(
+        const token = await getStreamToken(owner)
+        await client.connectUser(
           { id: owner || "guest" },
-          stream.devToken(owner || "guest")
+          token
         );
-        const channel = stream.channel("messaging", groupData.id);
+        const channel = client.channel("messaging", groupData.id);
         await channel.watch();
         setChannel(channel);
 
@@ -160,6 +164,8 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         }
       } catch (err) {
         console.error("Error initializing channel:", err);
+      } finally {
+        await client.disconnectUser();
       }
     };
 
@@ -206,9 +212,9 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         transaction: signatureHash ? bs58.encode(Buffer.from(signatureHash)) : "",
         amount: Number(groupData.entryFee),
       });
-       router.push("/dashboard");
+      router.push("/dashboard");
       setJoined(true);
-     
+
     } catch (err) {
       console.error("Error joining channel:", err);
     } finally {
@@ -229,17 +235,17 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       })
     : [];
 
- useEffect(() => {
-       const fetchAverageRating = async () => {
-         try {
-           await getAverageRating(groupData.id);
-         } catch (err) {
-           console.error("Error fetching average rating:", err);
-         }
-       };
-   
-       fetchAverageRating();
-     }, [groupData.id]);
+  useEffect(() => {
+    const fetchAverageRating = async () => {
+      try {
+        await getAverageRating(groupData.id);
+      } catch (err) {
+        console.error("Error fetching average rating:", err);
+      }
+    };
+
+    fetchAverageRating();
+  }, [groupData.id]);
 
   // Show skeleton while not ready
   if (!ready) {
@@ -395,44 +401,44 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
                 </div>
               ) : reviews.length > 0 ? (
                 <div className="space-y-4">
-                {reviews.map((review, idx) => {
-  const reviewerInfo = reviewersData[review.reviewer];
-  return (
-    <div
-      key={idx}
-      className="flex gap-3 sm:gap-4 bg-gray-100 dark:bg-white/5 p-3 sm:p-4 rounded-lg border border-gray-300 dark:border-slate-800"
-    >
-      <Link
-        href={`/${reviewerInfo?.username}`}
-        className="shrink-0 hover:opacity-90 transition-opacity"
-      >
-        <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
-          <AvatarImage
-            src={reviewerInfo?.avatar}
-            alt={reviewerInfo?.username}
-          />
-          <AvatarFallback className="bg-gray-300 dark:bg-slate-700 text-gray-900 dark:text-white">
-            {reviewerInfo?.username?.[0]}
-          </AvatarFallback>
-        </Avatar>
-      </Link>
+                  {reviews.map((review, idx) => {
+                    const reviewerInfo = reviewersData[review.reviewer];
+                    return (
+                      <div
+                        key={idx}
+                        className="flex gap-3 sm:gap-4 bg-gray-100 dark:bg-white/5 p-3 sm:p-4 rounded-lg border border-gray-300 dark:border-slate-800"
+                      >
+                        <Link
+                          href={`/${reviewerInfo?.username}`}
+                          className="shrink-0 hover:opacity-90 transition-opacity"
+                        >
+                          <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
+                            <AvatarImage
+                              src={reviewerInfo?.avatar}
+                              alt={reviewerInfo?.username}
+                            />
+                            <AvatarFallback className="bg-gray-300 dark:bg-slate-700 text-gray-900 dark:text-white">
+                              {reviewerInfo?.username?.[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <p className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-white">
-            {reviewerInfo?.username || "Anonymous"}
-          </p>
-        </div>
-        <p className="text-xs sm:text-sm text-gray-700 dark:text-slate-300 mb-1">
-          {review.comment}
-        </p>
-        <p className="text-xs text-gray-500 dark:text-slate-500">
-          {review.handle}
-        </p>
-      </div>
-    </div>
-  );
-})}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-white">
+                              {reviewerInfo?.username || "Anonymous"}
+                            </p>
+                          </div>
+                          <p className="text-xs sm:text-sm text-gray-700 dark:text-slate-300 mb-1">
+                            {review.comment}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-slate-500">
+                            {review.handle}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
 
                 </div>
               ) : (
