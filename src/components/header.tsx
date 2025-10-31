@@ -22,6 +22,8 @@ import { Skeleton } from "./ui/skeleton";
 import Image from 'next/image';
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import client from '@/lib/stream';
+import { getStreamToken } from '@/server/stream';
 
 const hideHeaderRoutes = ['/login'];
 
@@ -45,7 +47,7 @@ export function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [editedUser, setEditedUser] = useState<User | null>(null);
   const [openSettings, setOpenSettings] = useState(false);
-  
+
   useEffect(() => {
     const checkUser = async () => {
       if (!authenticated || !wallet) {
@@ -63,6 +65,16 @@ export function Header() {
 
         setUser(data);
         setEditedUser(data);
+        if (!data.walletAddress) return;
+        const token = await getStreamToken(data.walletAddress)
+        await client.connectUser(
+          {
+            id: data.walletAddress,
+            name: data.username,
+            image: data.avatar,
+          },
+          token
+        );
       } catch (err) {
         console.error("Failed to fetch user:", err);
       }
@@ -87,18 +99,18 @@ export function Header() {
         setOpenProfileDialog(false);
         //Toast
         toast.success('Profile Updated!', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-            transition: Bounce,
-            });
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
         <ToastContainer />
-        
+
       } else {
         alert("Failed to update user");
       }
@@ -137,11 +149,10 @@ export function Header() {
                   <button
                     key={item.name}
                     onClick={() => router.push(item.href)}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
-                      active
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                    }`}
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${active
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
                   >
                     {item.name}
                   </button>
@@ -169,7 +180,7 @@ export function Header() {
             {/* Auth section */}
             <>
               {!authenticated && ready ? (
-                <Button 
+                <Button
                   onClick={() => router.push("/login")}
                   className="font-semibold shadow-sm hover:shadow-md transition-all"
                 >
@@ -207,7 +218,7 @@ export function Header() {
                       </Avatar>
                       <span className="font-bold text-base text-foreground">{user?.username}</span>
                     </div>
-                    
+
                     <div className="space-y-1">
                       <Button
                         variant="ghost"

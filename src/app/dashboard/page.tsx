@@ -4,8 +4,6 @@ import Channelheader from "@/components/Dashboard/channel-header";
 import MessageInput from "@/components/Dashboard/message-input";
 import Sidebar from "@/components/Dashboard/sidebar";
 import client from "@/lib/stream";
-import { getStreamToken } from "@/server/stream";
-import { GetUserByWallet } from "@/server/user";
 import { usePrivy } from "@privy-io/react-auth";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -80,40 +78,6 @@ const DashboardContent = () => {
 };
 
 const Dashboard = () => {
-  const { user } = usePrivy();
-  const [isLoading, setIsLoading] = useState(true)
-
-  const fetchUser = async () => {
-    try {
-      if (!user?.wallet?.address) return;
-      const userData = await GetUserByWallet(user.wallet.address);
-      if (!userData.walletAddress) return;
-      const token = await getStreamToken(userData.walletAddress);
-      await client.connectUser(
-        {
-          id: userData.walletAddress,
-          name: userData.username,
-          image: userData.avatar,
-        },
-        token
-      );
-    } catch (error) {
-      console.log("Error fetching user:", error);
-    } finally {
-      setIsLoading(false)
-    }
-  };
-
-  useEffect(() => {
-    if (user?.wallet?.address) {
-      fetchUser();
-    }
-  }, [user]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="h-[calc(100vh-84px)]">
       <Chat client={client} theme="str-chat__theme-dark">

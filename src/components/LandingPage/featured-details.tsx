@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useTransfer from "@/hooks/use-transfer";
+import client from "@/lib/stream";
 import { getAverageRating, GetReviewsByGroupId } from "@/server/review";
 import { getStreamToken } from "@/server/stream";
 import { GetTipByGroupId } from "@/server/tips";
@@ -17,6 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Channel, StreamChat } from "stream-chat";
+import { useChatContext } from "stream-chat-react";
 
 // Type definitions
 type UserData = {
@@ -144,16 +146,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   // Init Stream Chat
   useEffect(() => {
     const initChannel = async () => {
-      const client = StreamChat.getInstance(
-        process.env.NEXT_PUBLIC_STREAM_API_KEY!,
-      );
-
       try {
-        const token = await getStreamToken(owner)
-        await client.connectUser(
-          { id: owner || "guest" },
-          token
-        );
         const channel = client.channel("messaging", groupData.id);
         await channel.watch();
         setChannel(channel);
@@ -164,8 +157,6 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         }
       } catch (err) {
         console.error("Error initializing channel:", err);
-      } finally {
-        await client.disconnectUser();
       }
     };
 
@@ -181,6 +172,10 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
     if (joined || joining) return;
     setJoining(true);
+
+    const stream = StreamChat.getInstance(
+      process.env.NEXT_PUBLIC_STREAM_API_KEY!,
+    );
 
     try {
       let signatureHash: Uint8Array<ArrayBufferLike> | undefined;
@@ -204,7 +199,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         signatureHash = signature;
       }
 
-      await channel?.addMembers([user.wallet!.address!]);
+      const token = await getStreamToken(owner)
+      await stream.connectUser(
+        { id: owner },
+        token
+      );
+
+      const channel = stream.channel("messaging", groupData.id);
+      await channel.addMembers([user.wallet!.address!]);
 
       await createTransaction({
         userId: user.wallet!.address!,
