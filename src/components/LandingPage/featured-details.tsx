@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Channel, StreamChat } from "stream-chat";
-import { useChatContext } from "stream-chat-react";
+import {joinStreamChatChannel} from "@/server/stream";
 
 // Type definitions
 type UserData = {
@@ -173,9 +173,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     if (joined || joining) return;
     setJoining(true);
 
-    const stream = StreamChat.getInstance(
-      process.env.NEXT_PUBLIC_STREAM_API_KEY!,
-    );
+   
 
     try {
       let signatureHash: Uint8Array<ArrayBufferLike> | undefined;
@@ -199,14 +197,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         signatureHash = signature;
       }
 
-      const token = await getStreamToken(owner)
-      await stream.connectUser(
-        { id: owner },
-        token
-      );
-
-      const channel = stream.channel("messaging", groupData.id);
-      await channel.addMembers([user.wallet!.address!]);
+      await joinStreamChatChannel(user.wallet!.address!, groupData.owner, groupData.id);
 
       await createTransaction({
         userId: user.wallet!.address!,

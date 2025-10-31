@@ -16,6 +16,7 @@ import {
 import "stream-chat-react/dist/css/v2/index.css";
 
 
+
 // Inner component that has access to ChatContext
 const DashboardContent = () => {
   const [showChat, setShowChat] = useState(false);

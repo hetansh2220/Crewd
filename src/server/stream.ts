@@ -19,3 +19,12 @@ export async function getStreamToken(id: string) {
     const token = client.createToken(id)
     return token
 }
+
+export async function joinStreamChatChannel(userID: string, ownerID: string, groupID: string) {
+    await client.disconnectUser();
+    const token = await getStreamToken(ownerID);
+    await client.connectUser({ id: ownerID }, token);
+    const channel = client.channel("messaging", groupID);
+    await channel.addMembers([userID]);
+    await client.disconnectUser();
+}
