@@ -263,7 +263,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
           </DialogHeader>
 
           <div className="space-y-6 mt-6">
-            {/* Star Rating */}
+            {/*  Rating */}
             <div className="flex items-center justify-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
