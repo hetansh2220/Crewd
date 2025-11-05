@@ -42,7 +42,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
   const [isPending, startTransition] = useTransition();
   const { channel } = useChatContext();
 
-  // Review state
+  // Review 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [memberDetails, setMemberDetails] = useState<{
