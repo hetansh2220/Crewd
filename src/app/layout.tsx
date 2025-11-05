@@ -4,7 +4,6 @@ import './globals.css';
 import Providers from "../providers/privy-provider";
 import { ThemeProvider } from "../providers/theme-provider";
 import { Header } from "@/components/header";
-import { ToastContainer } from "react-toastify";
 import { Toaster } from "@/components/ui/sonner"
 
 
@@ -55,8 +54,7 @@ export default function RootLayout({
             </div>
           </Providers>
         </ThemeProvider>
-        <ToastContainer />
-        <Toaster position="top-right" />
+        <Toaster position="top-right"/>
 
       </body>
     </html>

@@ -14,8 +14,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { GetUser } from '@/server/user'
-// import { toast } from 'react-toastify' // Import toastify for notifications
-import 'react-toastify/dist/ReactToastify.css' // Import toast styles
 import { useState } from 'react'
 import { toast } from "sonner"
 
