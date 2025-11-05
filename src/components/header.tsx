@@ -20,7 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import Image from 'next/image';
-import { Bounce, ToastContainer, toast } from 'react-toastify';
+import { toast } from "sonner";
 import 'react-toastify/dist/ReactToastify.css';
 import client from '@/lib/stream';
 import { getStreamToken } from '@/server/stream';
@@ -97,19 +97,7 @@ export function Header() {
       if (updated) {
         setUser(editedUser);
         setOpenProfileDialog(false);
-        //Toast
-        toast.success('Profile Updated!', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        });
-        <ToastContainer />
+        toast.success("Profile updated successfully!");
 
       } else {
         alert("Failed to update user");

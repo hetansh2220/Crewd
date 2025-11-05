@@ -14,9 +14,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { GetUser } from '@/server/user'
-import { toast } from 'react-toastify' // Import toastify for notifications
+// import { toast } from 'react-toastify' // Import toastify for notifications
 import 'react-toastify/dist/ReactToastify.css' // Import toast styles
 import { useState } from 'react'
+import { toast } from "sonner"
 
 const profileSchema = z.object({
   username: z.string().min(2, 'Username must be at least 2 characters'),

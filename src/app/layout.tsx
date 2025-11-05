@@ -5,6 +5,8 @@ import Providers from "../providers/privy-provider";
 import { ThemeProvider } from "../providers/theme-provider";
 import { Header } from "@/components/header";
 import { ToastContainer } from "react-toastify";
+import { Toaster } from "@/components/ui/sonner"
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,6 +56,8 @@ export default function RootLayout({
           </Providers>
         </ThemeProvider>
         <ToastContainer />
+        <Toaster position="top-right" />
+
       </body>
     </html>
   );
