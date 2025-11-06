@@ -6,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import useTransfer from "@/hooks/use-transfer";
 import client from "@/lib/stream";
 import { getAverageRating, GetReviewsByGroupId } from "@/server/review";
-import { getStreamToken } from "@/server/stream";
 import { GetTipByGroupId } from "@/server/tips";
 import { createTransaction } from "@/server/transaction";
 import { GetUserByWallet } from "@/server/user";
@@ -17,7 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Channel, StreamChat } from "stream-chat";
+import { Channel } from "stream-chat";
 import {joinStreamChatChannel} from "@/server/stream";
 
 // Type definitions

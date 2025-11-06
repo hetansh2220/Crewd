@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useTransition } from "react";
-import Link from "next/link";
+import {useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { ChannelHeader, useChatContext } from "stream-chat-react";
 import { ArrowLeftIcon, DotsThreeVerticalIcon } from "@phosphor-icons/react";
@@ -14,9 +12,7 @@ import {SendTip} from '@/components/Dialogs/send-tip'
 import { ViewMembersDialog } from "@/components/Dialogs/view-members";
 import { RateGroupDialog } from "@/components/Dialogs/rate-group";
 
-/**
- * Props
- */
+
 interface Props {
   onBack?: () => void;
 }
@@ -26,11 +22,14 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
   const [showMembersDialog, setShowMembersDialog] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showTipDialog, setShowTipDialog] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const { channel } = useChatContext();
 
   // Get all members from channel state
   const members = channel?.state?.members ? Object.values(channel.state.members) : [];
+  // Ensure we only pass members with a defined user_id to match ViewMembersDialog's expected type
+  const safeMembers = members
+    .filter((m) => typeof m.user_id === "string")
+    .map((m) => ({ user_id: m.user_id as string }));
 
   return (
     <div className="flex justify-between items-center p-2 border-b dark:bg-background">
@@ -99,7 +98,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
       <ViewMembersDialog
         open={showMembersDialog}
         onOpenChange={setShowMembersDialog}
-        members={members}
+        members={safeMembers}
         ready={ready}
       />
 

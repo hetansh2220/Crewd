@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserListIcon } from "@phosphor-icons/react"
 import Link from "next/link"
-import { useChatContext } from "stream-chat-react"
 import {GetUserByWallet} from "@/server/user"
 import React from "react"
 
@@ -17,9 +16,8 @@ interface ViewMembersDialogProps {
 }
 
 export function ViewMembersDialog({ open, onOpenChange, members, ready }: ViewMembersDialogProps) {
-  const {channel} = useChatContext()
+
   const [loading, setLoading] = React.useState(false)
-  const [error, setError] = React.useState<string | null>(null)
   const [memberDetails, setMemberDetails] = React.useState<Array<{
     id: string
     username: string
@@ -36,6 +34,7 @@ export function ViewMembersDialog({ open, onOpenChange, members, ready }: ViewMe
       })
       const memberDetailsResults = await Promise.all(memberDetailsPromises)
       setMemberDetails(memberDetailsResults)
+      setLoading(false)
     }
 
     if (ready && open) {
@@ -59,7 +58,7 @@ export function ViewMembersDialog({ open, onOpenChange, members, ready }: ViewMe
         </DialogHeader>
 
         {loading && <p className="text-muted-foreground">Loading members...</p>}
-        {error && <p className="text-red-500">Error: {error}</p>}
+
 
         <ul className="mt-6 space-y-3 max-h-96 overflow-y-auto border-t border-border pt-4">
           {memberDetails.map((member) => (
