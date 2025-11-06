@@ -5,6 +5,7 @@ import { group } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { group as groupType } from "@/db/schema";
 
+
 //GetGroups
 export async function GetGroups() {
     const groups = await db.select().from(group);
