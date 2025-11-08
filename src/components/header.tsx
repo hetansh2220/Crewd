@@ -88,25 +88,25 @@ export function Header() {
     { name: "Explore", href: "/" },
   ];
 
-  const handleSaveProfile = async () => {
-    if (!editedUser) return;
+  // const handleSaveProfile = async () => {
+  //   if (!editedUser) return;
 
-    try {
-      const updated = await UpdateUser(editedUser.id, editedUser.username, editedUser.bio);
+  //   try {
+  //     const updated = await UpdateUser(editedUser.id, editedUser.username, editedUser.bio);
 
-      if (updated) {
-        setUser(editedUser);
-        setOpenProfileDialog(false);
-        toast.success("Profile updated successfully!");
+  //     if (updated) {
+  //       setUser(editedUser);
+  //       setOpenProfileDialog(false);
+  //       toast.success("Profile updated successfully!");
 
-      } else {
-        alert("Failed to update user");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
-    }
-  };
+  //     } else {
+  //       alert("Failed to update user");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Something went wrong");
+  //   }
+  // };
 
   if (hideHeaderRoutes.includes(pathname)) {
     return null;
@@ -211,7 +211,9 @@ export function Header() {
                       <Button
                         variant="ghost"
                         className="w-full justify-start hover:bg-secondary/80 rounded-lg"
-                        onClick={() => setOpenProfileDialog(true)}
+                        onClick={() => {router.push("/settings"); // Open Settings page
+                
+                        }}
                       >
                         <User className="mr-2 h-4 w-4" />
                         Profile
@@ -243,84 +245,6 @@ export function Header() {
           </div>
         </div>
       </header>
-
-      {/* Profile Dialog */}
-      <Dialog open={openProfileDialog} onOpenChange={setOpenProfileDialog}>
-        <DialogContent className="w-[90vw] max-w-2xl border-border/50 bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl shadow-xl">
-          <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-border/50">
-            <div className="flex items-center gap-3">
-              <div className="rounded-xl border border-border bg-primary/5 p-3">
-                <User size={24} className="text-primary" />
-              </div>
-              <DialogTitle className="text-2xl font-bold text-foreground">
-                Edit Profile
-              </DialogTitle>
-            </div>
-          </DialogHeader>
-
-          <div className="space-y-6 mt-6">
-            <div className="flex flex-col items-center gap-4 border-b border-border/50 pb-6">
-              <div className="relative">
-                <Avatar className="h-24 w-24 ring-4 ring-border">
-                  <AvatarImage src={editedUser?.avatar} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-3xl font-bold">
-                    {editedUser?.username?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shadow-lg">
-                  {editedUser?.username?.charAt(0).toUpperCase()}
-                </div>
-              </div>
-              <p className="text-base font-semibold text-foreground">
-                @{editedUser?.username}
-              </p>
-            </div>
-
-            <div className="space-y-5 pt-2">
-              <div>
-                <Label htmlFor="username" className="text-sm font-semibold text-foreground mb-2 block">
-                  Username
-                </Label>
-                <Input
-                  id="username"
-                  value={editedUser?.username || ""}
-                  onChange={(e) =>
-                    setEditedUser((prev) =>
-                      prev ? { ...prev, username: e.target.value } : prev
-                    )
-                  }
-                  className="h-12 border-border/50 bg-secondary/20 text-base text-foreground rounded-xl focus:ring-2 focus:ring-primary/20"
-                  placeholder="Enter your username"
-                />
-              </div>
-              <div>
-                <Label htmlFor="bio" className="text-sm font-semibold text-foreground mb-2 block">
-                  Bio
-                </Label>
-                <Input
-                  id="bio"
-                  value={editedUser?.bio || ""}
-                  onChange={(e) =>
-                    setEditedUser((prev) =>
-                      prev ? { ...prev, bio: e.target.value } : prev
-                    )
-                  }
-                  className="h-12 border-border/50 bg-secondary/20 text-base text-foreground rounded-xl focus:ring-2 focus:ring-primary/20"
-                  placeholder="Tell us about yourself"
-                />
-              </div>
-            </div>
-
-            <Button
-              onClick={handleSaveProfile}
-              className="h-14 w-full rounded-xl text-base font-bold shadow-lg hover:shadow-xl transition-all mt-6"
-            >
-              Save Changes
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <Settings
         open={openSettings}
         onOpenChange={setOpenSettings}
