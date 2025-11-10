@@ -1,9 +1,4 @@
 "use client";
-
-import { Settings } from '@/components/Settings/settings';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -11,7 +6,7 @@ import {
 } from "@/components/ui/popover";
 import { GetUserByWallet, UpdateUser } from "@/server/user";
 import { usePrivy } from "@privy-io/react-auth";
-import { MoonIcon, SunIcon, User, Wallet } from "lucide-react";
+import { MoonIcon, SunIcon, User, Settings } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,22 +14,23 @@ import Logo from "../../logo/crewd.png";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
-import Image from 'next/image';
-import { toast } from "sonner";
-import 'react-toastify/dist/ReactToastify.css';
-import client from '@/lib/stream';
-import { getStreamToken } from '@/server/stream';
+import Image from "next/image";
+import "react-toastify/dist/ReactToastify.css";
+import client from "@/lib/stream";
+import { getStreamToken } from "@/server/stream";
 
-const hideHeaderRoutes = ['/login'];
+const hideHeaderRoutes = ["/login"];
 
 export function Header() {
   const { authenticated, logout, user: privyUser, ready } = usePrivy();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
+
   const [openProfileDialog, setOpenProfileDialog] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [openPopover, setOpenPopover] = useState(false); // controls popover open/close
   const wallet = privyUser?.wallet?.address;
-  // List of routes where header should be hidden
 
   type User = {
     id: string;
@@ -46,7 +42,6 @@ export function Header() {
 
   const [user, setUser] = useState<User | null>(null);
   const [editedUser, setEditedUser] = useState<User | null>(null);
-  const [openSettings, setOpenSettings] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -65,8 +60,9 @@ export function Header() {
 
         setUser(data);
         setEditedUser(data);
+
         if (!data.walletAddress) return;
-        const token = await getStreamToken(data.walletAddress)
+        const token = await getStreamToken(data.walletAddress);
         await client.connectUser(
           {
             id: data.walletAddress,
@@ -88,26 +84,6 @@ export function Header() {
     { name: "Explore", href: "/" },
   ];
 
-  // const handleSaveProfile = async () => {
-  //   if (!editedUser) return;
-
-  //   try {
-  //     const updated = await UpdateUser(editedUser.id, editedUser.username, editedUser.bio);
-
-  //     if (updated) {
-  //       setUser(editedUser);
-  //       setOpenProfileDialog(false);
-  //       toast.success("Profile updated successfully!");
-
-  //     } else {
-  //       alert("Failed to update user");
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("Something went wrong");
-  //   }
-  // };
-
   if (hideHeaderRoutes.includes(pathname)) {
     return null;
   }
@@ -123,7 +99,7 @@ export function Header() {
               width={128}
               height={128}
               alt="Crewd Logo"
-              className={`h-32 w-32 cursor-pointer`}
+              className="h-32 w-32 cursor-pointer"
               onClick={() => router.push("/")}
             />
           </div>
@@ -137,10 +113,11 @@ export function Header() {
                   <button
                     key={item.name}
                     onClick={() => router.push(item.href)}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${active
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                      }`}
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                      active
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                    }`}
                   >
                     {item.name}
                   </button>
@@ -165,90 +142,81 @@ export function Header() {
               )}
             </Button>
 
-            {/* Auth section */}
-            <>
-              {!authenticated && ready ? (
-                <Button
-                  onClick={() => router.push("/login")}
-                  className="font-semibold shadow-sm hover:shadow-md transition-all"
-                >
-                  Login
-                </Button>
-              ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" className="p-0 rounded-full hover:ring-2 hover:ring-primary/20 transition-all">
-                      {!ready && !authenticated ? (
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                      ) : (
-                        <Avatar className="h-10 w-10 ring-2 ring-border hover:ring-primary transition-all">
-                          <AvatarImage src={user?.avatar} alt={user?.username} />
-                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                            {user?.username?.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="end"
-                    className="w-56 p-3 rounded-xl border-border/50 shadow-lg"
+            {/* Auth Section */}
+            {!authenticated && ready ? (
+              <Button
+                onClick={() => router.push("/login")}
+                className="font-semibold shadow-sm hover:shadow-md transition-all"
+              >
+                Login
+              </Button>
+            ) : (
+              <Popover open={openPopover} onOpenChange={setOpenPopover}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="p-0 rounded-full hover:ring-2 hover:ring-primary/20 transition-all"
                   >
-                    <div className="flex flex-col items-center text-center border-b border-border/50 pb-3 mb-2">
-                      <Avatar className="h-16 w-16 mb-2 ring-2 ring-border">
-                        <AvatarImage
-                          src={user?.avatar}
-                          alt={user?.username}
-                        />
-                        <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+                    {!ready && !authenticated ? (
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                    ) : (
+                      <Avatar className="h-10 w-10 ring-2 ring-border hover:ring-primary transition-all">
+                        <AvatarImage src={user?.avatar} alt={user?.username} />
+                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                           {user?.username?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-bold text-base text-foreground">{user?.username}</span>
-                    </div>
+                    )}
+                  </Button>
+                </PopoverTrigger>
 
-                    <div className="space-y-1">
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start hover:bg-secondary/80 rounded-lg"
-                        onClick={() => {router.push("/settings"); // Open Settings page
-                
-                        }}
-                      >
-                        <User className="mr-2 h-4 w-4" />
-                        Profile
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start hover:bg-secondary/80 rounded-lg"
-                        onClick={() => setOpenSettings(true)}
-                      >
-                        <Wallet className="mr-2 h-4 w-4" />
-                        Wallet
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        className="w-full justify-start mt-2 rounded-lg"
-                        onClick={async () => {
-                          await logout();
-                          setUser(null);
-                          router.push("/");
-                        }}
-                      >
-                        Logout
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              )}
-            </>
+                <PopoverContent
+                  align="end"
+                  className="w-56 p-3 rounded-xl border-border/50 shadow-lg"
+                >
+                  <div className="flex flex-col items-center text-center border-b border-border/50 pb-3 mb-2">
+                    <Avatar className="h-16 w-16 mb-2 ring-2 ring-border">
+                      <AvatarImage src={user?.avatar} alt={user?.username} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+                        {user?.username?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="font-bold text-base text-foreground">
+                      {user?.username}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start hover:bg-secondary/80 rounded-lg"
+                      onClick={() => {
+                        setOpenPopover(false); // close popover
+                        router.push("/settings/profile"); // then navigate
+                      }}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="w-full justify-start mt-2 rounded-lg"
+                      onClick={async () => {
+                        await logout();
+                        setUser(null);
+                        setOpenPopover(false); // also close on logout
+                        router.push("/");
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         </div>
       </header>
-      <Settings
-        open={openSettings}
-        onOpenChange={setOpenSettings}
-      />
     </>
   );
 }
