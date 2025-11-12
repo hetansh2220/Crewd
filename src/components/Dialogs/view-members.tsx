@@ -1,47 +1,18 @@
-"use client"
+"use client";
 
-import {useEffect} from "react"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { UserListIcon } from "@phosphor-icons/react"
-import Link from "next/link"
-import {GetUserByWallet} from "@/server/user"
-import React from "react"
-
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserListIcon } from "@phosphor-icons/react";
+import { useGroupMembers } from "@/hooks/use-group-user";
+import { useChatContext } from "stream-chat-react";
 interface ViewMembersDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  members: { user_id: string }[]
-  ready: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function ViewMembersDialog({ open, onOpenChange, members, ready }: ViewMembersDialogProps) {
-
-  const [loading, setLoading] = React.useState(false)
-  const [memberDetails, setMemberDetails] = React.useState<Array<{
-    id: string
-    username: string
-    bio: string | null
-    avatar: string | null
-  }>>([])
- 
-  const membersIds = members.map((member) => member.user_id)
-  useEffect(() => {
-    const fetchMemberDetails = async () => {
-      const memberDetailsPromises = membersIds.map(async (walletAddress) => {
-        const userDetails = await GetUserByWallet(walletAddress)
-        return userDetails
-      })
-      const memberDetailsResults = await Promise.all(memberDetailsPromises)
-      setMemberDetails(memberDetailsResults)
-      setLoading(false)
-    }
-
-    if (ready && open) {
-      fetchMemberDetails()
-    }
-  }, [ready, open, membersIds])
-  
+export default function ViewMembersDialog({ open, onOpenChange,  }: ViewMembersDialogProps) {
+  const { channel } = useChatContext();
+  const { members, loading, error } = useGroupMembers(channel?.id);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[90vw] max-w-2xl border-border bg-background p-6 sm:p-8 mx-auto my-auto rounded-2xl">
@@ -58,14 +29,16 @@ export function ViewMembersDialog({ open, onOpenChange, members, ready }: ViewMe
         </DialogHeader>
 
         {loading && <p className="text-muted-foreground">Loading members...</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
+        {!loading && members.length === 0 && (
+          <p className="text-muted-foreground text-center">No members found.</p>
+        )}
 
         <ul className="mt-6 space-y-3 max-h-96 overflow-y-auto border-t border-border pt-4">
-          {memberDetails.map((member) => (
-            <Link
+          {members.map((member) => (
+            <li
               key={member.id}
-              href={`/${member.username}`}
-              onClick={() => onOpenChange(false)}
               className="flex items-center gap-3 rounded border bg-background/50 p-3 transition hover:bg-accent/50"
             >
               <Avatar>
@@ -78,10 +51,10 @@ export function ViewMembersDialog({ open, onOpenChange, members, ready }: ViewMe
                   <span className="text-sm text-muted-foreground truncate max-w-[200px]">{member.bio}</span>
                 )}
               </div>
-            </Link>
+            </li>
           ))}
         </ul>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

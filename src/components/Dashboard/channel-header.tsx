@@ -4,12 +4,10 @@ import {useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { ChannelHeader, useChatContext } from "stream-chat-react";
 import { ArrowLeftIcon, DotsThreeVerticalIcon } from "@phosphor-icons/react";
-
+import  ViewMembers  from "@/components/Dialogs/view-members";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import {SendTip} from '@/components/Dialogs/send-tip'
-
-import { ViewMembersDialog } from "@/components/Dialogs/view-members";
 import { RateGroupDialog } from "@/components/Dialogs/rate-group";
 
 
@@ -24,12 +22,6 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
   const [showTipDialog, setShowTipDialog] = useState(false);
   const { channel } = useChatContext();
 
-  // Get all members from channel state
-  const members = channel?.state?.members ? Object.values(channel.state.members) : [];
-  // Ensure we only pass members with a defined user_id to match ViewMembersDialog's expected type
-  const safeMembers = members
-    .filter((m) => typeof m.user_id === "string")
-    .map((m) => ({ user_id: m.user_id as string }));
 
   return (
     <div className="flex justify-between items-center p-2 border-b dark:bg-background">
@@ -95,11 +87,9 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
       </Popover>
 
       {/* View Members Dialog */}
-      <ViewMembersDialog
+      <ViewMembers
         open={showMembersDialog}
         onOpenChange={setShowMembersDialog}
-        members={safeMembers}
-        ready={ready}
       />
 
       {/* Rate Group Dialog */}
