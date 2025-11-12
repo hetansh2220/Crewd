@@ -43,7 +43,7 @@ export function useGroupMembers(groupId?: string) {
 
         
         const walletAddresses = [
-          ...new Set(streamMembers.map((m: any) => m.user?.id)),
+          ...new Set(streamMembers.map((m) => m.user?.id)),
         ].filter((v): v is string => !!v);
 
         console.log("Wallet addresses from Stream:", walletAddresses);
@@ -57,9 +57,8 @@ export function useGroupMembers(groupId?: string) {
 
         
         setMembers(usersData.filter((u): u is User => !!u));
-      } catch (err: any) {
-        console.error("Error fetching group members:", err);
-        setError(err.message || "Failed to fetch members");
+      } catch (error) {
+        console.error("Error fetching group members:", error);
       } finally {
         setLoading(false);
       }
