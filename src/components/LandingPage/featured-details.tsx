@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Channel } from "stream-chat";
 import {joinStreamChatChannel} from "@/server/stream";
+import {getStreamToken} from "@/server/stream";
 
 // Type definitions
 type UserData = {
@@ -146,10 +147,11 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   useEffect(() => {
     const initChannel = async () => {
       try {
+        const token = await getStreamToken(owner);
+        await client.connectUser({ id: owner }, token);
         const channel = client.channel("messaging", groupData.id);
         await channel.watch();
         setChannel(channel);
-
         const memberList = Object.values(channel.state.members);
         if (memberList.find((member) => member.user_id === userId)) {
           setJoined(true);
