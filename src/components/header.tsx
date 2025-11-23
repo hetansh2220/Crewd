@@ -209,11 +209,11 @@ export function Header() {
                     <div className="flex flex-col items-center text-center border-b border-border/50 pb-3 mb-2">
                       <Avatar className="h-16 w-16 mb-2 ring-2 ring-border">
                         <AvatarImage
-                          src={user?.avatar}
-                          alt={user?.username}
+                          src={editedUser?.avatar}
+                          alt={editedUser?.username}
                         />
                         <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
-                          {user?.username?.charAt(0).toUpperCase()}
+                          {editedUser?.username?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <span className="font-bold text-base text-foreground">{user?.username}</span>
