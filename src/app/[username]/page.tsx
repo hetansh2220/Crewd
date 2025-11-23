@@ -164,7 +164,7 @@ async function UserProfileContent({ username }: { username: string }) {
                     image={group.image || "/default-image.png"}
                     members={group.maxMembers}
                     reviews={10}
-                    price={`${group.entryFee} ETH`}
+                    price={`${group.entryFee}`}
                     description={group.description || "No description provided"}
                   />
                 </Link>
