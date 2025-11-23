@@ -34,7 +34,7 @@ export function Header() {
   const pathname = usePathname();
   const [openProfileDialog, setOpenProfileDialog] = useState(false);
   const wallet = privyUser?.wallet?.address;
-  // List of routes where header should be hidden
+
 
   type User = {
     id: string;

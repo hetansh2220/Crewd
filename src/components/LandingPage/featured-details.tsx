@@ -237,51 +237,48 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
             {/* Stats */}
             {/* Stats */}
-<div className="rounded-2xl border border-white/10 px-6 py-4 bg-background">
-  <div
-    className="
+            <div className="rounded-2xl border border-white/10 px-6 py-4 bg-background">
+              <div
+                className="
       grid grid-cols-1 sm:grid-cols-3 
       justify-items-center text-center 
       sm:divide-x sm:divide-white/10
       gap-8
     "
-  >
-    {stats.map((stat, idx) => (
-      <div key={idx} className="flex flex-col items-center space-y-2 py-4 w-full">
-        {/* LABEL */}
-        <p className="text-xs tracking-wide text-gray-400 uppercase">
-          {stat.label}
-        </p>
+              >
+                {stats.map((stat, idx) => (
+                  <div key={idx} className="flex flex-col items-center space-y-2 py-4 w-full">
+                    {/* LABEL */}
+                    <p className="text-xs tracking-wide text-gray-400 uppercase">
+                      {stat.label}
+                    </p>
 
-        {/* VALUE */}
-        <p className="text-4xl font-semibold text-white">
-          {stat.value}
-        </p>
+                    {/* VALUE */}
+                    <p className="text-4xl font-semibold text-white">
+                      {stat.value}
+                    </p>
 
-        {/* EXTRA ROWS BASED ON INDEX */}
-        {idx === 0 && (
-          <p className="text-yellow-400 text-md">★★★★★</p>
-        )}
+                    {/* EXTRA ROWS BASED ON INDEX */}
+                    {idx === 0 && (
+                      <p className="text-yellow-400 text-md">★★★★★</p>
+                    )}
 
-        {idx === 1 && (
-          <p className="text-gray-400 text-sm">SOL</p>
-        )}
+                    {idx === 1 && (
+                      <p className="text-gray-400 text-sm">SOL</p>
+                    )}
 
-        {idx === 2 && (
-          <p className="text-gray-400 text-sm">Sent</p>
-        )}
-      </div>
-    ))}
-  </div>
-</div>
-
-
-
+                    {idx === 2 && (
+                      <p className="text-gray-400 text-sm">Sent</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* About */}
             <div className="space-y-3">
               <h2 className="text-lg font-bold">About</h2>
-              <p className="text-gray-700">{groupData.description}</p>
+              <p className="text-gray-400">{groupData.description}</p>
             </div>
 
             {/* Members */}
@@ -353,7 +350,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
                         <div className="flex-1">
                           <p className="font-semibold">{reviewerInfo?.username || "Anonymous"}</p>
-                          <p className="text-sm text-gray-700">{review.comment}</p>
+                          <p className="text-sm text-gray-400">{review.comment}</p>
                           <p className="text-xs text-gray-500">{review.handle}</p>
                         </div>
                       </div>
