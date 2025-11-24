@@ -68,8 +68,8 @@ export default function page() {
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-8 bg-background transition-colors duration-300">
           <div className="max-w-2xl mx-auto space-y-6">
-            <h1 className="text-3xl font-bold">PROFILE SETTINGS</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-3xl font-bold text-center">PROFILE SETTINGS</h1>
+            <p className="text-sm text-muted-foreground text-center">
               Update your profile information below.
             </p>
             <Separator />
@@ -148,7 +148,7 @@ export default function page() {
               </p>
             </div>
 
-            <Button onClick={handleSave} disabled={isSaving} className="mt-4">
+            <Button onClick={handleSave} disabled={isSaving} className="mt-4 w-full">
               {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </div>
