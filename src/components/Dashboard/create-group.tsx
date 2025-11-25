@@ -10,13 +10,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {UploadImage} from "@/hooks/upload-image";
+import { UploadImage } from "@/hooks/upload-image";
 import { CreateGroup as CreateGroupDB } from "@/server/group";
 import { usePrivy } from "@privy-io/react-auth";
 import { Plus, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import client from "@/lib/stream";
+
 interface CreateGroupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -26,29 +27,59 @@ export default function CreateGroup({
   open,
   onOpenChange,
 }: CreateGroupProps) {
-  const { user } = usePrivy()
+  const { user } = usePrivy();
+
   const [groupName, setGroupName] = useState("");
   const [groupBio, setGroupBio] = useState("");
   const [groupImage, setGroupImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [maxMembers, setMaxMembers] = useState<number>(10);
   const [entryFee, setEntryFee] = useState<number>(0);
-
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Inline Errors
+  const [errors, setErrors] = useState({
+    name: "",
+    bio: "",
+    image: "",
+    maxMembers: "",
+    entryFee: "",
+  });
+
   const handleCreateGroup = async () => {
-    if (!groupName) return alert("Group name is required!");
-    if (maxMembers <= 0) return alert("Maximum members must be greater than 0");
-    if (entryFee < 0) return alert("Entry fee cannot be negative");
+    setLoading(true);
+
+    const newErrors: any = {};
+
+    if (!groupName.trim()) newErrors.name = "Group name is required";
+    if (!groupBio.trim()) newErrors.bio = "Group bio is required";
+    if (!groupImage) newErrors.image = "Group image is required";
+    if (!maxMembers || maxMembers <= 0)
+      newErrors.maxMembers = "Max members must be greater than 0";
+    if (entryFee === null || entryFee === undefined || entryFee < 0)
+      newErrors.entryFee = "Entry fee cannot be negative";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setLoading(false);
+      return;
+    }
 
     let imageUrl = previewUrl;
-    if (groupImage) {
-      try {
+
+    try {
+      if (groupImage) {
         imageUrl = await UploadImage(groupImage);
-      } catch (err) {
-        console.error(err);
-        return alert("Failed to upload image. Try again.");
       }
+    } catch (err) {
+      setErrors((prev) => ({
+        ...prev,
+        image: "Failed to upload image",
+      }));
+      setLoading(false);
+      return;
     }
 
 
@@ -64,43 +95,34 @@ export default function CreateGroup({
     } as Record<string, unknown>);
 
     await channel.create();
-    console.log(channel.data);
 
     try {
-      if (!user?.wallet || !imageUrl) return;
-      console.log(id,
-        groupName,
-        groupBio,
-        imageUrl,
-        maxMembers,
-        entryFee,
-        user?.wallet?.address)
-      const dbGroup = await CreateGroupDB(
-        {
-          id: id,
+      if (user?.wallet && imageUrl) {
+        await CreateGroupDB({
+          id,
           name: groupName,
           description: groupBio,
           image: imageUrl,
           maxMembers,
           entryFee: entryFee.toString(),
           owner: user?.wallet?.address,
-        }
-      );
-      console.log("Group saved in DB:", dbGroup);
+        });
+      }
     } catch (err) {
-      console.error("Failed to save group in DB:", err);
+      console.error("DB Error:", err);
     }
 
-    // reset form
+    // Reset and close
     setGroupName("");
     setGroupBio("");
     setGroupImage(null);
     setPreviewUrl(null);
     setMaxMembers(10);
     setEntryFee(0);
+
+    setLoading(false);
     onOpenChange(false);
   };
-
 
 
   const handleImageClick = () => {
@@ -112,11 +134,9 @@ export default function CreateGroup({
     if (file) {
       setGroupImage(file);
       setPreviewUrl(URL.createObjectURL(file));
+      if (errors.image) setErrors((prev) => ({ ...prev, image: "" }));
     }
   };
-
-
-
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -136,7 +156,8 @@ export default function CreateGroup({
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
-          {/* Image Upload with + Icon */}
+
+          {/* Image Upload */}
           <div
             className="w-28 h-28 mx-auto rounded-full bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition relative overflow-hidden border border-border"
             onClick={handleImageClick}
@@ -160,63 +181,93 @@ export default function CreateGroup({
               className="hidden"
             />
           </div>
+          {errors.image && (
+            <p className="text-red-500 text-sm text-center">{errors.image}</p>
+          )}
 
           <div className="space-y-4 border-t border-border pt-6">
+
+            {/* Group Name */}
             <Input
               placeholder="Group Name"
               value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
-              className="h-12 border-border bg-background text-lg text-foreground"
+              onChange={(e) => {
+                setGroupName(e.target.value);
+                if (errors.name)
+                  setErrors((prev) => ({ ...prev, name: "" }));
+              }}
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name}</p>
+            )}
 
+            {/* Group Bio */}
             <Textarea
               placeholder="Group Bio"
               value={groupBio}
-              onChange={(e) => setGroupBio(e.target.value)}
-              className="border-border bg-background text-lg text-foreground"
+              onChange={(e) => {
+                setGroupBio(e.target.value);
+                if (errors.bio)
+                  setErrors((prev) => ({ ...prev, bio: "" }));
+              }}
             />
+            {errors.bio && (
+              <p className="text-red-500 text-sm">{errors.bio}</p>
+            )}
 
+            {/* Max Members */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Maximum Members
               </label>
               <Input
                 type="number"
-                placeholder="Maximum Members"
                 value={maxMembers}
-                onChange={(e) => setMaxMembers(Number(e.target.value))}
                 min={1}
-                className="h-12 border-border bg-background text-lg text-foreground"
+                onChange={(e) => {
+                  setMaxMembers(Number(e.target.value));
+                  if (errors.maxMembers)
+                    setErrors((prev) => ({ ...prev, maxMembers: "" }));
+                }}
               />
+              {errors.maxMembers && (
+                <p className="text-red-500 text-sm">{errors.maxMembers}</p>
+              )}
             </div>
 
+            {/* Entry Fee */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Entry Fee (SOL)
               </label>
               <Input
                 type="number"
-                placeholder="Entry Fee"
                 value={entryFee}
-                onChange={(e) => setEntryFee(Number(e.target.value))}
                 min={0}
-                className="h-12 border-border bg-background text-lg text-foreground"
+                onChange={(e) => {
+                  setEntryFee(Number(e.target.value));
+                  if (errors.entryFee)
+                    setErrors((prev) => ({ ...prev, entryFee: "" }));
+                }}
               />
+              {errors.entryFee && (
+                <p className="text-red-500 text-sm">{errors.entryFee}</p>
+              )}
             </div>
           </div>
 
-          <div className=" pt-4 border-t border-border">
-
+          <div className="pt-4 border-t border-border">
             <Button
               onClick={handleCreateGroup}
-              className=" w-full text-base font-semibold"
+              disabled={loading}
+              className="w-full text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create
+              {loading ? "Creating..." : "Create"}
             </Button>
+
           </div>
         </div>
       </DialogContent>
     </Dialog>
-
   );
 }
