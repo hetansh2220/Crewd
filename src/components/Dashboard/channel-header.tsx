@@ -58,7 +58,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
 
   return (
     <div className="flex justify-between items-center p-2 border-b dark:bg-background">
-      {/* Left side */}
+      {/* Left  */}
       <div className="flex items-center gap-2 flex-1">
         {onBack && (
           <button
