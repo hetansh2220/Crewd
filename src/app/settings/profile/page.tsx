@@ -1,0 +1,159 @@
+"use client";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { X } from "lucide-react";
+import React from "react";
+import { usePrivy } from "@privy-io/react-auth";
+import { useState, useEffect } from "react";
+import { GetUserByWallet, UpdateUser } from "@/server/user";
+import { toast } from "sonner";
+
+export default function page() {
+  const { user: privyUser, authenticated } = usePrivy();
+  const [user, setUser] = useState<any>(null);
+  const [editedUser, setEditedUser] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch user from wallet when authenticated
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!authenticated || !privyUser?.wallet?.address) return;
+      const data = await GetUserByWallet(privyUser.wallet.address);
+      setUser(data);
+      setEditedUser(data);
+    };
+    fetchUser();
+  }, [authenticated, privyUser]);
+
+  const handleSave = async () => {
+    if (!editedUser || !editedUser.id) return;
+    try {
+      setIsSaving(true);
+      const updated = await UpdateUser(
+        editedUser.id,
+        editedUser.username,
+        editedUser.bio
+      );
+
+      if (updated) {
+        setUser(editedUser);
+        toast.success("Profile updated successfully!");
+      } else {
+        toast.error("Failed to update user");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Something went wrong while updating your profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-84px)] bg-background text-muted-foreground">
+        Loading your profile...
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex justify-center items-center bg-background text-foreground overflow-hidden transition-colors duration-300">
+      <div className="w-full">
+        {/* Main Content */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-8 bg-background transition-colors duration-300">
+          <div className="max-w-2xl mx-auto space-y-6">
+            <h1 className="text-2xl lg:text-3xl font-bold text-center">PROFILE SETTINGS</h1>
+            <p className="text-sm text-muted-foreground text-center">
+              Update your profile information below.
+            </p>
+            <Separator />
+
+            {/* Profile Avatar */}
+            <div className="flex items-center justify-center gap-4">
+              <Avatar className="h-20 w-20 ring-2 ring-border">
+                <AvatarImage
+                  src={user?.avatar || "/avatar.png"}
+                  alt={user?.username || "User"}
+                />
+                <AvatarFallback className="bg-primary/10 text-primary">
+                  {user?.username?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+
+            {/* Username */}
+            <div className="space-y-2">
+              <Label>Username</Label>
+              <Input
+                value={editedUser?.username || ""}
+                onChange={(e) =>
+                  setEditedUser({ ...editedUser, username: e.target.value })
+                }
+                className="bg-card border-border text-foreground focus-visible:ring-primary/20"
+              />
+            </div>
+
+            {/* Short Bio */}
+            <div className="space-y-2">
+              <Label>Short Bio</Label>
+              <p className="text-xs text-muted-foreground">
+                Appears on your profile and cards
+              </p>
+              <Input
+                value={editedUser?.bio || ""}
+                onChange={(e) =>
+                  setEditedUser({ ...editedUser, bio: e.target.value })
+                }
+                className="bg-card border-border text-foreground focus-visible:ring-primary/20"
+              />
+            </div>
+
+            {/* About Me */}
+            <div className="space-y-2">
+              <Label>About Me</Label>
+              <Textarea
+                value={editedUser?.about || ""}
+                onChange={(e) =>
+                  setEditedUser({ ...editedUser, about: e.target.value })
+                }
+                placeholder="Appears on your profile About section"
+                className="bg-card border-border text-foreground focus-visible:ring-primary/20 min-h-[120px]"
+              />
+            </div>
+
+            {/* Socials */}
+            <div className="space-y-2">
+              <Label>Socials</Label>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center border border-border px-3 py-2 rounded-lg w-full bg-card">
+                  <X className="h-4 w-4 text-muted-foreground mr-2" />
+                  <Input
+                    value={editedUser?.xHandle || ""}
+                    onChange={(e) =>
+                      setEditedUser({ ...editedUser, xHandle: e.target.value })
+                    }
+                    className="border-none bg-transparent focus-visible:ring-0 text-foreground"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Verify social profiles to make your profile more legitimate and
+                discoverable.
+              </p>
+            </div>
+
+            <Button onClick={handleSave} disabled={isSaving} className="mt-4 w-full">
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

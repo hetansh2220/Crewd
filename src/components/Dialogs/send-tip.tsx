@@ -12,7 +12,7 @@ import { useChatContext } from "stream-chat-react"
 import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana"
 import useTransfer from "@/hooks/use-transfer"
 import { ChannelData } from "stream-chat"
-import { Bounce, toast, ToastContainer } from "react-toastify";
+import { toast, Toaster } from "sonner"
 
 interface SetAmountDialogProps {
   open: boolean
@@ -89,16 +89,8 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
       //Toast
       toast.success('Tip successfully sent!', {
         position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
       });
-      <ToastContainer />
+      <Toaster />
 
       setAmount("")
       setSelectedPreset(null)
@@ -107,14 +99,6 @@ export function SendTip({ open, onOpenChange }: SetAmountDialogProps) {
       //toast error
       toast.error('Failed to send tip.', {
         position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
       });
 
     } finally {
