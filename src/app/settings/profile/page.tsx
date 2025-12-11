@@ -7,31 +7,45 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { usePrivy } from "@privy-io/react-auth";
-import { useState, useEffect } from "react";
 import { GetUserByWallet, UpdateUser } from "@/server/user";
 import { toast } from "sonner";
 
-export default function page() {
+// ---- Real User Type ---- //
+interface User {
+  id: string;
+  username: string;
+  bio: string;
+  about?: string;
+  xHandle?: string;
+  avatar?: string;
+}
+
+export default function Page() {
   const { user: privyUser, authenticated } = usePrivy();
-  const [user, setUser] = useState<any>(null);
-  const [editedUser, setEditedUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [editedUser, setEditedUser] = useState<User | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   // Fetch user from wallet when authenticated
   useEffect(() => {
     const fetchUser = async () => {
       if (!authenticated || !privyUser?.wallet?.address) return;
+
       const data = await GetUserByWallet(privyUser.wallet.address);
-      setUser(data);
-      setEditedUser(data);
+
+      if (data) {
+        setUser(data);
+        setEditedUser(data);
+      }
     };
     fetchUser();
   }, [authenticated, privyUser]);
 
   const handleSave = async () => {
     if (!editedUser || !editedUser.id) return;
+
     try {
       setIsSaving(true);
       const updated = await UpdateUser(
@@ -65,24 +79,28 @@ export default function page() {
   return (
     <div className="flex justify-center items-center bg-background text-foreground overflow-hidden transition-colors duration-300">
       <div className="w-full">
-        {/* Main Content */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-8 bg-background transition-colors duration-300">
           <div className="max-w-2xl mx-auto space-y-6">
-            <h1 className="text-2xl lg:text-3xl font-bold text-center">PROFILE SETTINGS</h1>
+
+            <h1 className="text-2xl lg:text-3xl font-bold text-center">
+              PROFILE SETTINGS
+            </h1>
+
             <p className="text-sm text-muted-foreground text-center">
               Update your profile information below.
             </p>
+
             <Separator />
 
             {/* Profile Avatar */}
             <div className="flex items-center justify-center gap-4">
               <Avatar className="h-20 w-20 ring-2 ring-border">
                 <AvatarImage
-                  src={user?.avatar || "/avatar.png"}
-                  alt={user?.username || "User"}
+                  src={user.avatar || "/avatar.png"}
+                  alt={user.username}
                 />
                 <AvatarFallback className="bg-primary/10 text-primary">
-                  {user?.username?.charAt(0).toUpperCase() || "U"}
+                  {user.username?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </div>
@@ -93,7 +111,7 @@ export default function page() {
               <Input
                 value={editedUser?.username || ""}
                 onChange={(e) =>
-                  setEditedUser({ ...editedUser, username: e.target.value })
+                  setEditedUser({ ...editedUser!, username: e.target.value })
                 }
                 className="bg-card border-border text-foreground focus-visible:ring-primary/20"
               />
@@ -108,7 +126,7 @@ export default function page() {
               <Input
                 value={editedUser?.bio || ""}
                 onChange={(e) =>
-                  setEditedUser({ ...editedUser, bio: e.target.value })
+                  setEditedUser({ ...editedUser!, bio: e.target.value })
                 }
                 className="bg-card border-border text-foreground focus-visible:ring-primary/20"
               />
@@ -120,7 +138,7 @@ export default function page() {
               <Textarea
                 value={editedUser?.about || ""}
                 onChange={(e) =>
-                  setEditedUser({ ...editedUser, about: e.target.value })
+                  setEditedUser({ ...editedUser!, about: e.target.value })
                 }
                 placeholder="Appears on your profile About section"
                 className="bg-card border-border text-foreground focus-visible:ring-primary/20 min-h-[120px]"
@@ -136,7 +154,7 @@ export default function page() {
                   <Input
                     value={editedUser?.xHandle || ""}
                     onChange={(e) =>
-                      setEditedUser({ ...editedUser, xHandle: e.target.value })
+                      setEditedUser({ ...editedUser!, xHandle: e.target.value })
                     }
                     className="border-none bg-transparent focus-visible:ring-0 text-foreground"
                   />
@@ -151,6 +169,7 @@ export default function page() {
             <Button onClick={handleSave} disabled={isSaving} className="mt-4 w-full">
               {isSaving ? "Saving..." : "Save Changes"}
             </Button>
+
           </div>
         </div>
       </div>

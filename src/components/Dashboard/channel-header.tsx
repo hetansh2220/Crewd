@@ -1,6 +1,6 @@
 "use client";
 
-import {startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { ChannelHeader, useChatContext } from "stream-chat-react";
 import { ArrowLeftIcon, DotsThreeVerticalIcon } from "@phosphor-icons/react";
@@ -9,8 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Skeleton } from "@/components/ui/skeleton";
 import {SendTip} from '@/components/Dialogs/send-tip'
 import { RateGroupDialog } from "@/components/Dialogs/rate-group";
-import { Bounce, toast, ToastContainer } from "react-toastify";
-import { CreateReview } from "@/server/review";
+
 import { GetUserByWallet } from "@/server/user";
 
 
@@ -25,9 +24,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
   const [showTipDialog, setShowTipDialog] = useState(false);
   const { channel } = useChatContext();
 
-  // Review 
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+ 
   const [memberDetails, setMemberDetails] = useState<{
     id: string;
     username: string;
@@ -37,56 +34,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
     createdAt: Date;
   }[]>();
 
-  const handleSubmitReview = () => {
-    const reviewer = user?.wallet?.address;
-    const groupId = channel?.data?.id;
-    if (!reviewer || !groupId) {
-      alert("Missing reviewer or group ID");
-      return;
-    }
-
-    if (rating < 1 || rating > 5) {
-      alert("Please select a rating between 1 and 5 stars");
-      return;
-    }
-
-    startTransition(async () => {
-      try {
-        await CreateReview(reviewer, groupId, rating, comment);
-        // toast
-        toast.success('Review submitted successfully!', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        });
-        <ToastContainer />
-        setShowReviewDialog(false);
-        setRating(0);
-        setComment("");
-      } catch (error) {
-
-        console.error("Error submitting review:", error);
-        // toast error
-        toast.error("Failed to submit review.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        });
-      }
-    });
-  };
+ 
 
 
   const members = channel?.state?.members ? Object.values(channel.state.members) : [];

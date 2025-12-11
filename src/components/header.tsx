@@ -4,9 +4,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { GetUserByWallet, UpdateUser } from "@/server/user";
+import { GetUserByWallet } from "@/server/user";
 import { usePrivy } from "@privy-io/react-auth";
-import { MoonIcon, SunIcon, User, Settings } from "lucide-react";
+import { MoonIcon, SunIcon, Settings } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -27,8 +27,6 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [openProfileDialog, setOpenProfileDialog] = useState(false);
-  const [openSettings, setOpenSettings] = useState(false);
   const [openPopover, setOpenPopover] = useState(false); // controls popover open/close
   const wallet = privyUser?.wallet?.address;
 
