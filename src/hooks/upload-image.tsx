@@ -1,4 +1,4 @@
-export async function uploadToCloudinary(file: File): Promise<string> {
+export async function UploadImage(file: File): Promise<string> {
   const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`;
 
   const formData = new FormData();

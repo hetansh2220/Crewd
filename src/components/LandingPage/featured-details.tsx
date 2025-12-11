@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useTransfer from "@/hooks/use-transfer";
 import client from "@/lib/stream";
-import { getAverageRating, GetReviewsByGroupId } from "@/server/review";
-import { getStreamToken } from "@/server/stream";
+import { GetReviewsByGroupId } from "@/server/review";
 import { GetTipByGroupId } from "@/server/tips";
 import { createTransaction } from "@/server/transaction";
 import { GetUserByWallet } from "@/server/user";
@@ -17,10 +16,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Channel, StreamChat } from "stream-chat";
-import {joinStreamChatChannel} from "@/server/stream";
+import { Channel } from "stream-chat";
+import { joinStreamChatChannel } from "@/server/stream";
+import { getStreamToken } from "@/server/stream";
 
-// Type definitions
+// Types
 type UserData = {
   id: string;
   username: string;
@@ -30,19 +30,15 @@ type UserData = {
   createdAt: Date;
 };
 
-// Update the Review type definition
 type Review = {
   id: string;
   groupId: string;
   reviewer: string;
   rating: number;
   comment: string;
-  handle?: string;  // Make handle optional
+  handle?: string;
   createdAt: Date;
 };
-
-
-
 
 interface FeaturedDetailsProps {
   groupData: {
@@ -61,21 +57,31 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
   const [joining, setJoining] = useState(false);
   const [joined, setJoined] = useState(false);
   const [channel, setChannel] = useState<Channel>();
-  const { user, ready } = usePrivy();
+  const [membersLoading, setMembersLoading] = useState(true); // ✅ NEW: Members skeleton state
+  const { user } = usePrivy();
   const userId = user?.wallet?.address;
   const owner = groupData.owner;
-  const membershipProgress = 92;
+
+
   const [ownername, setOwnername] = useState<{ username: string; walletAddress: string | null } | null>(null);
+
   const { transfer } = useTransfer();
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const { wallets } = useWallets();
   const router = useRouter();
+
   const [totalTips, setTotalTips] = useState<number>(0);
+
+  const Members = Object.values(channel?.state?.members ?? {});
+
+  if (Members.find((member) => member.user_id?.toLowerCase() === userId?.toLowerCase())) {
+    if (!joined) setJoined(true);
+  }
 
   // Reviews
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewersData, setReviewersData] = useState<Record<string, UserData>>({});
-  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [loading, setLoading] = useState(true); // Review loading
 
   const stats = [
     { label: "REVIEWS", value: reviews.length, icon: "⭐" },
@@ -92,11 +98,11 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     fetchOwnerName();
   }, [owner]);
 
-  // Reviews + reviewer usernames
+  // Reviews
   useEffect(() => {
     const fetchReviewsAndUsers = async () => {
       try {
-        setLoadingReviews(true);
+        setLoading(true);
         const fetchedReviews = await GetReviewsByGroupId(groupData.id);
         setReviews(fetchedReviews);
 
@@ -117,14 +123,14 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
       } catch (err) {
         console.error("Error loading reviews:", err);
       } finally {
-        setLoadingReviews(false);
+        setLoading(false);
       }
     };
 
     fetchReviewsAndUsers();
   }, [groupData.id]);
 
-  // Fetch and sum up all tips
+  // Tips
   useEffect(() => {
     const fetchTips = async () => {
       try {
@@ -143,27 +149,26 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     fetchTips();
   }, [groupData.id]);
 
-  // Init Stream Chat
+  // Init Chat Channel
   useEffect(() => {
     const initChannel = async () => {
       try {
+        const token = await getStreamToken(owner);
+        await client.connectUser({ id: owner }, token);
         const channel = client.channel("messaging", groupData.id);
         await channel.watch();
         setChannel(channel);
-
-        const memberList = Object.values(channel.state.members);
-        if (memberList.find((member) => member.user_id === userId)) {
-          setJoined(true);
-        }
       } catch (err) {
         console.error("Error initializing channel:", err);
+      } finally {
+        setMembersLoading(false); // ✅ Turn off members skeleton
       }
     };
 
     initChannel();
-  }, [user, userId, groupData.id, owner, groupData.maxMembers]);
+  }, [userId, groupData.id, owner]);
 
-  // Join logic
+  // Join
   const handleJoin = async () => {
     if (!user) {
       router.push("/login");
@@ -173,17 +178,11 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
     if (joined || joining) return;
     setJoining(true);
 
-   
-
     try {
-      let signatureHash: Uint8Array<ArrayBufferLike> | undefined;
+      let signatureHash: Uint8Array | undefined;
 
       if (Number(groupData.entryFee) > 0) {
-        const transaction = await transfer(
-          user.wallet!.address!,
-          groupData.owner,
-          Number(groupData.entryFee)
-        );
+        const transaction = await transfer(user.wallet!.address!, groupData.owner, Number(groupData.entryFee));
 
         const { signature } = await signAndSendTransaction({
           transaction: new Uint8Array(
@@ -205,183 +204,124 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
         transaction: signatureHash ? bs58.encode(Buffer.from(signatureHash)) : "",
         amount: Number(groupData.entryFee),
       });
+
       router.push("/dashboard");
       setJoined(true);
-
     } catch (err) {
-      console.error("Error joining channel:", err);
+      console.error("Error joining:", err);
     } finally {
       setJoining(false);
     }
   };
-
-  // Members
-  const members = channel?.state?.members
-    ? Object.values(channel.state.members)
-      .slice(0, 8)
-      .map((member) => {
-        const initial =
-          member.user && typeof member.user.id === "string"
-            ? member.user.id.slice(0, 2).toUpperCase()
-            : "XX";
-        return { initial, id: member.user?.id || null };
-      })
-    : [];
-
-  useEffect(() => {
-    const fetchAverageRating = async () => {
-      try {
-        await getAverageRating(groupData.id);
-      } catch (err) {
-        console.error("Error fetching average rating:", err);
-      }
-    };
-
-    fetchAverageRating();
-  }, [groupData.id]);
-
-  // Show skeleton while not ready
-  if (!ready) {
-    return (
-      <div className="min-h-screen bg-background m-2 flex flex-col pb-40 animate-pulse">
-        <main className="flex-1 px-4 sm:px-8 py-8 sm:py-12 max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-            <div className="md:col-span-8 space-y-6 sm:space-y-8">
-              <Skeleton className="h-8 w-1/3" /> {/* Title */}
-              <Skeleton className="h-4 w-1/4" /> {/* Owner */}
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4">
-                <Skeleton className="h-20 rounded-lg" />
-                <Skeleton className="h-20 rounded-lg" />
-                <Skeleton className="h-20 rounded-lg" />
-              </div>
-
-              {/* About */}
-              <Skeleton className="h-6 w-1/5" />
-              <Skeleton className="h-20 w-full rounded-lg" />
-
-              {/* Members */}
-              <Skeleton className="h-6 w-1/4" />
-              <div className="flex gap-2">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-10 w-10 rounded-full" />
-                ))}
-              </div>
-
-              {/* Reviews */}
-              <Skeleton className="h-6 w-1/5" />
-              {Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton key={i} className="h-20 w-full rounded-lg" />
-              ))}
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="md:col-span-4 space-y-4 xl:pl-8">
-              <Skeleton className="h-[400px] w-full rounded-xl" />
-            </div>
-          </div>
-        </main>
-
-        <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-gray-200 dark:border-slate-700 p-4">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-10 w-24 rounded-lg" />
-          </div>
-        </footer>
-      </div>
-    );
-  }
+  const membershipProgress = Math.min(
+    ((channel?.data?.member_count || 0) / groupData.maxMembers) * 100,
+    100
+  );
 
   return (
     <div className="min-h-screen bg-background m-2 flex flex-col pb-40">
-      {/* Main Content */}
+      {/* Main */}
       <main className="flex-1 px-4 sm:px-8 py-8 sm:py-12 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-          {/* Left Content - Second on mobile, First on tablet+ */}
+
+          {/* LEFT */}
           <div className="md:col-span-8 order-2 md:order-1 space-y-6 sm:space-y-8">
+
             {/* Title */}
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                {groupData.name}
-              </h1>
-              <p className="text-gray-600 dark:text-slate-400 text-sm sm:text-base">
-                By{" "}
-                <span className="text-gray-900 dark:text-white font-medium">
-                  {ownername?.username || "0x..."}
-                </span>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">{groupData.name}</h1>
+              <p className="text-gray-600 text-sm">
+                By <span className="font-medium">{ownername?.username || "0x..."}</span>
               </p>
             </div>
 
             {/* Stats */}
-            <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 shadow-sm">
-              <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-6 text-center">
+            {/* Stats */}
+            <div className="rounded-2xl border border-white/10 px-6 py-4 bg-background">
+              <div
+                className="
+      grid grid-cols-1 sm:grid-cols-3 
+      justify-items-center text-center 
+      sm:divide-x sm:divide-white/10
+      gap-8
+    "
+              >
                 {stats.map((stat, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col items-center justify-center space-y-1"
-                  >
-                    <p className="text-sm font-medium text-gray-500 dark:text-slate-400 tracking-wide uppercase">
+                  <div key={idx} className="flex flex-col items-center space-y-2 py-4 w-full">
+                    {/* LABEL */}
+                    <p className="text-xs tracking-wide text-gray-400 uppercase">
                       {stat.label}
                     </p>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+
+                    {/* VALUE */}
+                    <p className="text-4xl font-semibold text-white">
                       {stat.value}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">
-                      {idx === 0 && "⭐⭐⭐⭐⭐"}
-                      {idx === 1 && "SOL"}
-                      {idx === 2 && "Sent"}
-                    </p>
+
+                    {/* EXTRA ROWS BASED ON INDEX */}
+                    {idx === 0 && (
+                      <p className="text-yellow-400 text-md">★★★★★</p>
+                    )}
+
+                    {idx === 1 && (
+                      <p className="text-gray-400 text-sm">SOL</p>
+                    )}
+
+                    {idx === 2 && (
+                      <p className="text-gray-400 text-sm">Sent</p>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
 
-
             {/* About */}
             <div className="space-y-3">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                About
-              </h2>
-              <p className="text-gray-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base">
-                {groupData.description}
-              </p>
+              <h2 className="text-lg font-bold">About</h2>
+              <p className="text-gray-400">{groupData.description}</p>
             </div>
 
             {/* Members */}
             <div className="space-y-3">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                {members.length} Members
+              <h2 className="text-lg font-bold">
+                {Members.length} {Members.length === 1 ? "Member" : "Members"}
               </h2>
+
               <div className="flex flex-wrap gap-2">
-                {members.map((member, idx) => {
-                  const seed = member.id || member.initial;
-                  const avatarUrl = `https://api.dicebear.com/9.x/thumbs/svg?seed=${seed}`;
-                  return (
-                    <Avatar
-                      key={idx}
-                      className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-gray-300 dark:border-slate-700"
+                {membersLoading ? (
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-10 rounded-full" />
+                  ))
+                ) : Members.length > 0 ? (
+                  Members.map((member) => (
+                    <Link
+                      key={member.user_id}
+                      href={`/${member.user?.name || "user"}`}
                     >
-                      <AvatarImage src={avatarUrl} alt={member.id || "Member"} />
-                      <AvatarFallback className="bg-gray-500 text-white text-xs font-bold">
-                        {member.initial}
-                      </AvatarFallback>
-                    </Avatar>
-                  );
-                })}
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={member.user?.image || undefined} alt={member.user?.name || "Member"} />
+                        <AvatarFallback>
+                          {member.user?.name?.charAt(0)?.toUpperCase() || "M"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No members yet.</p>
+                )}
               </div>
             </div>
 
             {/* Reviews */}
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Reviews</h2>
+              <h2 className="text-lg font-bold">Reviews</h2>
 
-              {loadingReviews ? (
+              {loading ? (
                 <div className="space-y-4 animate-pulse">
                   {Array.from({ length: 2 }).map((_, i) => (
                     <div
                       key={i}
-                      className="flex gap-3 sm:gap-4 bg-gray-100 dark:bg-white/5 p-3 sm:p-4 rounded-lg border border-gray-300 dark:border-slate-800"
+                      className="flex gap-3 bg-gray-100 dark:bg-white/5 p-4 rounded-lg border"
                     >
                       <Skeleton className="h-12 w-12 rounded-full" />
                       <div className="flex-1 space-y-2">
@@ -399,52 +339,33 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
                     return (
                       <div
                         key={idx}
-                        className="flex gap-3 sm:gap-4 bg-gray-100 dark:bg-white/5 p-3 sm:p-4 rounded-lg border border-gray-300 dark:border-slate-800"
+                        className="flex gap-4 bg-gray-100 dark:bg-white/5 p-4 rounded-lg border"
                       >
-                        <Link
-                          href={`/${reviewerInfo?.username}`}
-                          className="shrink-0 hover:opacity-90 transition-opacity"
-                        >
-                          <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
-                            <AvatarImage
-                              src={reviewerInfo?.avatar}
-                              alt={reviewerInfo?.username}
-                            />
-                            <AvatarFallback className="bg-gray-300 dark:bg-slate-700 text-gray-900 dark:text-white">
-                              {reviewerInfo?.username?.[0]}
-                            </AvatarFallback>
+                        <Link href={`/${reviewerInfo?.username}`}>
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={reviewerInfo?.avatar} />
+                            <AvatarFallback>{reviewerInfo?.username?.[0]}</AvatarFallback>
                           </Avatar>
                         </Link>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-white">
-                              {reviewerInfo?.username || "Anonymous"}
-                            </p>
-                          </div>
-                          <p className="text-xs sm:text-sm text-gray-700 dark:text-slate-300 mb-1">
-                            {review.comment}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-slate-500">
-                            {review.handle}
-                          </p>
+                        <div className="flex-1">
+                          <p className="font-semibold">{reviewerInfo?.username || "Anonymous"}</p>
+                          <p className="text-sm text-gray-400">{review.comment}</p>
+                          <p className="text-xs text-gray-500">{review.handle}</p>
                         </div>
                       </div>
                     );
                   })}
-
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 dark:text-slate-400">
-                  No reviews yet.
-                </p>
+                <p className="text-sm text-gray-500">No reviews yet.</p>
               )}
             </div>
           </div>
 
-          {/* Right Sidebar Image - First on mobile, Second on tablet+ */}
-          <div className="md:col-span-4 order-1 md:order-2 space-y-4 xl:pl-8">
-            <div className="aspect-square rounded-2xl bg-background border p-6 sm:p-8 flex items-center justify-center overflow-hidden">
+          {/* RIGHT */}
+          <div className="md:col-span-4 order-1 md:order-2">
+            <div className="aspect-square rounded-2xl  p-6 overflow-hidden">
               <Image
                 src={groupData.image}
                 width={400}
@@ -459,26 +380,24 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-background border-t">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-stretch sm:items-end gap-4 sm:gap-8">
-          <div className="flex-1 space-y-2">
-            <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-slate-300">
-              Members Left
-            </h3>
-            <div className="w-full bg-gray-300 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-end gap-8">
+          <div className="flex-1">
+            <h3 className="text-sm font-semibold">Members Progress</h3>
+            <div className="w-full bg-gray-300 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-primary rounded-full transition-all"
+                className="bg-primary h-full rounded-full"
                 style={{ width: `${membershipProgress}%` }}
               />
             </div>
-            <p className="text-xs text-gray-600 dark:text-slate-400">
-              {members.map(m => m.id).length}/{groupData.maxMembers}
+            <p className="text-sm text-gray-600">
+              {groupData.maxMembers - Members.length} spots left out of {groupData.maxMembers}
             </p>
           </div>
 
           <Button
             onClick={handleJoin}
             disabled={joining || joined}
-            className="bg-primary text-white px-8 sm:px-12 h-10 sm:h-11 font-semibold text-base sm:text-lg w-full sm:w-auto"
+            className="bg-primary text-white px-12 h-11 text-lg"
           >
             {joining ? "Joining..." : joined ? "Joined" : "Join"}
           </Button>

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { uploadToCloudinary } from "@/providers/cloudinary-provider";
+import {UploadImage} from "@/hooks/upload-image";
 import { CreateGroup as CreateGroupDB } from "@/server/group";
 import { usePrivy } from "@privy-io/react-auth";
 import { Plus, Users } from "lucide-react";
@@ -44,7 +44,7 @@ export default function CreateGroup({
     let imageUrl = previewUrl;
     if (groupImage) {
       try {
-        imageUrl = await uploadToCloudinary(groupImage);
+        imageUrl = await UploadImage(groupImage);
       } catch (err) {
         console.error(err);
         return alert("Failed to upload image. Try again.");
