@@ -30,7 +30,7 @@ export function ExportWallet() {
 
   return (
     <div className="space-y-6 border-border pt-6">
-      <h3 className="text-lg font-semibold">Export Private Key</h3>
+      <h3 className="text-base lg:text-lg font-semibold">Export Private Key</h3>
       <p className="text-sm text-muted-foreground">
         This reveals your private key. Never share it or store it online.
       </p>
@@ -40,7 +40,11 @@ export function ExportWallet() {
           I understand the security risk.
         </Label>
       </div>
-      <Button disabled={!acknowledged || isLoading} onClick={handleExport} className="w-full h-16 rounded-2xl text-lg">
+      <Button 
+        disabled={!acknowledged || isLoading} 
+        onClick={handleExport} 
+        className="w-full h-14 lg:h-16 rounded-2xl text-base lg:text-lg"
+      >
         {isLoading ? "Exporting..." : "Export Private Key"}
       </Button>
     </div>

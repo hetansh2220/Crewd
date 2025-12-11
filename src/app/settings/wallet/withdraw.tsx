@@ -8,8 +8,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useSignAndSendTransaction, useWallets } from "@privy-io/react-auth/solana";
 import useTransfer from "@/hooks/use-transfer";
 
-
-
 const PRESET_AMOUNTS = [5, 15, 30, 100];
 
 export function Withdraw() {
@@ -53,8 +51,7 @@ export function Withdraw() {
 
   return (
     <div className="space-y-4 border-border pt-6">
-      
-      <h3 className="text-lg font-semibold text-foreground">Withdraw SOL</h3>
+      <h3 className="text-base lg:text-lg font-semibold text-foreground">Withdraw SOL</h3>
       <Input
         placeholder="Wallet address"
         className="h-12"
@@ -68,7 +65,7 @@ export function Withdraw() {
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
       />
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {PRESET_AMOUNTS.map((preset) => (
           <button
             key={preset}
@@ -76,8 +73,9 @@ export function Withdraw() {
               setAmount(preset.toString());
               setSelectedPreset(preset);
             }}
-            className={`rounded border py-2 text-md font-semibold ${selectedPreset === preset ? "bg-foreground/10" : "border-border"
-              }`}
+            className={`rounded border py-2 text-sm lg:text-md font-semibold ${
+              selectedPreset === preset ? "bg-foreground/10" : "border-border"
+            }`}
           >
             {preset} SOL
           </button>
@@ -87,7 +85,7 @@ export function Withdraw() {
       <Button
         disabled={isLoading}
         onClick={handleWithdraw}
-        className="w-full h-16 rounded-2xl text-lg font-semibold"
+        className="w-full h-14 lg:h-16 rounded-2xl text-base lg:text-lg font-semibold"
       >
         {isLoading ? "Processing..." : "Withdraw"}
       </Button>

@@ -21,9 +21,13 @@ export function Deposit() {
     // Clear previous QR
     qrRef.current.innerHTML = "";
 
+    // Responsive QR size
+    const isMobile = window.innerWidth < 640;
+    const qrSize = isMobile ? 250 : 300;
+
     const qr = new QRCodeStyling({
-      width: 300,
-      height: 300,
+      width: qrSize,
+      height: qrSize,
       data: address,
       image: "https://s2.coinmarketcap.com/static/img/coins/200x200/5426.png",
       dotsOptions: { color: theme === "light" ? "#000" : "#fff" },
@@ -50,13 +54,13 @@ export function Deposit() {
       </div>
 
       <div className="rounded-lg border border-border bg-background/50 p-4">
-        <p className="break-all font-mono text-sm">{address}</p>
+        <p className="break-all font-mono text-xs lg:text-sm">{address}</p>
       </div>
 
       <Button
         onClick={handleCopy}
         disabled={isLoading}
-        className="h-16 w-full rounded-2xl text-lg font-semibold"
+        className="h-14 lg:h-16 w-full rounded-2xl text-base lg:text-lg font-semibold"
       >
         {isLoading ? "Copying..." : "Copy Address"}
       </Button>

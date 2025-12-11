@@ -64,11 +64,11 @@ export default function page() {
 
   return (
     <div className="flex justify-center items-center bg-background text-foreground overflow-hidden transition-colors duration-300">
-      <div>
+      <div className="w-full">
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-8 bg-background transition-colors duration-300">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-8 bg-background transition-colors duration-300">
           <div className="max-w-2xl mx-auto space-y-6">
-            <h1 className="text-3xl font-bold text-center">PROFILE SETTINGS</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-center">PROFILE SETTINGS</h1>
             <p className="text-sm text-muted-foreground text-center">
               Update your profile information below.
             </p>
