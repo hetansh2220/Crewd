@@ -111,11 +111,10 @@ export function Header() {
                   <button
                     key={item.name}
                     onClick={() => router.push(item.href)}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
-                      active
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${active
                         ? "bg-primary/10 text-primary"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                    }`}
+                      }`}
                   >
                     {item.name}
                   </button>

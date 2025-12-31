@@ -1,5 +1,5 @@
 import React from "react";
-import Sidebar from "./@sidebar/page";
+import Sidebar from "./@sidebar/default";
 import MobileNavDropdown from "./@sidebar/mobile-nav";
 
 export default function Layout({ children }: { children: React.ReactNode }) {

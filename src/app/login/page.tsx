@@ -6,7 +6,8 @@ import { LoginProfileStep } from '@/components/Login/login-profile'
 import { CreateUser, GetUserByWallet } from '@/server/user'
 import { useLoginWithEmail, usePrivy } from '@privy-io/react-auth'
 import { useCreateWallet } from '@privy-io/react-auth/solana'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
 
 

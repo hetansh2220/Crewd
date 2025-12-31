@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { ChannelHeader, useChatContext } from "stream-chat-react";
 import { ArrowLeftIcon, DotsThreeVerticalIcon } from "@phosphor-icons/react";
-import  ViewMembers  from "@/components/Dialogs/view-members";
+import ViewMembers from "@/components/Dialogs/view-members";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
-import {SendTip} from '@/components/Dialogs/send-tip'
+import { SendTip } from '@/components/Dialogs/send-tip'
 import { RateGroupDialog } from "@/components/Dialogs/rate-group";
 
 import { GetUserByWallet } from "@/server/user";
@@ -24,7 +24,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
   const [showTipDialog, setShowTipDialog] = useState(false);
   const { channel } = useChatContext();
 
- 
+
   const [memberDetails, setMemberDetails] = useState<{
     id: string;
     username: string;
@@ -34,7 +34,7 @@ export default function ChannelHeaderWithMenu({ onBack }: Props) {
     createdAt: Date;
   }[]>();
 
- 
+
 
 
   const members = channel?.state?.members ? Object.values(channel.state.members) : [];
