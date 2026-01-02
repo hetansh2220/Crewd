@@ -85,7 +85,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
 
   const stats = [
     { label: "REVIEWS", value: reviews.length, icon: "⭐" },
-    { label: "ENTRY", value: groupData.entryFee, icon: "💰" },
+    { label: "ENTRY", value: `${Number(groupData.entryFee) == 0 ? "Free" : `${groupData.entryFee} SOL`}`, icon: "💰" },
     { label: "TIPS", value: `${totalTips === 0 ? 0 : totalTips.toFixed(4)} SOL`, icon: "💵" },
   ];
 
@@ -264,7 +264,7 @@ export default function FeaturedDetails({ groupData }: FeaturedDetailsProps) {
                     )}
 
                     {idx === 1 && (
-                      <p className="text-gray-400 text-sm">SOL</p>
+                      <p className="text-gray-400 text-sm">{Number(groupData.entryFee) === 0 ? "" : "SOL"}</p>
                     )}
 
                     {idx === 2 && (

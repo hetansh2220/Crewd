@@ -16,7 +16,7 @@ const Sidebar = () => {
     }`;
 
   return (
-    <aside className="fixed w-64 border-r border-border p-6 space-y-8 hidden lg:block bg-card/30 backdrop-blur-xl h-[calc(100vh-84px)]">
+    <aside className="fixed w-64 border-r  p-6 space-y-8 hidden lg:block  backdrop-blur-xl h-[calc(100vh-84px)]">
       <div className="space-y-4">
         <h2 className="text-muted-foreground text-xs font-semibold"></h2>
         <nav className="space-y-2">
